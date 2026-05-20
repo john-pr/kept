@@ -8,3 +8,4 @@
 [//]: # (Any extra notes)
 ## History
 [//]: # (keep this updated. earliest to latest)
+- 2026-05-20: Initial Next.js setup via Create Next App
