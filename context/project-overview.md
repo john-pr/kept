@@ -324,3 +324,10 @@ Notes:
 - Sharing collections publicly (read-only links).
 - Browser extension for one-click save.
 - VS Code extension.
+
+## 10. Design References
+
+Refer to the screenshots for the dashboard UI. It doesnt have to be exact, use it aas reference.
+
+- @context/screenshots/dashboard.png
+- @context/screenshots/dashboard-drawer-ui.png
