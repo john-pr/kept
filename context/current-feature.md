@@ -15,3 +15,5 @@ N/A
 - 2026-07-06: Completed Dashboard UI Phase 2 — collapsible sidebar (desktop) with item types, favorite/recent collections, user footer, and "Navigation" header; mobile drawer sidebar via Sheet; DevStash brand moved to top bar with responsive mobile layout (icon-only actions + full-width search). Build and lint pass.
 - 2026-07-06: Documented Dashboard UI Phase 3 spec
 - 2026-07-06: Completed Dashboard UI Phase 3 — stats cards (total items/collections, favorite items/collections), recent collections grid, pinned items and recent items sections with item cards; contained scrolling (sidebar fixed, main scrolls independently); "Dashboard" title and centered max-width content area. Build and lint pass.
+- 2026-07-06: Documented Prisma + Neon PostgreSQL setup spec
+- 2026-07-06: Completed Prisma + Neon PostgreSQL setup — Prisma 7 schema (app models + NextAuth models) with driver adapter (@prisma/adapter-neon), prisma.config.ts, initial migration applied to Neon dev branch, and prisma/seed.ts translating mock-data.ts into seeded rows. UI still reads from mock-data.ts (not yet wired to Prisma). Build and lint pass.
