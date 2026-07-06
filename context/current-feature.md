@@ -1,11 +1,13 @@
 # Current Feature
-[//]: # (Feature name and short description)
+None — awaiting next feature/fix.
 ## Status
-[//]: # (Not Started | in Progress | completed)
+N/A
 ## Goals
-[//]: # (Goals and requirements)
+N/A
 ## Notes
-[//]: # (Any extra notes)
+N/A
 ## History
 [//]: # (keep this updated. earliest to latest)
 - 2026-05-20: Initial Next.js setup via Create Next App
+- 2026-07-06: Started Dashboard UI Phase 1
+- 2026-07-06: Completed Dashboard UI Phase 1 — shadcn/ui init, /dashboard route, dark-mode-default layout, top bar with search + new item/collection buttons, sidebar/main placeholders. Build and lint pass.
