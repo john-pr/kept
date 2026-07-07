@@ -1,17 +1,17 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCollectionItemTypeIds, getCollectionItems, getItemType } from "@/lib/dashboard";
 import { iconMap } from "@/lib/icon-map";
-import type { Collection } from "@/lib/mock-data";
+import type { CollectionSummary } from "@/lib/db/collections";
 
-export function CollectionCard({ collection }: { collection: Collection }) {
-  const itemCount = getCollectionItems(collection.id).length;
-  const typeIds = getCollectionItemTypeIds(collection);
-
+export function CollectionCard({ collection }: { collection: CollectionSummary }) {
   return (
     <Link href={`/collections/${collection.id}`}>
-      <Card className="h-full transition-colors hover:ring-primary/40">
+      <Card
+        className="h-full ring-2 transition-colors"
+        style={{ "--tw-ring-color": collection.borderColor } as CSSProperties}
+      >
         <CardHeader>
           <CardTitle className="flex items-center justify-between gap-2">
             <span className="truncate">{collection.name}</span>
@@ -26,13 +26,12 @@ export function CollectionCard({ collection }: { collection: Collection }) {
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
-              {typeIds.map((typeId) => {
-                const type = getItemType(typeId);
-                if (!type) return null;
+              {collection.types.map((type) => {
                 const Icon = iconMap[type.icon];
+                if (!Icon) return null;
                 return (
                   <span
-                    key={typeId}
+                    key={type.id}
                     className="flex size-6 items-center justify-center rounded-md bg-muted"
                   >
                     <Icon className="size-3.5" style={{ color: type.color }} />
@@ -41,7 +40,7 @@ export function CollectionCard({ collection }: { collection: Collection }) {
               })}
             </div>
             <span className="text-xs text-muted-foreground">
-              {itemCount} {itemCount === 1 ? "item" : "items"}
+              {collection.itemCount} {collection.itemCount === 1 ? "item" : "items"}
             </span>
           </div>
         </CardContent>

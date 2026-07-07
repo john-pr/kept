@@ -19,3 +19,5 @@ N/A
 - 2026-07-06: Completed Prisma + Neon PostgreSQL setup — Prisma 7 schema (app models + NextAuth models) with driver adapter (@prisma/adapter-neon), prisma.config.ts, initial migration applied to Neon dev branch, and prisma/seed.ts translating mock-data.ts into seeded rows. UI still reads from mock-data.ts (not yet wired to Prisma). Build and lint pass.
 - 2026-07-07: Documented Seed Data spec
 - 2026-07-07: Completed Seed Data — added `password` field to User (migration), `bcryptjs` dep, rewrote `prisma/seed.ts` with demo user/item types/collections/items per spec, made item-collection linking idempotent, and updated `scripts/test-db.ts` to display demo data. Build and lint pass.
+- 2026-07-07: Documented Dashboard Collections spec
+- 2026-07-07: Completed Dashboard Collections — added `src/lib/db/collections.ts` fetching collections with items/itemTypes via Prisma; `CollectionsSection` now an async server component using real Neon data instead of mock-data; `CollectionCard` shows a border colored by the most-used item type and icons for all types present. Items under collections still deferred. Build and lint pass.
