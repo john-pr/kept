@@ -1,22 +1,24 @@
+import type { CSSProperties } from "react";
 import { Heart, Pin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getItemType } from "@/lib/dashboard";
 import { iconMap } from "@/lib/icon-map";
-import type { Item } from "@/lib/mock-data";
+import type { ItemSummary } from "@/lib/db/items";
 
-export function ItemCard({ item }: { item: Item }) {
-  const type = getItemType(item.itemTypeId);
-  const Icon = type ? iconMap[type.icon] : null;
+export function ItemCard({ item }: { item: ItemSummary }) {
+  const Icon = iconMap[item.typeIcon];
 
   return (
-    <Card className="h-full">
+    <Card
+      className="h-full ring-2"
+      style={{ "--tw-ring-color": item.typeColor } as CSSProperties}
+    >
       <CardHeader>
         <CardTitle className="flex items-start justify-between gap-2">
           <span
             className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted"
           >
-            {Icon && <Icon className="size-4" style={{ color: type?.color }} />}
+            {Icon && <Icon className="size-4" style={{ color: item.typeColor }} />}
           </span>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             {item.isPinned && <Pin className="size-3.5" />}
