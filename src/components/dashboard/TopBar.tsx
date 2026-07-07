@@ -3,14 +3,26 @@ import { Search, FolderPlus, Plus, Code } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
+import type { ItemTypeSummary } from "@/lib/db/items";
+import type { CollectionSummary } from "@/lib/db/collections";
 
-export function TopBar() {
+interface TopBarProps {
+  itemTypes: ItemTypeSummary[];
+  favoriteCollections: CollectionSummary[];
+  recentCollections: CollectionSummary[];
+}
+
+export function TopBar({ itemTypes, favoriteCollections, recentCollections }: TopBarProps) {
   return (
     <header className="flex flex-col gap-3 border-b border-border px-4 py-3 md:grid md:grid-cols-3 md:items-center md:gap-4">
       <div className="flex items-center justify-between gap-2 md:justify-start">
         <div className="flex items-center gap-2">
           <div className="md:hidden">
-            <MobileSidebar />
+            <MobileSidebar
+              itemTypes={itemTypes}
+              favoriteCollections={favoriteCollections}
+              recentCollections={recentCollections}
+            />
           </div>
           <Link
             href="/dashboard"

@@ -6,8 +6,16 @@ import { Button } from "@/components/ui/button";
 import { SidebarNav } from "@/components/dashboard/SidebarNav";
 import { UserFooter } from "@/components/dashboard/UserFooter";
 import { cn } from "@/lib/utils";
+import type { ItemTypeSummary } from "@/lib/db/items";
+import type { CollectionSummary } from "@/lib/db/collections";
 
-export function Sidebar() {
+interface SidebarProps {
+  itemTypes: ItemTypeSummary[];
+  favoriteCollections: CollectionSummary[];
+  recentCollections: CollectionSummary[];
+}
+
+export function Sidebar({ itemTypes, favoriteCollections, recentCollections }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -39,7 +47,12 @@ export function Sidebar() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-2 py-4">
-        <SidebarNav collapsed={collapsed} />
+        <SidebarNav
+          itemTypes={itemTypes}
+          favoriteCollections={favoriteCollections}
+          recentCollections={recentCollections}
+          collapsed={collapsed}
+        />
       </div>
 
       <UserFooter collapsed={collapsed} />

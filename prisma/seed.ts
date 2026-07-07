@@ -25,7 +25,7 @@ const collections = [
     id: "col-react-patterns",
     name: "React Patterns",
     description: "Reusable React patterns and hooks",
-    isFavorite: false,
+    isFavorite: true,
   },
   {
     id: "col-ai-workflows",
@@ -37,7 +37,7 @@ const collections = [
     id: "col-devops",
     name: "DevOps",
     description: "Infrastructure and deployment resources",
-    isFavorite: false,
+    isFavorite: true,
   },
   {
     id: "col-terminal-commands",
@@ -323,7 +323,11 @@ async function main() {
   for (const collection of collections) {
     await prisma.collection.upsert({
       where: { id: collection.id },
-      update: {},
+      update: {
+        name: collection.name,
+        description: collection.description,
+        isFavorite: collection.isFavorite,
+      },
       create: {
         id: collection.id,
         name: collection.name,
