@@ -1,0 +1,63 @@
+import { prisma } from "@/lib/prisma";
+
+export interface CollectionTypeIcon {
+  id: string;
+  icon: string;
+  color: string;
+}
+
+export interface CollectionSummary {
+  id: string;
+  name: string;
+  description: string | null;
+  isFavorite: boolean;
+  itemCount: number;
+  borderColor: string;
+  types: CollectionTypeIcon[];
+}
+
+export async function getRecentCollections(limit = 6): Promise<CollectionSummary[]> {
+  const collections = await prisma.collection.findMany({
+    take: limit,
+    orderBy: { createdAt: "desc" },
+    include: {
+      items: {
+        include: {
+          item: {
+            include: { itemType: true },
+          },
+        },
+      },
+    },
+  });
+
+  return collections.map((collection) => {
+    const typeCounts = new Map<string, { count: number; icon: string; color: string }>();
+
+    for (const { item } of collection.items) {
+      const existing = typeCounts.get(item.itemType.id);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        typeCounts.set(item.itemType.id, {
+          count: 1,
+          icon: item.itemType.icon,
+          color: item.itemType.color,
+        });
+      }
+    }
+
+    const sortedTypes = Array.from(typeCounts.entries()).sort((a, b) => b[1].count - a[1].count);
+    const dominantColor = sortedTypes[0]?.[1].color;
+
+    return {
+      id: collection.id,
+      name: collection.name,
+      description: collection.description,
+      isFavorite: collection.isFavorite,
+      itemCount: collection.items.length,
+      borderColor: dominantColor ?? "var(--border)",
+      types: sortedTypes.map(([id, { icon, color }]) => ({ id, icon, color })),
+    };
+  });
+}

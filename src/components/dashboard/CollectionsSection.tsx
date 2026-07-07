@@ -1,8 +1,8 @@
-import { collections } from "@/lib/mock-data";
+import { getRecentCollections } from "@/lib/db/collections";
 import { CollectionCard } from "@/components/dashboard/CollectionCard";
 
-export function CollectionsSection() {
-  const recentCollections = collections.slice(0, 6);
+export async function CollectionsSection() {
+  const recentCollections = await getRecentCollections(6);
 
   return (
     <section className="flex flex-col gap-3">
