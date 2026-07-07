@@ -1,15 +1,17 @@
 import { Package, FolderOpen, Heart, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { dashboardStats } from "@/lib/dashboard";
+import { getDashboardStats } from "@/lib/db/stats";
 
-const stats = [
-  { label: "Total Items", value: dashboardStats.totalItems, icon: Package },
-  { label: "Collections", value: dashboardStats.totalCollections, icon: FolderOpen },
-  { label: "Favorite Items", value: dashboardStats.favoriteItems, icon: Heart },
-  { label: "Favorite Collections", value: dashboardStats.favoriteCollections, icon: Star },
-];
+export async function StatsCards() {
+  const dashboardStats = await getDashboardStats();
 
-export function StatsCards() {
+  const stats = [
+    { label: "Total Items", value: dashboardStats.totalItems, icon: Package },
+    { label: "Collections", value: dashboardStats.totalCollections, icon: FolderOpen },
+    { label: "Favorite Items", value: dashboardStats.favoriteItems, icon: Heart },
+    { label: "Favorite Collections", value: dashboardStats.favoriteCollections, icon: Star },
+  ];
+
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {stats.map(({ label, value, icon: Icon }) => (
