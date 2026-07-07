@@ -27,6 +27,59 @@ async function main() {
     items: itemCount,
     tags: tagCount,
   });
+
+  const demoUser = await prisma.user.findUnique({
+    where: { email: "demo@devstash.io" },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      isPro: true,
+      emailVerified: true,
+      password: true,
+      collections: {
+        select: {
+          id: true,
+          name: true,
+          items: {
+            select: {
+              item: {
+                select: {
+                  id: true,
+                  title: true,
+                  itemType: { select: { name: true } },
+                  tags: { select: { name: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!demoUser) {
+    throw new Error("Demo user (demo@devstash.io) not found — run `npm run db:seed`.");
+  }
+
+  console.log("\nDemo user:");
+  console.log({
+    id: demoUser.id,
+    email: demoUser.email,
+    name: demoUser.name,
+    isPro: demoUser.isPro,
+    emailVerified: demoUser.emailVerified,
+    hasPassword: Boolean(demoUser.password),
+  });
+
+  console.log("\nDemo collections:");
+  for (const collection of demoUser.collections) {
+    console.log(`- ${collection.name} (${collection.items.length} items)`);
+    for (const { item } of collection.items) {
+      const tags = item.tags.map((tag) => tag.name).join(", ");
+      console.log(`    [${item.itemType.name}] ${item.title}${tags ? ` (${tags})` : ""}`);
+    }
+  }
 }
 
 main()
