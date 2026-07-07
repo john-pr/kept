@@ -11,8 +11,20 @@ import {
 } from "@/components/ui/sheet";
 import { SidebarNav } from "@/components/dashboard/SidebarNav";
 import { UserFooter } from "@/components/dashboard/UserFooter";
+import type { ItemTypeSummary } from "@/lib/db/items";
+import type { CollectionSummary } from "@/lib/db/collections";
 
-export function MobileSidebar() {
+interface MobileSidebarProps {
+  itemTypes: ItemTypeSummary[];
+  favoriteCollections: CollectionSummary[];
+  recentCollections: CollectionSummary[];
+}
+
+export function MobileSidebar({
+  itemTypes,
+  favoriteCollections,
+  recentCollections,
+}: MobileSidebarProps) {
   return (
     <Sheet>
       <SheetTrigger
@@ -29,7 +41,11 @@ export function MobileSidebar() {
           </SheetTitle>
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-2 py-4">
-          <SidebarNav />
+          <SidebarNav
+            itemTypes={itemTypes}
+            favoriteCollections={favoriteCollections}
+            recentCollections={recentCollections}
+          />
         </div>
         <UserFooter />
       </SheetContent>

@@ -1,17 +1,23 @@
 import Link from "next/link";
 import { Star } from "lucide-react";
-import { itemTypes, collections } from "@/lib/mock-data";
+import type { ItemTypeSummary } from "@/lib/db/items";
+import type { CollectionSummary } from "@/lib/db/collections";
 import { iconMap } from "@/lib/icon-map";
 import { cn } from "@/lib/utils";
 
 interface SidebarNavProps {
+  itemTypes: ItemTypeSummary[];
+  favoriteCollections: CollectionSummary[];
+  recentCollections: CollectionSummary[];
   collapsed?: boolean;
 }
 
-export function SidebarNav({ collapsed = false }: SidebarNavProps) {
-  const favoriteCollections = collections.filter((c) => c.isFavorite);
-  const recentCollections = collections.slice(0, 6);
-
+export function SidebarNav({
+  itemTypes,
+  favoriteCollections,
+  recentCollections,
+  collapsed = false,
+}: SidebarNavProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -34,7 +40,14 @@ export function SidebarNav({ collapsed = false }: SidebarNavProps) {
                 )}
               >
                 <Icon className="size-4 shrink-0" style={{ color: type.color }} />
-                {!collapsed && <span className="truncate">{type.name}</span>}
+                {!collapsed && (
+                  <>
+                    <span className="truncate">{type.name}</span>
+                    <span className="ml-auto text-xs text-muted-foreground">
+                      {type.itemCount}
+                    </span>
+                  </>
+                )}
               </Link>
             );
           })}
@@ -84,10 +97,24 @@ export function SidebarNav({ collapsed = false }: SidebarNavProps) {
                 collapsed && "justify-center"
               )}
             >
-              <span className="size-4 shrink-0 rounded-full bg-muted-foreground/40" />
+              <span
+                className="size-4 shrink-0 rounded-full"
+                style={{ backgroundColor: collection.borderColor }}
+              />
               {!collapsed && <span className="truncate">{collection.name}</span>}
             </Link>
           ))}
+          <Link
+            href="/collections"
+            title={collapsed ? "View all collections" : undefined}
+            className={cn(
+              "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+              collapsed && "justify-center"
+            )}
+          >
+            {!collapsed && <span className="truncate">View all collections</span>}
+            {collapsed && <span className="truncate">…</span>}
+          </Link>
         </nav>
       </div>
     </div>
