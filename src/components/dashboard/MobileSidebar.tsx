@@ -13,17 +13,20 @@ import { SidebarNav } from "@/components/dashboard/SidebarNav";
 import { UserFooter } from "@/components/dashboard/UserFooter";
 import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionSummary } from "@/lib/db/collections";
+import type { CurrentUser } from "@/lib/db/users";
 
 interface MobileSidebarProps {
   itemTypes: ItemTypeSummary[];
   favoriteCollections: CollectionSummary[];
   recentCollections: CollectionSummary[];
+  user: CurrentUser;
 }
 
 export function MobileSidebar({
   itemTypes,
   favoriteCollections,
   recentCollections,
+  user,
 }: MobileSidebarProps) {
   return (
     <Sheet>
@@ -47,7 +50,7 @@ export function MobileSidebar({
             recentCollections={recentCollections}
           />
         </div>
-        <UserFooter />
+        <UserFooter user={user} />
       </SheetContent>
     </Sheet>
   );

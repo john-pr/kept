@@ -8,14 +8,16 @@ import { UserFooter } from "@/components/dashboard/UserFooter";
 import { cn } from "@/lib/utils";
 import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionSummary } from "@/lib/db/collections";
+import type { CurrentUser } from "@/lib/db/users";
 
 interface SidebarProps {
   itemTypes: ItemTypeSummary[];
   favoriteCollections: CollectionSummary[];
   recentCollections: CollectionSummary[];
+  user: CurrentUser;
 }
 
-export function Sidebar({ itemTypes, favoriteCollections, recentCollections }: SidebarProps) {
+export function Sidebar({ itemTypes, favoriteCollections, recentCollections, user }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -55,7 +57,7 @@ export function Sidebar({ itemTypes, favoriteCollections, recentCollections }: S
         />
       </div>
 
-      <UserFooter collapsed={collapsed} />
+      <UserFooter user={user} collapsed={collapsed} />
     </aside>
   );
 }

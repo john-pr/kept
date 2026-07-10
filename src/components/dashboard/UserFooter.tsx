@@ -1,13 +1,14 @@
 import { Settings } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { user } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import type { CurrentUser } from "@/lib/db/users";
 
 interface UserFooterProps {
+  user: CurrentUser;
   collapsed?: boolean;
 }
 
-export function UserFooter({ collapsed = false }: UserFooterProps) {
+export function UserFooter({ user, collapsed = false }: UserFooterProps) {
   const initials = user.name
     .split(" ")
     .map((part) => part[0])
