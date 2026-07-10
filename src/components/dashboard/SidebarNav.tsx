@@ -4,6 +4,7 @@ import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionSummary } from "@/lib/db/collections";
 import { iconMap } from "@/lib/icon-map";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface SidebarNavProps {
   itemTypes: ItemTypeSummary[];
@@ -39,10 +40,23 @@ export function SidebarNav({
                   collapsed && "justify-center"
                 )}
               >
-                <Icon className="size-4 shrink-0" style={{ color: type.color }} />
+                <span className="relative shrink-0">
+                  <Icon className="size-4" style={{ color: type.color }} />
+                  {collapsed && type.isPro && (
+                    <span className="absolute -top-1 -right-1 size-1.5 rounded-full bg-muted-foreground" />
+                  )}
+                </span>
                 {!collapsed && (
                   <>
                     <span className="truncate">{type.name}</span>
+                    {type.isPro && (
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] tracking-wide text-muted-foreground"
+                      >
+                        PRO
+                      </Badge>
+                    )}
                     <span className="ml-auto text-xs text-muted-foreground">
                       {type.itemCount}
                     </span>

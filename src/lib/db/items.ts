@@ -7,7 +7,10 @@ export interface ItemTypeSummary {
   icon: string;
   color: string;
   itemCount: number;
+  isPro: boolean;
 }
+
+const PRO_TYPE_NAMES = new Set(["file", "image"]);
 
 export async function getItemTypes(): Promise<ItemTypeSummary[]> {
   const itemTypes = await prisma.itemType.findMany({
@@ -18,13 +21,15 @@ export async function getItemTypes(): Promise<ItemTypeSummary[]> {
   return itemTypes
     .map((type) => {
       const lowerName = type.name.toLowerCase();
+      const pluralLowerName = `${lowerName}s`;
       return {
         id: type.id,
-        name: lowerName.charAt(0).toUpperCase() + lowerName.slice(1),
-        slug: `${lowerName}s`,
+        name: pluralLowerName.charAt(0).toUpperCase() + pluralLowerName.slice(1),
+        slug: pluralLowerName,
         icon: type.icon,
         color: type.color,
         itemCount: type._count.items,
+        isPro: PRO_TYPE_NAMES.has(lowerName),
       };
     })
     .sort((a, b) => b.itemCount - a.itemCount);
