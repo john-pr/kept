@@ -1,14 +1,11 @@
 # Current Feature
-Dashboard Quick Fixes (code-scanner audit follow-up)
+None — awaiting next feature/fix.
 ## Status
-In Progress
+N/A
 ## Goals
-Low-risk cleanup items identified by the code-scanner audit on 2026-07-11:
-1. **Fix duplicate `getRecentCollections(6)` query (N+1)** — `dashboard/page.tsx` and `CollectionsSection.tsx` both independently call `getRecentCollections(6)`, doubling a Prisma query with nested `items.item.itemType` joins on every dashboard load. Fetch once in `dashboard/page.tsx` and pass the result into `CollectionsSection` as a prop, matching the existing pattern for `itemTypes`/`favoriteCollections`/`user`.
-2. **Add a `take` limit to `getPinnedItems`** — unlike `getRecentItems`, it has no cap, so pinned-item lists are unbounded as they grow. Add a reasonable `take` limit consistent with `getRecentItems`.
-3. **Fix dead `line-clamp-2` in `ItemCard.tsx`** — `truncate` and `line-clamp-2` are combined on the same `<p>` (line 33); `truncate` forces single-line ellipsis and overrides the clamp. Drop `truncate`, keep only `line-clamp-2`.
+N/A
 ## Notes
-Deferred from audit (not included — higher risk/scope): `ItemSummary.content` field conflation (content/url/description merged into one string) and wiring up the `TopBar` search input.
+N/A
 ## History
 [//]: # (keep this updated. earliest to latest)
 - 2026-05-20: Initial Next.js setup via Create Next App
@@ -30,3 +27,5 @@ Deferred from audit (not included — higher risk/scope): `ItemSummary.content` 
 - 2026-07-07: Completed Stats & Sidebar — added `getItemTypes()` (with per-type item counts, sorted most-to-least) to `src/lib/db/items.ts` and `getFavoriteCollections()` to `src/lib/db/collections.ts`; `SidebarNav` is now prop-driven from real Neon data (item types link to `/items/[slug]`, favorite collections keep the star icon, recent collections show a colored circle from their dominant item type, plus a new "View all collections" link to `/collections`); data is fetched once in `dashboard/page.tsx` and threaded through `Sidebar`/`MobileSidebar`/`TopBar`. Marked "React Patterns" and "DevOps" as favorite collections in `prisma/seed.ts` and fixed the seed's collection upsert (previously a no-op on existing rows) so favorite/name/description changes apply on re-seed. Stats cards were already wired to Neon from a prior feature. Build and lint pass.
 - 2026-07-10: Documented Add Pro Badge to Sidebar spec
 - 2026-07-10: Completed Add Pro Badge to Sidebar — added `isPro` flag to `ItemTypeSummary` (`src/lib/db/items.ts`), derived from type name being "file"/"image"; `SidebarNav.tsx` renders a subtle outline shadCN `Badge` reading "PRO" next to the (now pluralized, e.g. "Snippets"/"Links") item type name when expanded, and a small dot indicator on the icon when collapsed; `src/app/page.tsx` now redirects `/` to `/dashboard` instead of showing the CNA placeholder. Build and lint pass.
+- 2026-07-11: Documented Dashboard Quick Fixes spec (code-scanner audit follow-up)
+- 2026-07-11: Completed Dashboard Quick Fixes — fixed duplicate `getRecentCollections(6)` query by fetching once in `dashboard/page.tsx` and passing it into `CollectionsSection` as a prop instead of a second self-fetch; added a `take` limit (default 10) to `getPinnedItems` in `src/lib/db/items.ts`, matching `getRecentItems`; removed the `truncate` class from `ItemCard.tsx` that was overriding `line-clamp-2`. Build and lint pass.
