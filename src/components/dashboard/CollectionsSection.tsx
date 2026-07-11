@@ -1,9 +1,11 @@
-import { getRecentCollections } from "@/lib/db/collections";
+import type { CollectionSummary } from "@/lib/db/collections";
 import { CollectionCard } from "@/components/dashboard/CollectionCard";
 
-export async function CollectionsSection() {
-  const recentCollections = await getRecentCollections(6);
+interface CollectionsSectionProps {
+  recentCollections: CollectionSummary[];
+}
 
+export function CollectionsSection({ recentCollections }: CollectionsSectionProps) {
   return (
     <section className="flex flex-col gap-3">
       <h3 className="text-sm font-medium text-foreground">Recent Collections</h3>

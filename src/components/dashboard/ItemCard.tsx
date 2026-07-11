@@ -30,7 +30,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-3">
         <h4 className="truncate text-sm font-medium text-foreground">{item.title}</h4>
-        <p className="line-clamp-2 truncate font-mono text-xs text-muted-foreground">
+        <p className="line-clamp-2 font-mono text-xs text-muted-foreground">
           {item.content}
         </p>
         <div className="flex flex-wrap gap-1.5">

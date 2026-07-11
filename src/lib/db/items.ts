@@ -69,9 +69,10 @@ function toItemSummary(item: {
   };
 }
 
-export async function getPinnedItems(): Promise<ItemSummary[]> {
+export async function getPinnedItems(limit = 10): Promise<ItemSummary[]> {
   const items = await prisma.item.findMany({
     where: { isPinned: true },
+    take: limit,
     orderBy: { createdAt: "desc" },
     include: { itemType: true, tags: true },
   });

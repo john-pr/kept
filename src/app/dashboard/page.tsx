@@ -35,7 +35,7 @@ export default async function DashboardPage() {
           <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
             <StatsCards />
-            <CollectionsSection />
+            <CollectionsSection recentCollections={recentCollections} />
             <PinnedItemsSection />
             <RecentItemsSection />
           </div>

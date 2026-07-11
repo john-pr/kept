@@ -1,11 +1,14 @@
 # Current Feature
-None — awaiting next feature/fix.
+Dashboard Quick Fixes (code-scanner audit follow-up)
 ## Status
-N/A
+In Progress
 ## Goals
-N/A
+Low-risk cleanup items identified by the code-scanner audit on 2026-07-11:
+1. **Fix duplicate `getRecentCollections(6)` query (N+1)** — `dashboard/page.tsx` and `CollectionsSection.tsx` both independently call `getRecentCollections(6)`, doubling a Prisma query with nested `items.item.itemType` joins on every dashboard load. Fetch once in `dashboard/page.tsx` and pass the result into `CollectionsSection` as a prop, matching the existing pattern for `itemTypes`/`favoriteCollections`/`user`.
+2. **Add a `take` limit to `getPinnedItems`** — unlike `getRecentItems`, it has no cap, so pinned-item lists are unbounded as they grow. Add a reasonable `take` limit consistent with `getRecentItems`.
+3. **Fix dead `line-clamp-2` in `ItemCard.tsx`** — `truncate` and `line-clamp-2` are combined on the same `<p>` (line 33); `truncate` forces single-line ellipsis and overrides the clamp. Drop `truncate`, keep only `line-clamp-2`.
 ## Notes
-N/A
+Deferred from audit (not included — higher risk/scope): `ItemSummary.content` field conflation (content/url/description merged into one string) and wiring up the `TopBar` search input.
 ## History
 [//]: # (keep this updated. earliest to latest)
 - 2026-05-20: Initial Next.js setup via Create Next App
