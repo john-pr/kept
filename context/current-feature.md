@@ -1,20 +1,11 @@
-# Current Feature: Email Verification on Register
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
+N/A
 ## Goals
-- After a user registers via `/api/auth/register`, send a verification email (via Resend) containing a link with a unique token.
-- Credentials sign-in is blocked for unverified users ("Please verify your email" style error), with a way to resend the verification email.
-- Clicking the link marks `User.emailVerified` (already exists on the model) with the current timestamp and consumes the token.
-- Verification link expires after 24 hours; expired/invalid tokens show a clear error and let the user request a new one.
-- After registering, user lands on a dedicated "check your email" page (not redirected straight to sign-in) with a resend button.
+N/A
 ## Notes
-- Email provider: Resend. API key already present in `.env` as `RESEND_API_KEY` — do not commit or print this key.
-- `VerificationToken` model already exists in `prisma/schema.prisma` (NextAuth default: `identifier`, `token` (unique), `expires`, `@@unique([identifier, token])`) — reuse it rather than adding a new model, unless it proves insufficient (e.g. no `createdAt`/single-use tracking beyond deletion).
-- `User.emailVerified` (`DateTime?`) already exists — no migration needed for that field.
-- Registration flow is at `src/app/api/auth/register/route.ts` (Zod-validated, bcrypt hash, Prisma `user.create`) — this is where token generation + email send should be triggered after user creation.
-- Need a new "resend package" dependency and a `src/lib/` email helper, plus an API route (e.g. `/api/auth/verify-email?token=...`) to handle the verification link click.
-- Follow existing patterns: Server Actions/API routes return `{ success, data/error }`; Zod validation; toast feedback on the client.
-- Decide during `start`: sign-in blocking behavior for unverified users, verification link expiry duration, and resend-email UX (e.g. button on sign-in page or a dedicated "check your email" page after register).
+N/A
 ## History
 [//]: # (keep this updated. earliest to latest)
 - 2026-05-20: Initial Next.js setup via Create Next App
@@ -44,3 +35,5 @@ In Progress
 - 2026-07-28: Completed Auth Credentials - Email/Password Provider — added `zod` dependency; `auth.config.ts` Credentials provider placeholder (`authorize: () => null`) with `label`/`type` metadata on `email`/`password` fields for a capitalized, masked default sign-in form; `auth.ts` overrides Credentials with real bcrypt validation against Prisma (`bcrypt.compare` against `User.password`, which already existed on the model from the Seed Data feature — no migration needed); added `src/app/api/auth/register/route.ts` (Zod-validated name/email/password/confirmPassword, checks for existing user, hashes with bcryptjs, returns `{success, data/error}`). Verified via curl: register success (200), duplicate email (409), password mismatch (400), credentials sign-in with correct/incorrect password (session cookie set/rejected via `/api/auth/callback/credentials` + `/api/auth/session`). Build and lint pass.
 - 2026-07-28: Documented Auth UI - Sign In, Register & Sign Out spec, Phase 3
 - 2026-07-28: Completed Auth UI - Sign In, Register & Sign Out — added custom `/sign-in` (email/password + "Sign in with GitHub" + link to register, error display) and `/register` (name/email/password/confirm, client-side Zod validation, submits to `/api/auth/register`, success toast, redirect to sign-in) pages under `src/components/auth/` (`SignInForm`, `RegisterForm`, `GitHubIcon`, reusable `UserAvatar` handling GitHub image vs. initials fallback); added shadcn `dropdown-menu`, `label`, `alert`, `sonner` components; `UserFooter.tsx` rewritten as a client component with a `DropdownMenu` on the avatar (Sign out via `next-auth/react`'s `signOut`) and a settings icon linking to a new minimal `/profile` page; `auth.config.ts` now sets `pages.signIn: "/sign-in"`; `proxy.ts` protects `/profile` too and redirects unauthenticated requests to `/sign-in` (was the NextAuth default page); `getCurrentUser()` (`src/lib/db/users.ts`) now reads the real session user via `auth()` instead of always returning the first user in the DB, and exposes `image`; added `<Toaster position="top-center" richColors />` to the root layout. Verified in browser: sign-in/sign-out/register flows, validation errors, avatar initials, dropdown, profile link, protected-route redirect, and the registration success toast. Build and lint pass.
+- 2026-07-28: Documented Email Verification on Register spec
+- 2026-07-28: Completed Email Verification on Register — added `resend` dependency; `src/lib/email.ts` sends a styled, dark-themed HTML (+ plain-text) verification email via Resend matching the `/sign-in` page's card look; `src/lib/verification-token.ts` generates a 24h-expiry token reusing the existing `VerificationToken` model (deletes prior tokens for that identifier first); `register/route.ts` triggers the email after user creation; new `GET /api/auth/verify-email` route validates/consumes the token, sets `User.emailVerified`, and redirects to `/sign-in` with a `verified`/`verifyError` query param; new `POST /api/auth/resend-verification` route re-sends a token for unverified users (silently no-ops for unknown/verified emails to avoid leaking account existence); `auth.ts` Credentials `authorize` now throws a custom `EmailNotVerifiedError` (`CredentialsSignin` subclass, `code: "unverified-email"`) when `emailVerified` is null, blocking sign-in; `SignInForm` surfaces this as an inline error with a resend button, and toasts on `verified=1`/`verifyError` redirects; `RegisterForm` now redirects to a new dedicated `/check-email` page (`CheckEmailContent.tsx`) instead of straight to sign-in; added shared `src/hooks/useResendCooldown.ts` (30s cooldown) used by both resend buttons to prevent spamming. Also added `scripts/delete-non-demo-users.ts` (`npm run db:cleanup`) to wipe all non-demo users and their content (cascade via Prisma relations) with a confirmation prompt/`--yes` flag, for cleaning up test accounts created during manual testing. Verified in browser: register → check-email page → email delivery/styling → verify link → sign-in success; blocked sign-in for unverified account with working resend + cooldown. Build and lint pass.
