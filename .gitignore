@@ -44,3 +44,6 @@ next-env.d.ts
 
 # prisma
 /src/generated/prisma
+
+# mcp (contains local API keys)
+.mcp.json
