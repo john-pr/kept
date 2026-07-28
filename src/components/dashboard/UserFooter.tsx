@@ -1,5 +1,15 @@
-import { Settings } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+"use client";
+
+import { signOut } from "next-auth/react";
+import { Settings, LogOut } from "lucide-react";
+import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { UserAvatar } from "@/components/auth/UserAvatar";
 import { cn } from "@/lib/utils";
 import type { CurrentUser } from "@/lib/db/users";
 
@@ -9,12 +19,6 @@ interface UserFooterProps {
 }
 
 export function UserFooter({ user, collapsed = false }: UserFooterProps) {
-  const initials = user.name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
-
   return (
     <div
       className={cn(
@@ -22,9 +26,20 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
         collapsed && "justify-center"
       )}
     >
-      <Avatar>
-        <AvatarFallback>{initials}</AvatarFallback>
-      </Avatar>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={<button type="button" aria-label="User menu" />}
+        >
+          <UserAvatar name={user.name} image={user.image} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/sign-in" })}>
+            <LogOut className="size-4" />
+            Sign out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       {!collapsed && (
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-sm font-medium text-foreground">
@@ -35,8 +50,11 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
           </span>
         </div>
       )}
+
       {!collapsed && (
-        <Settings className="size-4 shrink-0 text-muted-foreground" />
+        <Link href="/profile" aria-label="Profile">
+          <Settings className="size-4 shrink-0 text-muted-foreground hover:text-foreground" />
+        </Link>
       )}
     </div>
   );

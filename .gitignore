@@ -47,3 +47,6 @@ next-env.d.ts
 
 # mcp (contains local API keys)
 .mcp.json
+
+# playwright mcp debug output
+.playwright-mcp/
