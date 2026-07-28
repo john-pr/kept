@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -58,10 +57,7 @@ export function RegisterForm() {
       return;
     }
 
-    toast.success("Account created", {
-      description: "You can now log in with your new account.",
-    });
-    router.push("/sign-in");
+    router.push(`/check-email?email=${encodeURIComponent(parsed.data.email)}`);
   }
 
   return (

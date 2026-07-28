@@ -1,11 +1,20 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: Email Verification on Register
 ## Status
-N/A
+In Progress
 ## Goals
-N/A
+- After a user registers via `/api/auth/register`, send a verification email (via Resend) containing a link with a unique token.
+- Credentials sign-in is blocked for unverified users ("Please verify your email" style error), with a way to resend the verification email.
+- Clicking the link marks `User.emailVerified` (already exists on the model) with the current timestamp and consumes the token.
+- Verification link expires after 24 hours; expired/invalid tokens show a clear error and let the user request a new one.
+- After registering, user lands on a dedicated "check your email" page (not redirected straight to sign-in) with a resend button.
 ## Notes
-N/A
+- Email provider: Resend. API key already present in `.env` as `RESEND_API_KEY` — do not commit or print this key.
+- `VerificationToken` model already exists in `prisma/schema.prisma` (NextAuth default: `identifier`, `token` (unique), `expires`, `@@unique([identifier, token])`) — reuse it rather than adding a new model, unless it proves insufficient (e.g. no `createdAt`/single-use tracking beyond deletion).
+- `User.emailVerified` (`DateTime?`) already exists — no migration needed for that field.
+- Registration flow is at `src/app/api/auth/register/route.ts` (Zod-validated, bcrypt hash, Prisma `user.create`) — this is where token generation + email send should be triggered after user creation.
+- Need a new "resend package" dependency and a `src/lib/` email helper, plus an API route (e.g. `/api/auth/verify-email?token=...`) to handle the verification link click.
+- Follow existing patterns: Server Actions/API routes return `{ success, data/error }`; Zod validation; toast feedback on the client.
+- Decide during `start`: sign-in blocking behavior for unverified users, verification link expiry duration, and resend-email UX (e.g. button on sign-in page or a dedicated "check your email" page after register).
 ## History
 [//]: # (keep this updated. earliest to latest)
 - 2026-05-20: Initial Next.js setup via Create Next App

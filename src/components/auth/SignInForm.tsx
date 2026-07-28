@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { GitHubIcon } from "@/components/auth/GitHubIcon";
+import { useResendCooldown } from "@/hooks/useResendCooldown";
 
 export function SignInForm() {
   const router = useRouter();
@@ -18,12 +20,31 @@ export function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isUnverified, setIsUnverified] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const { secondsLeft, startCooldown } = useResendCooldown();
+
+  useEffect(() => {
+    if (searchParams.get("verified") === "1") {
+      toast.success("Email verified", {
+        description: "You can now sign in.",
+      });
+    } else if (searchParams.get("verifyError") === "expired-token") {
+      toast.error("Verification link expired", {
+        description: "Sign in and use the resend option to get a new link.",
+      });
+    } else if (searchParams.get("verifyError") === "missing-token") {
+      toast.error("Invalid verification link");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setIsUnverified(false);
     setIsSubmitting(true);
 
     const result = await signIn("credentials", {
@@ -35,18 +56,53 @@ export function SignInForm() {
     setIsSubmitting(false);
 
     if (result?.error) {
-      setError("Invalid email or password");
+      if (result.code === "unverified-email") {
+        setIsUnverified(true);
+        setError("Please verify your email before signing in.");
+      } else {
+        setError("Invalid email or password");
+      }
       return;
     }
 
     router.push(callbackUrl);
   }
 
+  async function handleResend() {
+    setIsResending(true);
+
+    await fetch("/api/auth/resend-verification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    setIsResending(false);
+    startCooldown();
+    toast.success("Verification email sent", {
+      description: `Check ${email} for the link.`,
+    });
+  }
+
   return (
     <div className="flex flex-col gap-4">
       {error && (
         <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription className="flex flex-col gap-2">
+            {error}
+            {isUnverified && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isResending || secondsLeft > 0}
+                onClick={handleResend}
+              >
+                {isResending && <Loader2 className="size-4 animate-spin" />}
+                {secondsLeft > 0 ? `Resend verification email (${secondsLeft}s)` : "Resend verification email"}
+              </Button>
+            )}
+          </AlertDescription>
         </Alert>
       )}
 
