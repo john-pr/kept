@@ -1,14 +1,11 @@
-# Current Feature: Auth UI - Sign In, Register & Sign Out (Phase 3)
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
+N/A
 ## Goals
-- Custom `/sign-in` page: email/password fields, "Sign in with GitHub" button, link to register page, form validation and error display
-- Custom `/register` page: name/email/password/confirm password fields, validation (passwords match, email format), submit to `/api/auth/register`, redirect to sign-in on success
-- Sidebar bottom: user avatar (GitHub image or initials fallback), user name, dropdown on avatar click with "Sign out" link, clicking avatar/icon goes to `/profile`
+N/A
 ## Notes
-- Avatar logic: use `image` from GitHub if present, otherwise generate initials from name (e.g. "Brad Traversy" → "BT")
-- Create a reusable Avatar component handling both image and initials cases
-- Testing checklist: `/sign-in` renders custom UI; GitHub sign-in flow works; email/password sign-in flow works; avatar shows correctly in sidebar; avatar click shows dropdown; sign-out logs out and redirects; `/register` creates account and redirects to sign-in
+N/A
 ## History
 [//]: # (keep this updated. earliest to latest)
 - 2026-05-20: Initial Next.js setup via Create Next App
@@ -36,3 +33,5 @@ In Progress
 - 2026-07-28: Completed Auth Setup Phase 1 — installed `next-auth@beta` (5.0.0-beta.32) and `@auth/prisma-adapter`; added split config pattern (`src/auth.config.ts` edge-safe providers-only, `src/auth.ts` full config with Prisma adapter + JWT strategy + session/jwt callbacks exposing `user.id`); added `src/app/api/auth/[...nextauth]/route.ts` handlers; added `src/proxy.ts` protecting `/dashboard/*` via matcher, redirecting unauthenticated requests to `/api/auth/signin` with callbackUrl; added `src/types/next-auth.d.ts` extending Session with `user.id`. Verified in browser: unauthenticated `/dashboard` redirects to default sign-in page with GitHub button. Also added `.mcp.json` to `.gitignore` (contained a live Context7 API key that should not be committed). Build and lint pass.
 - 2026-07-28: Documented Auth Credentials - Email/Password Provider spec, Phase 2
 - 2026-07-28: Completed Auth Credentials - Email/Password Provider — added `zod` dependency; `auth.config.ts` Credentials provider placeholder (`authorize: () => null`) with `label`/`type` metadata on `email`/`password` fields for a capitalized, masked default sign-in form; `auth.ts` overrides Credentials with real bcrypt validation against Prisma (`bcrypt.compare` against `User.password`, which already existed on the model from the Seed Data feature — no migration needed); added `src/app/api/auth/register/route.ts` (Zod-validated name/email/password/confirmPassword, checks for existing user, hashes with bcryptjs, returns `{success, data/error}`). Verified via curl: register success (200), duplicate email (409), password mismatch (400), credentials sign-in with correct/incorrect password (session cookie set/rejected via `/api/auth/callback/credentials` + `/api/auth/session`). Build and lint pass.
+- 2026-07-28: Documented Auth UI - Sign In, Register & Sign Out spec, Phase 3
+- 2026-07-28: Completed Auth UI - Sign In, Register & Sign Out — added custom `/sign-in` (email/password + "Sign in with GitHub" + link to register, error display) and `/register` (name/email/password/confirm, client-side Zod validation, submits to `/api/auth/register`, success toast, redirect to sign-in) pages under `src/components/auth/` (`SignInForm`, `RegisterForm`, `GitHubIcon`, reusable `UserAvatar` handling GitHub image vs. initials fallback); added shadcn `dropdown-menu`, `label`, `alert`, `sonner` components; `UserFooter.tsx` rewritten as a client component with a `DropdownMenu` on the avatar (Sign out via `next-auth/react`'s `signOut`) and a settings icon linking to a new minimal `/profile` page; `auth.config.ts` now sets `pages.signIn: "/sign-in"`; `proxy.ts` protects `/profile` too and redirects unauthenticated requests to `/sign-in` (was the NextAuth default page); `getCurrentUser()` (`src/lib/db/users.ts`) now reads the real session user via `auth()` instead of always returning the first user in the DB, and exposes `image`; added `<Toaster position="top-center" richColors />` to the root layout. Verified in browser: sign-in/sign-out/register flows, validation errors, avatar initials, dropdown, profile link, protected-route redirect, and the registration success toast. Build and lint pass.
