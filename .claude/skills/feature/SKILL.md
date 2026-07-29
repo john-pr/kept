@@ -37,3 +37,7 @@ Execute the requested action: $ARGUMENTS
 See [actions/](actions/) for detailed instructions.
 
 If no action provided, explain the available options.
+
+## Task Tracking
+
+Before executing an action, use TaskCreate to add one task per numbered step in that action's instructions (see [actions/](actions/)). Mark each task in_progress as you start it and completed immediately after finishing it — don't batch updates. This keeps the todo list visible to the user throughout the action.
