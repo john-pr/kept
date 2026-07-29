@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createAndSendVerificationEmail } from "@/lib/verification-token";
+import { isEmailVerificationEnabled } from "@/lib/email-verification";
 
 const registerSchema = z
   .object({
@@ -38,15 +39,28 @@ export async function POST(request: NextRequest) {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  const verificationEnabled = isEmailVerificationEnabled();
 
   const user = await prisma.user.create({
-    data: { name, email, password: hashedPassword },
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      emailVerified: verificationEnabled ? null : new Date(),
+    },
   });
 
-  await createAndSendVerificationEmail(email);
+  if (verificationEnabled) {
+    await createAndSendVerificationEmail(email);
+  }
 
   return NextResponse.json({
     success: true,
-    data: { id: user.id, name: user.name, email: user.email },
+    data: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      requiresVerification: verificationEnabled,
+    },
   });
 }

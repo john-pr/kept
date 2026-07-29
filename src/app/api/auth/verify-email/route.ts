@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isEmailVerificationEnabled } from "@/lib/email-verification";
 
 export async function GET(request: NextRequest) {
-  const token = request.nextUrl.searchParams.get("token");
   const appUrl = request.nextUrl.origin;
+
+  if (!isEmailVerificationEnabled()) {
+    return NextResponse.redirect(`${appUrl}/sign-in`);
+  }
+
+  const token = request.nextUrl.searchParams.get("token");
 
   if (!token) {
     return NextResponse.redirect(`${appUrl}/sign-in?verifyError=missing-token`);

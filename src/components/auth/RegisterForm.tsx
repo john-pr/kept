@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 const registerSchema = z
   .object({
@@ -54,6 +55,12 @@ export function RegisterForm() {
 
     if (!result.success) {
       setError(result.error ?? "Something went wrong");
+      return;
+    }
+
+    if (result.data?.requiresVerification === false) {
+      toast.success("Account created. You can now sign in.");
+      router.push("/sign-in");
       return;
     }
 
