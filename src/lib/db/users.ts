@@ -2,10 +2,13 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 export interface CurrentUser {
+  id: string;
   name: string;
   email: string;
   image: string | null;
   isPro: boolean;
+  createdAt: Date;
+  hasPassword: boolean;
 }
 
 export async function getCurrentUser(): Promise<CurrentUser> {
@@ -19,9 +22,12 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   });
 
   return {
+    id: user.id,
     name: user.name ?? user.email,
     email: user.email,
     image: user.image,
     isPro: user.isPro,
+    createdAt: user.createdAt,
+    hasPassword: user.password !== null,
   };
 }
