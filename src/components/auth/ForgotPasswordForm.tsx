@@ -15,11 +15,12 @@ const forgotPasswordSchema = z.object({
 });
 
 async function sendResetLink(email: string) {
-  await fetch("/api/auth/forgot-password", {
+  const response = await fetch("/api/auth/forgot-password", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
   });
+  return response.json();
 }
 
 export function ForgotPasswordForm() {
@@ -41,16 +42,28 @@ export function ForgotPasswordForm() {
     }
 
     setIsSubmitting(true);
-    await sendResetLink(parsed.data.email);
+    const result = await sendResetLink(parsed.data.email);
     setIsSubmitting(false);
+
+    if (!result.success) {
+      setError(result.error ?? "Something went wrong");
+      return;
+    }
+
     setIsSubmitted(true);
     startCooldown();
   }
 
   async function handleResend() {
     setIsResending(true);
-    await sendResetLink(email);
+    const result = await sendResetLink(email);
     setIsResending(false);
+
+    if (!result.success) {
+      toast.error(result.error ?? "Something went wrong");
+      return;
+    }
+
     startCooldown();
     toast.success("Reset link sent", {
       description: `Check ${email} for the link.`,

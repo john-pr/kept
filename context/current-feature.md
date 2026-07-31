@@ -1,11 +1,25 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: Rate Limiting for Auth
 ## Status
-N/A
+In Progress
 ## Goals
-N/A
+- Add rate limiting to auth-related API routes to prevent brute force, credential stuffing, and abuse of email-sending endpoints
+- Use Upstash Redis with `@upstash/ratelimit` (sliding window) for serverless-compatible limiting
+- Create a reusable rate limiting utility in `src/lib/rate-limit.ts`
+- Protect these endpoints:
+  - `/api/auth/callback/credentials` (login) — 5 attempts / 15 min, keyed by IP + email
+  - `/api/auth/register` — 3 attempts / 1 hour, keyed by IP
+  - `/api/auth/forgot-password` — 3 attempts / 1 hour, keyed by IP
+  - `/api/auth/reset-password` — 5 attempts / 15 min, keyed by IP
+  - `/api/auth/resend-verification` — 3 attempts / 15 min, keyed by IP + email
+- Return 429 with `{ error: "Too many attempts. Please try again in X minutes." }` and a `Retry-After` header
+- Display rate-limit errors to the user via toast on the frontend
 ## Notes
-N/A
+- Extract IP from `x-forwarded-for` header (Vercel) or request; combine with email identifier where applicable for tighter limits
+- Rate limit check should return `{ success, remaining, reset }`
+- Env vars needed: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (Upstash free tier: 10k requests/day)
+- Rate limiting should fail open (allow request) if Upstash is unavailable
+- Login limiting via NextAuth Credentials provider is tricky — may need a custom sign-in handler rather than limiting the NextAuth catch-all route directly
+- Consider centralizing as middleware later for cleaner implementation; not required for this pass
 ## History
 [//]: # (keep this updated. earliest to latest)
 - 2026-05-20: Initial Next.js setup via Create Next App

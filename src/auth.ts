@@ -6,9 +6,14 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import authConfig from "@/auth.config";
 import { prisma } from "@/lib/prisma";
 import { isEmailVerificationEnabled } from "@/lib/email-verification";
+import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 
 class EmailNotVerifiedError extends CredentialsSignin {
   code = "unverified-email";
+}
+
+class RateLimitedError extends CredentialsSignin {
+  code = "rate-limited";
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -36,11 +41,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials) => {
+      authorize: async (credentials, request) => {
         const email = credentials?.email;
         const password = credentials?.password;
         if (typeof email !== "string" || typeof password !== "string") {
           return null;
+        }
+
+        const ip = getRequestIp(request);
+        const rateLimit = await checkRateLimit("login", `${ip}:${email}`, 5, 15 * 60);
+        if (!rateLimit.success) {
+          throw new RateLimitedError();
         }
 
         const user = await prisma.user.findUnique({ where: { email } });
