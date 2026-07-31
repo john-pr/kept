@@ -1,25 +1,11 @@
-# Current Feature: Rate Limiting for Auth
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
+N/A
 ## Goals
-- Add rate limiting to auth-related API routes to prevent brute force, credential stuffing, and abuse of email-sending endpoints
-- Use Upstash Redis with `@upstash/ratelimit` (sliding window) for serverless-compatible limiting
-- Create a reusable rate limiting utility in `src/lib/rate-limit.ts`
-- Protect these endpoints:
-  - `/api/auth/callback/credentials` (login) — 5 attempts / 15 min, keyed by IP + email
-  - `/api/auth/register` — 3 attempts / 1 hour, keyed by IP
-  - `/api/auth/forgot-password` — 3 attempts / 1 hour, keyed by IP
-  - `/api/auth/reset-password` — 5 attempts / 15 min, keyed by IP
-  - `/api/auth/resend-verification` — 3 attempts / 15 min, keyed by IP + email
-- Return 429 with `{ error: "Too many attempts. Please try again in X minutes." }` and a `Retry-After` header
-- Display rate-limit errors to the user via toast on the frontend
+N/A
 ## Notes
-- Extract IP from `x-forwarded-for` header (Vercel) or request; combine with email identifier where applicable for tighter limits
-- Rate limit check should return `{ success, remaining, reset }`
-- Env vars needed: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (Upstash free tier: 10k requests/day)
-- Rate limiting should fail open (allow request) if Upstash is unavailable
-- Login limiting via NextAuth Credentials provider is tricky — may need a custom sign-in handler rather than limiting the NextAuth catch-all route directly
-- Consider centralizing as middleware later for cleaner implementation; not required for this pass
+N/A
 ## History
 [//]: # (keep this updated. earliest to latest)
 - 2026-05-20: Initial Next.js setup via Create Next App
@@ -57,3 +43,5 @@ In Progress
 - 2026-07-29: Completed Forgot Password — added `src/lib/password-reset-token.ts` (`createAndSendPasswordResetEmail`, `emailFromResetIdentifier`) reusing the existing `VerificationToken` model with a `reset:${email}`-prefixed identifier (1h expiry) to keep reset tokens isolated from email-verification tokens; `src/lib/email.ts` gained `sendPasswordResetEmail` with a dark-themed HTML template matching the verification email; `POST /api/auth/forgot-password` looks up the user and always returns `{success:true}` regardless of whether the email exists (no account-existence leak); `POST /api/auth/reset-password` validates the token (existence, prefix, expiry), hashes the new password with bcryptjs, updates `User.password`, and deletes the token (single use); new `/forgot-password` (`ForgotPasswordForm`) and `/reset-password?token=...` (`ResetPasswordForm`) pages/components follow the `/check-email` card styling, with a success state (checkmark icon + "Reset link sent"), a resend button reusing `useResendCooldown` (30s), and "Back to sign in" links with an arrow-left icon; `SignInForm` gained a "Forgot password?" link next to the password label. No schema changes, no changes to `auth.ts`/Credentials provider. Verified in browser end-to-end: forgot-password → token created in Neon with `reset:` prefix → reset-password page → password changed → signed in with new password → dashboard loaded; also verified the invalid/expired-token error path. Build and lint pass.
 - 2026-07-30: Documented Profile Page spec
 - 2026-07-30: Completed Profile Page — expanded the minimal `/profile` page into the full spec: `getCurrentUser()` (`src/lib/db/users.ts`) now also exposes `id`, `createdAt`, and `hasPassword` (password !== null, used to hide password-change UI for GitHub OAuth users); added `getProfileStats(userId)` (`src/lib/db/stats.ts`) for per-user total items/collections and an item-type breakdown (scoped by `userId`, unlike the existing global dashboard stats); new `POST /api/auth/change-password` (session-authenticated, verifies current password via bcrypt) and `POST /api/auth/delete-account` (deletes the user; cascades remove items/collections/sessions/accounts) routes; new `src/components/profile/` components — `ChangePasswordForm`, `ChangePasswordSection` (button toggles the form open/closed, not shown by default), and `DeleteAccountDialog` (`AlertDialog` requiring the user to type "delete" before the destructive action enables, resets on close); added shadcn `alert-dialog` component. `/profile` now renders inside the same TopBar/Sidebar shell as `/dashboard` (matching stat-card styling) instead of a standalone centered card; the sidebar's settings-gear link was removed from `UserFooter.tsx` and a "Profile" item added to the avatar dropdown, above "Sign out". Also updated `context/ai-interaction.md`'s Test workflow step so browser/Playwright verification only happens when explicitly requested, not automatically on every feature. Verified in browser: profile rendering with real stats, change-password toggle open/cancel, delete-account button disabled until "delete" is typed, and the new dropdown Profile link navigating correctly. Build and lint pass.
+- 2026-07-31: Documented Rate Limiting for Auth spec
+- 2026-07-31: Completed Rate Limiting for Auth — added `@upstash/ratelimit` + `@upstash/redis` deps and `src/lib/rate-limit.ts` (`checkRateLimit`, `getRequestIp`, `rateLimitResponse`, `retryAfterMessage`): sliding-window limiter that fails open if Upstash isn't configured or errors; protected `register` (3/hr by IP), `forgot-password` (3/hr by IP), `reset-password` (5/15min by IP), and `resend-verification` (3/15min by IP+email) routes, each returning 429 + `Retry-After` header via `rateLimitResponse`; login (5/15min by IP+email) is enforced inside the Credentials provider's `authorize()` in `src/auth.ts` via a new `RateLimitedError` (`CredentialsSignin` subclass, `code: "rate-limited"`) since NextAuth's `/api/auth/callback/credentials` route can't be wrapped directly; `SignInForm` surfaces this as an inline error, and `SignInForm`'s resend-verification handler plus `ForgotPasswordForm` now check the JSON response instead of always assuming success, so a 429 shows an error/toast instead of silently rendering the "email sent" state. No `.env.example` exists in this repo so none was added — `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` need to be set in deployment env to actually enforce limits (falls open without them). Build and lint pass.
