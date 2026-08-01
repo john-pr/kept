@@ -1,11 +1,16 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: Three-Column Items List Grid
+
 ## Status
-N/A
+In Progress
+
 ## Goals
-N/A
+- On the items list view (`/items/[type]`), show items in a 3-column grid on large screens instead of 2.
+- Keep the grid responsive: 1 column on mobile, 2 columns on medium screens, 3 columns on large screens.
+
 ## Notes
-N/A
+- Target file: `src/app/items/[type]/page.tsx` — grid is currently `grid grid-cols-1 gap-4 md:grid-cols-2` (line 49).
+- Change to something like `grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3`.
+- Uses existing `ItemCard` component, no changes expected there.
 
 ## History
 [//]: # (keep this updated. earliest to latest)
