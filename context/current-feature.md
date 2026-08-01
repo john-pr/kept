@@ -1,20 +1,11 @@
-# Current Feature: Items List View
-
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
-
+N/A
 ## Goals
-- Create dynamic route `/items/[type]` (e.g., /items/snippets, /items/notes)
-- Fetch and display items filtered by type
-- Responsive grid of ItemCard components
-- Two columns on medium and up
-- Each card has left border colored by item type
-- Follow existing codebase patterns
-
+N/A
 ## Notes
-- Overview: Dynamic items listing page at `/items/[type]` that displays type-filtered items.
-- Reuse existing `ItemCard` component and its item-type color/icon derivation (already used on the dashboard for pinned/recent items).
-- Sidebar item type links already point to `/items/[slug]` (from the Stats & Sidebar feature) — this route currently doesn't exist yet.
+N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -56,3 +47,4 @@ In Progress
 - 2026-07-31: Documented Rate Limiting for Auth spec
 - 2026-07-31: Completed Rate Limiting for Auth — added `@upstash/ratelimit` + `@upstash/redis` deps and `src/lib/rate-limit.ts` (`checkRateLimit`, `getRequestIp`, `rateLimitResponse`, `retryAfterMessage`): sliding-window limiter that fails open if Upstash isn't configured or errors; protected `register` (3/hr by IP), `forgot-password` (3/hr by IP), `reset-password` (5/15min by IP), and `resend-verification` (3/15min by IP+email) routes, each returning 429 + `Retry-After` header via `rateLimitResponse`; login (5/15min by IP+email) is enforced inside the Credentials provider's `authorize()` in `src/auth.ts` via a new `RateLimitedError` (`CredentialsSignin` subclass, `code: "rate-limited"`) since NextAuth's `/api/auth/callback/credentials` route can't be wrapped directly; `SignInForm` surfaces this as an inline error, and `SignInForm`'s resend-verification handler plus `ForgotPasswordForm` now check the JSON response instead of always assuming success, so a 429 shows an error/toast instead of silently rendering the "email sent" state. No `.env.example` exists in this repo so none was added — `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` need to be set in deployment env to actually enforce limits (falls open without them). Build and lint pass.
 - 2026-08-01: Documented Items List View spec
+- 2026-08-01: Completed Items List View — added `getItemTypeBySlug` and `getItemsByType` (`src/lib/db/items.ts`), matching a slug (e.g. `snippets`) to its `ItemType` and fetching items for it; new `src/app/items/[type]/page.tsx` renders the same TopBar/Sidebar shell as `/dashboard`/`/profile` with a responsive grid (1 col mobile, 2 col md+) of the existing `ItemCard` component (kept the existing ring-style type-color border rather than introducing a literal left border, to stay consistent with the dashboard/profile item grids); unknown type slugs 404 via `notFound()`; `proxy.ts` now also protects `/items/:path*` alongside `/dashboard` and `/profile`. Build and lint pass.
