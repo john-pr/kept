@@ -1,16 +1,11 @@
-# Current Feature: Three-Column Items List Grid
-
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
-
+N/A
 ## Goals
-- On the items list view (`/items/[type]`), show items in a 3-column grid on large screens instead of 2.
-- Keep the grid responsive: 1 column on mobile, 2 columns on medium screens, 3 columns on large screens.
-
+N/A
 ## Notes
-- Target file: `src/app/items/[type]/page.tsx` — grid is currently `grid grid-cols-1 gap-4 md:grid-cols-2` (line 49).
-- Change to something like `grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3`.
-- Uses existing `ItemCard` component, no changes expected there.
+N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -55,3 +50,5 @@ In Progress
 - 2026-08-01: Completed Items List View — added `getItemTypeBySlug` and `getItemsByType` (`src/lib/db/items.ts`), matching a slug (e.g. `snippets`) to its `ItemType` and fetching items for it; new `src/app/items/[type]/page.tsx` renders the same TopBar/Sidebar shell as `/dashboard`/`/profile` with a responsive grid (1 col mobile, 2 col md+) of the existing `ItemCard` component (kept the existing ring-style type-color border rather than introducing a literal left border, to stay consistent with the dashboard/profile item grids); unknown type slugs 404 via `notFound()`; `proxy.ts` now also protects `/items/:path*` alongside `/dashboard` and `/profile`. Build and lint pass.
 - 2026-08-01: Documented Vitest Unit Testing Setup spec
 - 2026-08-01: Completed Vitest Unit Testing Setup — added `vitest` dep and `vitest.config.ts` (node environment, native `resolve.tsconfigPaths` for `@/*`, `include` scoped to `src/actions/**/*.test.ts` and `src/lib/**/*.test.ts` so component tests can't accidentally slip in); added `npm run test` (`vitest run`) and `npm run test:watch` (`vitest`) scripts; no `@testing-library/react`/jsdom installed, by design, since only server actions and utilities are in scope. No `src/actions/` directory exists yet (all mutations are currently API routes) so there's nothing to test there yet — the config/docs are ready for when server actions are introduced. Added example unit tests for existing `src/lib` utilities: `utils.test.ts` (`cn`), `email-verification.test.ts` (`isEmailVerificationEnabled`), `rate-limit.test.ts` (`getRequestIp`, `retryAfterMessage`) — deliberately skipped `checkRateLimit`/`rateLimitResponse` since they hit Redis/Next internals rather than being pure logic. Updated `context/ai-interaction.md` workflow step 4 to run `npm run test` alongside `npm run build`; added a "Testing" section to `context/coding-standards.md` (scope, file-naming convention, no DOM setup, mock external services at the boundary); added `npm run test`/`test:watch` to the command list in `CLAUDE.md`. Build, lint, and test pass.
+- 2026-08-01: Documented Three-Column Items List Grid spec
+- 2026-08-01: Completed Three-Column Items List Grid — changed the items list grid in `src/app/items/[type]/page.tsx` from `grid-cols-1 md:grid-cols-2` to `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`, so large screens show 3 columns instead of 2 while staying responsive (1 col mobile, 2 col medium). No changes to `ItemCard`. No testable logic (pure Tailwind class change to a page component, outside `src/actions/`/`src/lib/` scope). Build and test pass.
