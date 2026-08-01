@@ -18,6 +18,8 @@ npm run dev      # start dev server
 npm run build    # production build
 npm run start    # start production server
 npm run lint     # run ESLint
+npm run test     # run unit tests (server actions + utilities)
+npm run test:watch # run unit tests in watch mode
 ```
 
 ## Neon MCP

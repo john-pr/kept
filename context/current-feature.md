@@ -1,9 +1,10 @@
 # Current Feature
-None — awaiting next feature/fix.
+Vitest Unit Testing Setup
 ## Status
-N/A
+Completed
 ## Goals
-N/A
+- Add Vitest for unit testing, scoped to server actions (`src/actions/`) and utilities/lib (`src/lib/`) only — not components
+- Update `context/ai-interaction.md` workflow and `context/coding-standards.md` to reflect the new testing step/conventions
 ## Notes
 N/A
 
@@ -48,3 +49,5 @@ N/A
 - 2026-07-31: Completed Rate Limiting for Auth — added `@upstash/ratelimit` + `@upstash/redis` deps and `src/lib/rate-limit.ts` (`checkRateLimit`, `getRequestIp`, `rateLimitResponse`, `retryAfterMessage`): sliding-window limiter that fails open if Upstash isn't configured or errors; protected `register` (3/hr by IP), `forgot-password` (3/hr by IP), `reset-password` (5/15min by IP), and `resend-verification` (3/15min by IP+email) routes, each returning 429 + `Retry-After` header via `rateLimitResponse`; login (5/15min by IP+email) is enforced inside the Credentials provider's `authorize()` in `src/auth.ts` via a new `RateLimitedError` (`CredentialsSignin` subclass, `code: "rate-limited"`) since NextAuth's `/api/auth/callback/credentials` route can't be wrapped directly; `SignInForm` surfaces this as an inline error, and `SignInForm`'s resend-verification handler plus `ForgotPasswordForm` now check the JSON response instead of always assuming success, so a 429 shows an error/toast instead of silently rendering the "email sent" state. No `.env.example` exists in this repo so none was added — `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` need to be set in deployment env to actually enforce limits (falls open without them). Build and lint pass.
 - 2026-08-01: Documented Items List View spec
 - 2026-08-01: Completed Items List View — added `getItemTypeBySlug` and `getItemsByType` (`src/lib/db/items.ts`), matching a slug (e.g. `snippets`) to its `ItemType` and fetching items for it; new `src/app/items/[type]/page.tsx` renders the same TopBar/Sidebar shell as `/dashboard`/`/profile` with a responsive grid (1 col mobile, 2 col md+) of the existing `ItemCard` component (kept the existing ring-style type-color border rather than introducing a literal left border, to stay consistent with the dashboard/profile item grids); unknown type slugs 404 via `notFound()`; `proxy.ts` now also protects `/items/:path*` alongside `/dashboard` and `/profile`. Build and lint pass.
+- 2026-08-01: Documented Vitest Unit Testing Setup spec
+- 2026-08-01: Completed Vitest Unit Testing Setup — added `vitest` dep and `vitest.config.ts` (node environment, native `resolve.tsconfigPaths` for `@/*`, `include` scoped to `src/actions/**/*.test.ts` and `src/lib/**/*.test.ts` so component tests can't accidentally slip in); added `npm run test` (`vitest run`) and `npm run test:watch` (`vitest`) scripts; no `@testing-library/react`/jsdom installed, by design, since only server actions and utilities are in scope. No `src/actions/` directory exists yet (all mutations are currently API routes) so there's nothing to test there yet — the config/docs are ready for when server actions are introduced. Added example unit tests for existing `src/lib` utilities: `utils.test.ts` (`cn`), `email-verification.test.ts` (`isEmailVerificationEnabled`), `rate-limit.test.ts` (`getRequestIp`, `retryAfterMessage`) — deliberately skipped `checkRateLimit`/`rateLimitResponse` since they hit Redis/Next internals rather than being pure logic. Updated `context/ai-interaction.md` workflow step 4 to run `npm run test` alongside `npm run build`; added a "Testing" section to `context/coding-standards.md` (scope, file-naming convention, no DOM setup, mock external services at the boundary); added `npm run test`/`test:watch` to the command list in `CLAUDE.md`. Build, lint, and test pass.
