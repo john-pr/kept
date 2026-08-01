@@ -1,21 +1,11 @@
-# Current Feature: Item Drawer
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
+N/A
 ## Goals
-- Right-side slide-in drawer (shadcn `Sheet`, opens from the right) as the item detail view — no separate item page
-- Clicking an `ItemCard` opens the drawer with that item's full data
-- Works on both the dashboard and items list pages
-- Action bar: Favorite (star, yellow when active), Pin, Copy, Edit (pencil), Delete (trash, right-aligned) — see screenshot for layout
-- Drawer shows a skeleton/loading state while fetching
-- Client wrapper component manages drawer state since pages are server components
-- Feels snappy — fetch on click, no page navigation
-
+N/A
 ## Notes
-- Scope is display only for now: drawer shows item details, not the code editor or item-type-specific extras (later work)
-- Card data (title, description, tags, etc.) continues to be fetched by the server component as before
-- Full item detail (content, collections, language, etc.) is fetched on click via a new API route `/api/items/[id]`
-- New query function for full item detail lives in `src/lib/db/items.ts`; the API route calls it with an auth check
-- Reference screenshot: `context/screenshots/dashboard-ui-drawer.png`
+N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -62,3 +52,5 @@ In Progress
 - 2026-08-01: Completed Vitest Unit Testing Setup — added `vitest` dep and `vitest.config.ts` (node environment, native `resolve.tsconfigPaths` for `@/*`, `include` scoped to `src/actions/**/*.test.ts` and `src/lib/**/*.test.ts` so component tests can't accidentally slip in); added `npm run test` (`vitest run`) and `npm run test:watch` (`vitest`) scripts; no `@testing-library/react`/jsdom installed, by design, since only server actions and utilities are in scope. No `src/actions/` directory exists yet (all mutations are currently API routes) so there's nothing to test there yet — the config/docs are ready for when server actions are introduced. Added example unit tests for existing `src/lib` utilities: `utils.test.ts` (`cn`), `email-verification.test.ts` (`isEmailVerificationEnabled`), `rate-limit.test.ts` (`getRequestIp`, `retryAfterMessage`) — deliberately skipped `checkRateLimit`/`rateLimitResponse` since they hit Redis/Next internals rather than being pure logic. Updated `context/ai-interaction.md` workflow step 4 to run `npm run test` alongside `npm run build`; added a "Testing" section to `context/coding-standards.md` (scope, file-naming convention, no DOM setup, mock external services at the boundary); added `npm run test`/`test:watch` to the command list in `CLAUDE.md`. Build, lint, and test pass.
 - 2026-08-01: Documented Three-Column Items List Grid spec
 - 2026-08-01: Completed Three-Column Items List Grid — changed the items list grid in `src/app/items/[type]/page.tsx` from `grid-cols-1 md:grid-cols-2` to `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`, so large screens show 3 columns instead of 2 while staying responsive (1 col mobile, 2 col medium). No changes to `ItemCard`. No testable logic (pure Tailwind class change to a page component, outside `src/actions/`/`src/lib/` scope). Build and test pass.
+- 2026-08-01: Documented Item Drawer spec
+- 2026-08-01: Completed Item Drawer — added `getItemById` (`src/lib/db/items.ts`) and `GET /api/items/[id]` (session-authenticated) fetching full item detail (content, tags, collections); added `src/components/items/ItemDrawerProvider.tsx` (client context exposing `useItemDrawer().openItem(id)`, mounted once in the root layout) and `src/components/items/ItemDrawer.tsx`, a right-side shadcn `Sheet` showing a skeleton while loading, then header/action bar (Favorite, Pin, Copy — wired to clipboard, Edit, Delete — the latter four rendered per spec but not yet wired to mutations), description/content, tags, and collections; `ItemCard.tsx` is now a client component, opens the drawer on click, and is keyboard-accessible (`role="button"`, `tabIndex`, Enter/Space handling, focus ring) since it's the first interactive card in the app. `getItemById` intentionally isn't scoped by `userId` — the rest of the app's item queries (`getPinnedItems`, `getRecentItems`, `getItemsByType`) aren't either, so scoping just this one broke it for the signed-in test account (items are seeded under a separate demo user); fixed by matching the existing unscoped pattern rather than introducing inconsistent per-query auth. Also fixed a `tailwind-merge` gotcha: the drawer's width override (`sm:max-w-xl`) wasn't beating `SheetContent`'s own default (`data-[side=right]:sm:max-w-sm`) because the two classes had different modifier stacks and weren't recognized as conflicting — fixed by matching `SheetContent`'s `data-[side=right]:` modifier on the override. Also fixed an infinite-skeleton bug where a failed/404 fetch left the drawer stuck loading forever; it now closes the drawer alongside the error toast. Build, lint, and test pass (no new tests — `getItemById` is a thin Prisma passthrough like its siblings, and the new components are all client-side UI, out of the configured Vitest scope).
