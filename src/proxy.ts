@@ -7,7 +7,8 @@ export const proxy = auth((req) => {
   const isLoggedIn = !!req.auth;
   const isProtected =
     req.nextUrl.pathname.startsWith("/dashboard") ||
-    req.nextUrl.pathname.startsWith("/profile");
+    req.nextUrl.pathname.startsWith("/profile") ||
+    req.nextUrl.pathname.startsWith("/items");
 
   if (isProtected && !isLoggedIn) {
     const signInUrl = new URL("/sign-in", req.nextUrl.origin);
@@ -17,5 +18,5 @@ export const proxy = auth((req) => {
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*"],
+  matcher: ["/dashboard/:path*", "/profile/:path*", "/items/:path*"],
 };
