@@ -114,3 +114,61 @@ export async function getItemsByType(itemTypeId: string): Promise<ItemSummary[]>
 
   return items.map(toItemSummary);
 }
+
+export interface ItemDetail {
+  id: string;
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
+  isFavorite: boolean;
+  isPinned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: string[];
+  itemType: { name: string; icon: string; color: string };
+  collections: { id: string; name: string }[];
+}
+
+export async function getItemById(id: string): Promise<ItemDetail | null> {
+  const item = await prisma.item.findUnique({
+    where: { id },
+    include: {
+      itemType: true,
+      tags: true,
+      collections: { include: { collection: true } },
+    },
+  });
+
+  if (!item) return null;
+
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    content: item.content,
+    url: item.url,
+    language: item.language,
+    fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    fileSize: item.fileSize,
+    isFavorite: item.isFavorite,
+    isPinned: item.isPinned,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    tags: item.tags.map((tag) => tag.name),
+    itemType: {
+      name: item.itemType.name,
+      icon: item.itemType.icon,
+      color: item.itemType.color,
+    },
+    collections: item.collections.map(({ collection }) => ({
+      id: collection.id,
+      name: collection.name,
+    })),
+  };
+}

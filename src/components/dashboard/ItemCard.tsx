@@ -1,17 +1,30 @@
+"use client";
+
 import type { CSSProperties } from "react";
 import { Heart, Pin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { iconMap } from "@/lib/icon-map";
 import type { ItemSummary } from "@/lib/db/items";
+import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 
 export function ItemCard({ item }: { item: ItemSummary }) {
   const Icon = iconMap[item.typeIcon];
+  const { openItem } = useItemDrawer();
 
   return (
     <Card
-      className="h-full ring-2"
+      className="h-full cursor-pointer ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       style={{ "--tw-ring-color": item.typeColor } as CSSProperties}
+      role="button"
+      tabIndex={0}
+      onClick={() => openItem(item.id)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openItem(item.id);
+        }
+      }}
     >
       <CardHeader>
         <CardTitle className="flex items-start justify-between gap-2">
