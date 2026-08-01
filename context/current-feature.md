@@ -1,10 +1,9 @@
 # Current Feature
-Vitest Unit Testing Setup
+None — awaiting next feature/fix.
 ## Status
-Completed
+N/A
 ## Goals
-- Add Vitest for unit testing, scoped to server actions (`src/actions/`) and utilities/lib (`src/lib/`) only — not components
-- Update `context/ai-interaction.md` workflow and `context/coding-standards.md` to reflect the new testing step/conventions
+N/A
 ## Notes
 N/A
 
