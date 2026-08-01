@@ -15,7 +15,7 @@ This is the common workflow that we will use for every single feature/fix:
 1. **Document** - Document the feature in @context/current-feature.md.
 2. **Branch** - Create new branch for feature, fix, etc
 3. **Implement** - Implement the feature/fix that I create in @context/current-feature.md
-4. **Test** - Run `npm run build` and fix any errors. Do not launch a browser (e.g. Playwright) to verify unless I explicitly ask for it. Implement unit testing later.
+4. **Test** - Run `npm run build` and fix any errors. Run `npm run test` and fix any failures; add/update unit tests for any server actions or utilities touched by the change. Do not launch a browser (e.g. Playwright) to verify unless I explicitly ask for it.
 5. **Iterate** - Iterate and change things if needed
 6. **Commit** - Only after build passes and everything works
 7. **Merge** - Merge to main

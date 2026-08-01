@@ -78,6 +78,14 @@ Example v4 configuration:
 - Run `prisma migrate status` before committing to verify migrations are in sync
 - Production deployments must run `prisma migrate deploy` before the app starts
 
+## Testing
+
+- Vitest for unit tests (`npm run test` / `npm run test:watch`)
+- Only test **server actions** (`src/actions/`) and **utilities/lib** (`src/lib/`) — not components
+- Test files live next to the source file: `foo.ts` → `foo.test.ts`
+- No DOM/component testing setup is configured (no `@testing-library/react`, no jsdom) — keep it that way unless asked
+- Mock external services (DB, Redis, email) at the boundary; don't hit real Neon/Upstash/Resend in tests
+
 ## Data Fetching
 
 - Server components fetch directly with Prisma
