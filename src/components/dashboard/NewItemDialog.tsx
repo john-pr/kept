@@ -181,7 +181,12 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
         <DialogFooter>
           <Button
             onClick={handleCreate}
-            disabled={!itemTypeId || form.title.trim() === "" || isSaving}
+            disabled={
+              !itemTypeId ||
+              form.title.trim() === "" ||
+              (showUrl && form.url.trim() === "") ||
+              isSaving
+            }
           >
             {isSaving ? "Creating..." : "Create"}
           </Button>

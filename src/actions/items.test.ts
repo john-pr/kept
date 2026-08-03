@@ -10,7 +10,7 @@ vi.mock("@/lib/db/items", () => ({
   updateItem: vi.fn(),
   createItem: vi.fn(),
   deleteItem: vi.fn(),
-  itemTypeExists: vi.fn(),
+  getItemTypeById: vi.fn(),
 }));
 
 import { auth } from "@/auth";
@@ -18,7 +18,7 @@ import {
   createItem as createItemQuery,
   deleteItem as deleteItemQuery,
   getItemOwnerId,
-  itemTypeExists,
+  getItemTypeById,
   updateItem as updateItemQuery,
 } from "@/lib/db/items";
 
@@ -120,12 +120,12 @@ describe("createItem", () => {
     const result = await createItem(validCreatePayload);
 
     expect(result).toEqual({ success: false, error: "Not authenticated" });
-    expect(itemTypeExists).not.toHaveBeenCalled();
+    expect(getItemTypeById).not.toHaveBeenCalled();
   });
 
   it("returns an error when the item type does not exist", async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
-    vi.mocked(itemTypeExists).mockResolvedValue(false);
+    vi.mocked(getItemTypeById).mockResolvedValue(null);
 
     const result = await createItem(validCreatePayload);
 
@@ -133,9 +133,19 @@ describe("createItem", () => {
     expect(createItemQuery).not.toHaveBeenCalled();
   });
 
+  it("returns an error when creating a link item without a url", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "Link" });
+
+    const result = await createItem(validCreatePayload);
+
+    expect(result).toEqual({ success: false, error: "URL is required for link items" });
+    expect(createItemQuery).not.toHaveBeenCalled();
+  });
+
   it("creates the item when validation, auth, and item type all pass", async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
-    vi.mocked(itemTypeExists).mockResolvedValue(true);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "Snippet" });
     const created = { id: "item-1", title: "New title" };
     vi.mocked(createItemQuery).mockResolvedValue(created as never);
 

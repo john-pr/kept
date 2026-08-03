@@ -6,7 +6,7 @@ import {
   createItem as createItemQuery,
   deleteItem as deleteItemQuery,
   getItemOwnerId,
-  itemTypeExists,
+  getItemTypeById,
   updateItem as updateItemQuery,
   type ItemDetail,
 } from "@/lib/db/items";
@@ -77,9 +77,12 @@ export async function createItem(data: CreateItemPayload): Promise<ActionResult<
     return { success: false, error: "Not authenticated" };
   }
 
-  const typeExists = await itemTypeExists(parsed.data.itemTypeId);
-  if (!typeExists) {
+  const itemType = await getItemTypeById(parsed.data.itemTypeId);
+  if (!itemType) {
     return { success: false, error: "Invalid item type" };
+  }
+  if (itemType.name.toLowerCase() === "link" && !parsed.data.url) {
+    return { success: false, error: "URL is required for link items" };
   }
 
   const created = await createItemQuery({ ...parsed.data, userId: session.user.id });

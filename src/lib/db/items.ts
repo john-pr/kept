@@ -199,9 +199,9 @@ export async function updateItem(id: string, data: UpdateItemInput): Promise<Ite
   };
 }
 
-export async function itemTypeExists(id: string): Promise<boolean> {
-  const itemType = await prisma.itemType.findUnique({ where: { id }, select: { id: true } });
-  return itemType !== null;
+export async function getItemTypeById(id: string): Promise<{ id: string; name: string } | null> {
+  const itemType = await prisma.itemType.findUnique({ where: { id }, select: { id: true, name: true } });
+  return itemType;
 }
 
 export interface CreateItemInput {

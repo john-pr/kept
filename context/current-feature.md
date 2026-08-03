@@ -9,6 +9,8 @@ N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
+- 2026-08-03: Re-loaded Item Create spec to verify against the already-shipped "Item Create & Delete" feature
+- 2026-08-03: Completed Item Create spec re-verification — confirmed `NewItemDialog`/`createItem` already matched the spec, except link items didn't actually require a URL; fixed by replacing `itemTypeExists` with `getItemTypeById` (`src/lib/db/items.ts`) so `createItem` (`src/actions/items.ts`) can check the type name and reject link items with no URL, and disabling the dialog's Create button client-side when a required URL is empty. Updated `items.test.ts` mocks/tests accordingly. Build, lint, and test (26/26) pass.
 - 2026-05-20: Initial Next.js setup via Create Next App
 - 2026-07-06: Started Dashboard UI Phase 1
 - 2026-07-06: Completed Dashboard UI Phase 1 — shadcn/ui init, /dashboard route, dark-mode-default layout, top bar with search + new item/collection buttons, sidebar/main placeholders. Build and lint pass.
