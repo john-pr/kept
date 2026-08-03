@@ -10,6 +10,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -17,7 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { iconMap } from "@/lib/icon-map";
 import type { ItemDetail } from "@/lib/db/items";
-import { updateItem } from "@/actions/items";
+import { deleteItem, updateItem } from "@/actions/items";
 
 type ItemDetailResponse = Omit<ItemDetail, "createdAt" | "updatedAt"> & {
   createdAt: string;
@@ -61,6 +72,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState<EditFormState | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!open || !itemId) return;
@@ -152,6 +164,22 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       router.refresh();
     } else {
       toast.error(result.error ?? "Failed to update item");
+    }
+  }
+
+  async function handleDelete() {
+    if (!item) return;
+
+    setIsDeleting(true);
+    const result = await deleteItem(item.id);
+    setIsDeleting(false);
+
+    if (result.success) {
+      toast.success("Item deleted");
+      handleOpenChange(false);
+      router.refresh();
+    } else {
+      toast.error(result.error ?? "Failed to delete item");
     }
   }
 
@@ -306,9 +334,44 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                     >
                       <Pencil className="size-4" />
                     </Button>
-                    <Button variant="outline" size="icon-sm" className="ml-auto text-destructive">
-                      <Trash2 className="size-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        render={
+                          <Button
+                            variant="outline"
+                            size="icon-sm"
+                            className="ml-auto text-destructive"
+                            disabled={!item.canEdit}
+                            title={
+                              item.canEdit
+                                ? undefined
+                                : "You don't have permission to delete this item"
+                            }
+                          />
+                        }
+                      >
+                        <Trash2 className="size-4" />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete item</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete &quot;{item.title}&quot;. This action
+                            cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            variant="destructive"
+                            disabled={isDeleting}
+                            onClick={handleDelete}
+                          >
+                            {isDeleting ? "Deleting..." : "Delete"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
 
                   {item.description && (

@@ -2,7 +2,14 @@
 
 import { z } from "zod";
 import { auth } from "@/auth";
-import { getItemOwnerId, updateItem as updateItemQuery, type ItemDetail } from "@/lib/db/items";
+import {
+  createItem as createItemQuery,
+  deleteItem as deleteItemQuery,
+  getItemOwnerId,
+  itemTypeExists,
+  updateItem as updateItemQuery,
+  type ItemDetail,
+} from "@/lib/db/items";
 
 const updateItemSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -14,6 +21,18 @@ const updateItemSchema = z.object({
 });
 
 export type UpdateItemPayload = z.infer<typeof updateItemSchema>;
+
+const createItemSchema = z.object({
+  itemTypeId: z.string().trim().min(1, "Item type is required"),
+  title: z.string().trim().min(1, "Title is required"),
+  description: z.string().nullable(),
+  content: z.string().nullable(),
+  url: z.union([z.string().trim().url("Invalid URL"), z.null()]),
+  language: z.string().nullable(),
+  tags: z.array(z.string().trim().min(1)),
+});
+
+export type CreateItemPayload = z.infer<typeof createItemSchema>;
 
 interface ActionResult<T> {
   success: boolean;
@@ -45,4 +64,42 @@ export async function updateItem(
 
   const updated = await updateItemQuery(itemId, parsed.data);
   return { success: true, data: updated };
+}
+
+export async function createItem(data: CreateItemPayload): Promise<ActionResult<ItemDetail>> {
+  const parsed = createItemSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  const typeExists = await itemTypeExists(parsed.data.itemTypeId);
+  if (!typeExists) {
+    return { success: false, error: "Invalid item type" };
+  }
+
+  const created = await createItemQuery({ ...parsed.data, userId: session.user.id });
+  return { success: true, data: created };
+}
+
+export async function deleteItem(itemId: string): Promise<ActionResult<null>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  const ownerId = await getItemOwnerId(itemId);
+  if (!ownerId) {
+    return { success: false, error: "Item not found" };
+  }
+  if (ownerId !== session.user.id) {
+    return { success: false, error: "Not authorized to delete this item" };
+  }
+
+  await deleteItemQuery(itemId);
+  return { success: true, data: null };
 }
