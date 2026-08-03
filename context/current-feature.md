@@ -1,11 +1,18 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: Item Create & Delete
 ## Status
-N/A
+In Progress
 ## Goals
-N/A
+- Wire up the "New Item" button (`TopBar.tsx`, both desktop and mobile variants) to a create flow: pick an item type and fill in the type-specific fields (title, description, tags, plus content/language for snippet/prompt/command/note, url for link), then create the item.
+- Add a `createItem` server action in `src/actions/items.ts`, Zod-validated like the existing `updateItem` action, session-authenticated, creating the item for the current user (and a corresponding `createItem` query in `src/lib/db/items.ts`).
+- Wire up the Trash2 delete button in `ItemDrawer.tsx` (currently rendered but not wired) to actually delete the item.
+- Add a `deleteItem` server action in `src/actions/items.ts` (auth + ownership check, matching `updateItem`'s pattern) and a corresponding query in `src/lib/db/items.ts`.
+- Deleting must show a shadcn `AlertDialog` confirmation before proceeding (follow the existing pattern in `src/components/profile/DeleteAccountDialog.tsx`), and both create and delete must show a toast (`sonner`, matching existing usage) on success/error.
+- After a successful delete, close the drawer and refresh the underlying list (`router.refresh()`, matching the edit-mode save flow).
 ## Notes
-N/A
+- Follow the existing `updateItem` action pattern (`src/actions/items.ts`) for both new actions: Zod validation before touching auth/DB, `auth()` session check, ownership check via `getItemOwnerId`, `{ success, data?, error? }` return shape.
+- `ItemDrawer.tsx` already has the type-specific field logic (CONTENT_TYPES/LANGUAGE_TYPES/URL_TYPES sets) that the create form should reuse/mirror.
+- Add unit tests for the new server actions in `src/actions/items.test.ts`, following the existing test style (Zod-rejection, no-session, not-found, ownership-mismatch, happy path).
+- No schema changes expected — `Item` model already supports all needed fields.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

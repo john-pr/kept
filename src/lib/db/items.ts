@@ -199,6 +199,78 @@ export async function updateItem(id: string, data: UpdateItemInput): Promise<Ite
   };
 }
 
+export async function itemTypeExists(id: string): Promise<boolean> {
+  const itemType = await prisma.itemType.findUnique({ where: { id }, select: { id: true } });
+  return itemType !== null;
+}
+
+export interface CreateItemInput {
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  tags: string[];
+  itemTypeId: string;
+  userId: string;
+}
+
+export async function createItem(data: CreateItemInput): Promise<ItemDetail> {
+  const item = await prisma.item.create({
+    data: {
+      title: data.title,
+      description: data.description,
+      content: data.content,
+      url: data.url,
+      language: data.language,
+      contentType: "TEXT",
+      itemTypeId: data.itemTypeId,
+      userId: data.userId,
+      tags: {
+        connectOrCreate: data.tags.map((name) => ({
+          where: { name },
+          create: { name },
+        })),
+      },
+    },
+    include: {
+      itemType: true,
+      tags: true,
+      collections: { include: { collection: true } },
+    },
+  });
+
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    content: item.content,
+    url: item.url,
+    language: item.language,
+    fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    fileSize: item.fileSize,
+    isFavorite: item.isFavorite,
+    isPinned: item.isPinned,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    tags: item.tags.map((tag) => tag.name),
+    itemType: {
+      name: item.itemType.name,
+      icon: item.itemType.icon,
+      color: item.itemType.color,
+    },
+    collections: item.collections.map(({ collection }) => ({
+      id: collection.id,
+      name: collection.name,
+    })),
+  };
+}
+
+export async function deleteItem(id: string): Promise<void> {
+  await prisma.item.delete({ where: { id } });
+}
+
 export async function getItemById(id: string): Promise<ItemDetail | null> {
   const item = await prisma.item.findUnique({
     where: { id },

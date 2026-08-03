@@ -3,6 +3,7 @@ import { Search, FolderPlus, Plus, Code } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
+import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionSummary } from "@/lib/db/collections";
 import type { CurrentUser } from "@/lib/db/users";
@@ -39,9 +40,12 @@ export function TopBar({ itemTypes, favoriteCollections, recentCollections, user
           <Button variant="outline" size="icon-sm" aria-label="New Collection">
             <FolderPlus />
           </Button>
-          <Button size="icon-sm" aria-label="New Item">
+          <NewItemDialog
+            itemTypes={itemTypes}
+            trigger={<Button size="icon-sm" aria-label="New Item" />}
+          >
             <Plus />
-          </Button>
+          </NewItemDialog>
         </div>
       </div>
 
@@ -55,10 +59,10 @@ export function TopBar({ itemTypes, favoriteCollections, recentCollections, user
           <FolderPlus />
           New Collection
         </Button>
-        <Button>
+        <NewItemDialog itemTypes={itemTypes} trigger={<Button />}>
           <Plus />
           New Item
-        </Button>
+        </NewItemDialog>
       </div>
     </header>
   );
