@@ -134,6 +134,71 @@ export interface ItemDetail {
   collections: { id: string; name: string }[];
 }
 
+export async function getItemOwnerId(id: string): Promise<string | null> {
+  const item = await prisma.item.findUnique({ where: { id }, select: { userId: true } });
+  return item?.userId ?? null;
+}
+
+export interface UpdateItemInput {
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  tags: string[];
+}
+
+export async function updateItem(id: string, data: UpdateItemInput): Promise<ItemDetail> {
+  const item = await prisma.item.update({
+    where: { id },
+    data: {
+      title: data.title,
+      description: data.description,
+      content: data.content,
+      url: data.url,
+      language: data.language,
+      tags: {
+        set: [],
+        connectOrCreate: data.tags.map((name) => ({
+          where: { name },
+          create: { name },
+        })),
+      },
+    },
+    include: {
+      itemType: true,
+      tags: true,
+      collections: { include: { collection: true } },
+    },
+  });
+
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    content: item.content,
+    url: item.url,
+    language: item.language,
+    fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    fileSize: item.fileSize,
+    isFavorite: item.isFavorite,
+    isPinned: item.isPinned,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    tags: item.tags.map((tag) => tag.name),
+    itemType: {
+      name: item.itemType.name,
+      icon: item.itemType.icon,
+      color: item.itemType.color,
+    },
+    collections: item.collections.map(({ collection }) => ({
+      id: collection.id,
+      name: collection.name,
+    })),
+  };
+}
+
 export async function getItemById(id: string): Promise<ItemDetail | null> {
   const item = await prisma.item.findUnique({
     where: { id },

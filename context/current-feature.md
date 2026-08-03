@@ -1,11 +1,29 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: Item Drawer — Edit Mode
+
 ## Status
-N/A
+In Progress
+
 ## Goals
-N/A
+- Edit button in the item drawer's action bar toggles the drawer into inline edit mode (same drawer, no navigation)
+- Edit mode replaces the action bar with Save and Cancel buttons
+- Cancel discards changes and returns to view mode
+- Save persists changes via a new `updateItem` server action, returns to view mode, and refreshes drawer data
+- Toast notification on save success or error
+- Editable fields (all types): Title (required), Description (optional textarea), Tags (comma-separated input -> array on save)
+- Editable fields (type-specific): Content (textarea) for snippet/prompt/command/note; Language (text input) for snippet/command; URL (text input) for link
+- Non-editable in edit mode (display only): item type, collections, created/updated dates
+- Zod validation of the update payload in the server action (title non-empty trimmed; description/content/url/language string-or-null optional; url valid URL string or null; tags array of trimmed non-empty strings); Zod errors returned via `{ success: false, error }`
+- `updateItem(itemId, data)` added to `src/actions/items.ts`: validates with Zod, gets session via `auth()`, validates ownership, calls the db query function, returns `{ success, data, error }`
+- `updateItem` query function added to `src/lib/db/items.ts`: on tag update, disconnect all existing tags then connect-or-create new ones; returns updated `ItemDetail` so the drawer can refresh without a second fetch
+- After save, call `router.refresh()` so the underlying item card list reflects changes
+
 ## Notes
-N/A
+- Keep it simple — controlled inputs with local state, no form library
+- Client-side: disable Save button when title is empty (basic UX guard only, not source of truth)
+- Server-side Zod validation is the source of truth
+- Content textarea does not need to be a code editor (comes later)
+- Collections management is out of scope here (handled separately)
+- This is the first server action in the project (`src/actions/items.ts` doesn't exist yet) — add corresponding unit tests per coding-standards testing scope (server actions are testable)
 
 ## History
 [//]: # (keep this updated. earliest to latest)

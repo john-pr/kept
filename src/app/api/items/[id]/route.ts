@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getItemById } from "@/lib/db/items";
+import { getItemById, getItemOwnerId } from "@/lib/db/items";
 
 export async function GET(
   request: NextRequest,
@@ -18,5 +18,8 @@ export async function GET(
     return NextResponse.json({ success: false, error: "Item not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ success: true, data: item });
+  const ownerId = await getItemOwnerId(id);
+  const canEdit = ownerId === session.user.id;
+
+  return NextResponse.json({ success: true, data: { ...item, canEdit } });
 }
