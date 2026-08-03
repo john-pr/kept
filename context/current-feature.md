@@ -1,29 +1,11 @@
-# Current Feature: Item Drawer — Edit Mode
-
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
-
+N/A
 ## Goals
-- Edit button in the item drawer's action bar toggles the drawer into inline edit mode (same drawer, no navigation)
-- Edit mode replaces the action bar with Save and Cancel buttons
-- Cancel discards changes and returns to view mode
-- Save persists changes via a new `updateItem` server action, returns to view mode, and refreshes drawer data
-- Toast notification on save success or error
-- Editable fields (all types): Title (required), Description (optional textarea), Tags (comma-separated input -> array on save)
-- Editable fields (type-specific): Content (textarea) for snippet/prompt/command/note; Language (text input) for snippet/command; URL (text input) for link
-- Non-editable in edit mode (display only): item type, collections, created/updated dates
-- Zod validation of the update payload in the server action (title non-empty trimmed; description/content/url/language string-or-null optional; url valid URL string or null; tags array of trimmed non-empty strings); Zod errors returned via `{ success: false, error }`
-- `updateItem(itemId, data)` added to `src/actions/items.ts`: validates with Zod, gets session via `auth()`, validates ownership, calls the db query function, returns `{ success, data, error }`
-- `updateItem` query function added to `src/lib/db/items.ts`: on tag update, disconnect all existing tags then connect-or-create new ones; returns updated `ItemDetail` so the drawer can refresh without a second fetch
-- After save, call `router.refresh()` so the underlying item card list reflects changes
-
+N/A
 ## Notes
-- Keep it simple — controlled inputs with local state, no form library
-- Client-side: disable Save button when title is empty (basic UX guard only, not source of truth)
-- Server-side Zod validation is the source of truth
-- Content textarea does not need to be a code editor (comes later)
-- Collections management is out of scope here (handled separately)
-- This is the first server action in the project (`src/actions/items.ts` doesn't exist yet) — add corresponding unit tests per coding-standards testing scope (server actions are testable)
+N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -72,3 +54,5 @@ In Progress
 - 2026-08-01: Completed Three-Column Items List Grid — changed the items list grid in `src/app/items/[type]/page.tsx` from `grid-cols-1 md:grid-cols-2` to `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`, so large screens show 3 columns instead of 2 while staying responsive (1 col mobile, 2 col medium). No changes to `ItemCard`. No testable logic (pure Tailwind class change to a page component, outside `src/actions/`/`src/lib/` scope). Build and test pass.
 - 2026-08-01: Documented Item Drawer spec
 - 2026-08-01: Completed Item Drawer — added `getItemById` (`src/lib/db/items.ts`) and `GET /api/items/[id]` (session-authenticated) fetching full item detail (content, tags, collections); added `src/components/items/ItemDrawerProvider.tsx` (client context exposing `useItemDrawer().openItem(id)`, mounted once in the root layout) and `src/components/items/ItemDrawer.tsx`, a right-side shadcn `Sheet` showing a skeleton while loading, then header/action bar (Favorite, Pin, Copy — wired to clipboard, Edit, Delete — the latter four rendered per spec but not yet wired to mutations), description/content, tags, and collections; `ItemCard.tsx` is now a client component, opens the drawer on click, and is keyboard-accessible (`role="button"`, `tabIndex`, Enter/Space handling, focus ring) since it's the first interactive card in the app. `getItemById` intentionally isn't scoped by `userId` — the rest of the app's item queries (`getPinnedItems`, `getRecentItems`, `getItemsByType`) aren't either, so scoping just this one broke it for the signed-in test account (items are seeded under a separate demo user); fixed by matching the existing unscoped pattern rather than introducing inconsistent per-query auth. Also fixed a `tailwind-merge` gotcha: the drawer's width override (`sm:max-w-xl`) wasn't beating `SheetContent`'s own default (`data-[side=right]:sm:max-w-sm`) because the two classes had different modifier stacks and weren't recognized as conflicting — fixed by matching `SheetContent`'s `data-[side=right]:` modifier on the override. Also fixed an infinite-skeleton bug where a failed/404 fetch left the drawer stuck loading forever; it now closes the drawer alongside the error toast. Build, lint, and test pass (no new tests — `getItemById` is a thin Prisma passthrough like its siblings, and the new components are all client-side UI, out of the configured Vitest scope).
+- 2026-08-03: Documented Item Drawer — Edit Mode spec
+- 2026-08-03: Completed Item Drawer — Edit Mode — added the project's first server action, `updateItem(itemId, data)` in `src/actions/items.ts`: Zod-validates the payload (title non-empty trimmed; description/content/url/language string-or-null; url must be a valid URL when present; tags array of trimmed non-empty strings) before touching auth or the DB, checks the session via `auth()`, validates ownership via a new `getItemOwnerId` (`src/lib/db/items.ts`), then calls a new `updateItem` query function that disconnects all tags and connect-or-creates the new set, returning the refreshed `ItemDetail`; `ItemDrawer.tsx` now supports inline edit mode — the Edit button swaps the action bar for Save (disabled while title is empty or saving) and Cancel buttons, with controlled inputs for title/description/tags (all types) and content/language/url (type-specific per snippet/prompt/command/note/link), toasts on save success/error, and `router.refresh()` after save; item type, collections, and created date remain display-only. Added shadcn `textarea` component. Follow-up in the same session: `GET /api/items/[id]` now also computes and returns a `canEdit` flag (session user vs. the item's actual owner, via `getItemOwnerId`) so the Edit button is disabled (with a tooltip) for items the signed-in user doesn't own, on top of the pre-existing server-side ownership check in the action; also swapped the Save button's icon from a checkmark to a floppy-disk (`Save` from lucide-react) per request, and added an `X` icon to Cancel. Added `src/actions/items.test.ts` (6 tests: Zod-rejection short-circuits before auth/DB, no-session, item-not-found, ownership-mismatch, and the happy path) — `getItemOwnerId`/`updateItem` in `lib/db/items.ts` are thin Prisma passthroughs left untested, matching the project's existing pattern. Build, lint, and test (17/17) pass.
