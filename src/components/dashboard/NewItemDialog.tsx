@@ -25,11 +25,16 @@ import {
 } from "@/components/ui/select";
 import type { ItemTypeSummary } from "@/lib/db/items";
 import { createItem } from "@/actions/items";
+import { iconMap } from "@/lib/icon-map";
 
 const CONTENT_SLUGS = new Set(["snippets", "prompts", "commands", "notes"]);
 const LANGUAGE_SLUGS = new Set(["snippets", "commands"]);
 const URL_SLUGS = new Set(["links"]);
 const FILE_SLUGS = new Set(["files", "images"]);
+
+function singularize(name: string): string {
+  return name.endsWith("s") ? name.slice(0, -1) : name;
+}
 
 interface NewItemDialogProps {
   itemTypes: ItemTypeSummary[];
@@ -50,6 +55,7 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
 
   const selectedType = selectableTypes.find((type) => type.id === itemTypeId);
   const slug = selectedType?.slug ?? "";
+  const SelectedTypeIcon = selectedType ? iconMap[selectedType.icon] : undefined;
   const showContent = CONTENT_SLUGS.has(slug);
   const showLanguage = LANGUAGE_SLUGS.has(slug);
   const showUrl = URL_SLUGS.has(slug);
@@ -103,14 +109,30 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
             <Label htmlFor="new-item-type">Type</Label>
             <Select value={itemTypeId} onValueChange={(value) => setItemTypeId(value ?? "")}>
               <SelectTrigger id="new-item-type" className="w-full">
-                <SelectValue placeholder="Select a type" />
+                <SelectValue placeholder="Select a type">
+                  {selectedType ? (
+                    <span className="flex items-center gap-1.5">
+                      {SelectedTypeIcon && (
+                        <SelectedTypeIcon
+                          className="size-4"
+                          style={{ color: selectedType.color }}
+                        />
+                      )}
+                      {singularize(selectedType.name)}
+                    </span>
+                  ) : null}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {selectableTypes.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {type.name}
-                  </SelectItem>
-                ))}
+                {selectableTypes.map((type) => {
+                  const TypeIcon = iconMap[type.icon];
+                  return (
+                    <SelectItem key={type.id} value={type.id} label={singularize(type.name)}>
+                      {TypeIcon && <TypeIcon className="size-4" style={{ color: type.color }} />}
+                      {singularize(type.name)}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -119,6 +141,7 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
             <Label htmlFor="new-item-title">Title</Label>
             <Input
               id="new-item-title"
+              placeholder="e.g. Debounce hook"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
@@ -128,6 +151,7 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
             <Label htmlFor="new-item-description">Description</Label>
             <Textarea
               id="new-item-description"
+              placeholder="A short summary of this item"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
@@ -139,6 +163,7 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
               <Textarea
                 id="new-item-content"
                 className="min-h-32 font-mono text-xs"
+                placeholder={LANGUAGE_SLUGS.has(slug) ? "Paste your code here" : "Write the content here"}
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
               />
@@ -150,6 +175,7 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
               <Label htmlFor="new-item-language">Language</Label>
               <Input
                 id="new-item-language"
+                placeholder="e.g. typescript"
                 value={form.language}
                 onChange={(e) => setForm({ ...form, language: e.target.value })}
               />
@@ -161,6 +187,7 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
               <Label htmlFor="new-item-url">URL</Label>
               <Input
                 id="new-item-url"
+                placeholder="https://example.com"
                 value={form.url}
                 onChange={(e) => setForm({ ...form, url: e.target.value })}
               />
