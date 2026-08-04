@@ -1,17 +1,11 @@
-# Current Feature: Type-Specific Add Button + Preselected Type
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
+N/A
 ## Goals
-- Each `/items/[type]` page (e.g. `/items/snippets`) shows an "Add {Type}" button (singular, e.g. "Add Snippet") near the page heading, not just the global "New Item" button in the TopBar.
-- Clicking that button opens the existing `NewItemDialog`, but with its item type `Select` preselected/locked to the current page's type instead of defaulting to the first selectable type.
-- The global "New Item" button in `TopBar` keeps its current behavior (defaults to the first selectable type, user picks freely).
-- File/Image type pages are out of scope for this button per the existing `FILE_SLUGS` exclusion in `NewItemDialog` (file upload isn't implemented) — either hide the add button on those pages or leave the type picker functional there; decide during implementation based on what's least surprising.
-
+N/A
 ## Notes
-- Relevant files: `src/app/items/[type]/page.tsx` (page needing the new button), `src/components/dashboard/NewItemDialog.tsx` (dialog currently always defaults `itemTypeId` to `selectableTypes[0]?.id`), `src/components/dashboard/TopBar.tsx` (existing usage pattern for `NewItemDialog` trigger/children).
-- `NewItemDialog` will likely need an optional prop (e.g. `defaultItemTypeId` or `lockedItemTypeId`) so the type page can pass the current type's id in, while `TopBar`'s usage stays unchanged.
-- Follow existing singular-label pattern (`singularize` helper) for the button text.
-- No server action or `src/lib/` utility changes expected — likely no new unit tests needed (UI-only), matching prior UI-only features in history below.
+N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -69,3 +63,5 @@ In Progress
 - 2026-08-03: Completed New Item Dialog polish — fixed the type `Select` in `NewItemDialog.tsx` showing the raw base-ui value instead of the type name (no custom `SelectValue` render override was set); trigger and each `SelectItem` now show the type's icon (from the shared `iconMap`, colored via `type.color`) next to a singular label (e.g. "Snippet" instead of "Snippets") via a small local `singularize` helper, and `SelectItem` now passes `label` for correct a11y/typeahead; added placeholders to Title, Description, Content (type-aware: "Paste your code here" for snippet/command, "Write the content here" otherwise), Language, and URL fields. UI-only change in a client component — no testable logic per the project's testing scope (`src/actions/`/`src/lib/` only, no DOM/component test setup). Build, lint, and test (26/26) pass.
 - 2026-08-04: Documented Code Editor spec
 - 2026-08-04: Completed Code Editor — added `@monaco-editor/react` dependency and a new `CodeEditor` component (`src/components/items/CodeEditor.tsx`): a client component wrapping Monaco with a `vs-dark` theme, a header with macOS-style red/yellow/green window dots plus a language label and copy-to-clipboard button, and a body that auto-grows with content (via `onDidContentSizeChange`) between a 120px min and 400px max height, with a themed thin scrollbar (`scrollbar.verticalScrollbarSize`/`horizontalScrollbarSize`); supports a `readOnly` prop for display vs. edit modes and an optional `placeholder`. Wired into `ItemDrawer.tsx` (both display and edit modes) and `NewItemDialog.tsx` (create mode) for snippet/command content only — notes, prompts, and other non-code types keep the existing `Textarea`. UI-only change in client components — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (26/26) pass.
+- 2026-08-04: Documented Type-Specific Add Button + Preselected Type spec
+- 2026-08-04: Completed Type-Specific Add Button + Preselected Type — each `/items/[type]` page (`src/app/items/[type]/page.tsx`) now shows an "Add {Type}" button (singular, capitalized, e.g. "Add Snippet") next to the page heading, hidden on `files`/`images` pages since file upload isn't implemented; `NewItemDialog.tsx` gained an optional `defaultItemTypeId` prop that preselects and disables the type `Select` when it matches a selectable type, used by the new page-level button while `TopBar`'s existing "New Item" button (unchanged) keeps its free-choice default-to-first-type behavior. UI-only change in client/server components — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (26/26) pass.
