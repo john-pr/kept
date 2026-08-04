@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { CodeEditor } from "@/components/items/CodeEditor";
 import { iconMap } from "@/lib/icon-map";
 import type { ItemDetail } from "@/lib/db/items";
 import { deleteItem, updateItem } from "@/actions/items";
@@ -249,12 +250,20 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   {showContent && (
                     <div className="flex flex-col gap-2">
                       <Label htmlFor="item-content">Content</Label>
-                      <Textarea
-                        id="item-content"
-                        className="min-h-32 font-mono text-xs"
-                        value={form.content}
-                        onChange={(e) => setForm({ ...form, content: e.target.value })}
-                      />
+                      {showLanguage ? (
+                        <CodeEditor
+                          value={form.content}
+                          onChange={(value) => setForm({ ...form, content: value })}
+                          language={form.language || undefined}
+                        />
+                      ) : (
+                        <Textarea
+                          id="item-content"
+                          className="min-h-32 font-mono text-xs"
+                          value={form.content}
+                          onChange={(e) => setForm({ ...form, content: e.target.value })}
+                        />
+                      )}
                     </div>
                   )}
 
@@ -384,9 +393,13 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   {(item.content || item.url) && (
                     <div className="flex flex-col gap-2">
                       <h4 className="text-sm font-medium text-foreground">Content</h4>
-                      <pre className="max-h-80 overflow-auto rounded-md bg-muted p-3 font-mono text-xs text-foreground whitespace-pre-wrap">
-                        {item.content ?? item.url}
-                      </pre>
+                      {showLanguage && item.content ? (
+                        <CodeEditor value={item.content} language={item.language} readOnly />
+                      ) : (
+                        <pre className="max-h-80 overflow-auto rounded-md bg-muted p-3 font-mono text-xs text-foreground whitespace-pre-wrap">
+                          {item.content ?? item.url}
+                        </pre>
+                      )}
                     </div>
                   )}
 

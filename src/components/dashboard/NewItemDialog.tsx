@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { CodeEditor } from "@/components/items/CodeEditor";
 import {
   Select,
   SelectContent,
@@ -160,13 +161,22 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
           {showContent && (
             <div className="flex flex-col gap-2">
               <Label htmlFor="new-item-content">Content</Label>
-              <Textarea
-                id="new-item-content"
-                className="min-h-32 font-mono text-xs"
-                placeholder={LANGUAGE_SLUGS.has(slug) ? "Paste your code here" : "Write the content here"}
-                value={form.content}
-                onChange={(e) => setForm({ ...form, content: e.target.value })}
-              />
+              {showLanguage ? (
+                <CodeEditor
+                  value={form.content}
+                  onChange={(value) => setForm({ ...form, content: value })}
+                  language={form.language || undefined}
+                  placeholder="Paste your code here"
+                />
+              ) : (
+                <Textarea
+                  id="new-item-content"
+                  className="min-h-32 font-mono text-xs"
+                  placeholder="Write the content here"
+                  value={form.content}
+                  onChange={(e) => setForm({ ...form, content: e.target.value })}
+                />
+              )}
             </div>
           )}
 
