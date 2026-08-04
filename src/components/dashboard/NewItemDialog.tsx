@@ -41,16 +41,27 @@ interface NewItemDialogProps {
   itemTypes: ItemTypeSummary[];
   trigger: ReactElement;
   children: ReactNode;
+  /** Preselect and lock the type picker to this item type id (e.g. from a type-specific page). */
+  defaultItemTypeId?: string;
 }
 
 const EMPTY_FORM = { title: "", description: "", content: "", language: "", url: "", tags: "" };
 
-export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogProps) {
+export function NewItemDialog({
+  itemTypes,
+  trigger,
+  children,
+  defaultItemTypeId,
+}: NewItemDialogProps) {
   const router = useRouter();
   const selectableTypes = itemTypes.filter((type) => !FILE_SLUGS.has(type.slug));
+  const isTypeLocked = Boolean(
+    defaultItemTypeId && selectableTypes.some((type) => type.id === defaultItemTypeId),
+  );
+  const initialTypeId = isTypeLocked ? defaultItemTypeId! : selectableTypes[0]?.id ?? "";
 
   const [open, setOpen] = useState(false);
-  const [itemTypeId, setItemTypeId] = useState(selectableTypes[0]?.id ?? "");
+  const [itemTypeId, setItemTypeId] = useState(initialTypeId);
   const [form, setForm] = useState(EMPTY_FORM);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -65,7 +76,7 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
     setOpen(nextOpen);
     if (!nextOpen) {
       setForm(EMPTY_FORM);
-      setItemTypeId(selectableTypes[0]?.id ?? "");
+      setItemTypeId(initialTypeId);
     }
   }
 
@@ -108,7 +119,11 @@ export function NewItemDialog({ itemTypes, trigger, children }: NewItemDialogPro
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="new-item-type">Type</Label>
-            <Select value={itemTypeId} onValueChange={(value) => setItemTypeId(value ?? "")}>
+            <Select
+              value={itemTypeId}
+              onValueChange={(value) => setItemTypeId(value ?? "")}
+              disabled={isTypeLocked}
+            >
               <SelectTrigger id="new-item-type" className="w-full">
                 <SelectValue placeholder="Select a type">
                   {selectedType ? (
