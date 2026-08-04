@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CodeEditor } from "@/components/items/CodeEditor";
+import { MarkdownEditor } from "@/components/items/MarkdownEditor";
 import {
   Select,
   SelectContent,
@@ -30,6 +31,7 @@ import { iconMap } from "@/lib/icon-map";
 
 const CONTENT_SLUGS = new Set(["snippets", "prompts", "commands", "notes"]);
 const LANGUAGE_SLUGS = new Set(["snippets", "commands"]);
+const MARKDOWN_SLUGS = new Set(["prompts", "notes"]);
 const URL_SLUGS = new Set(["links"]);
 const FILE_SLUGS = new Set(["files", "images"]);
 
@@ -70,6 +72,7 @@ export function NewItemDialog({
   const SelectedTypeIcon = selectedType ? iconMap[selectedType.icon] : undefined;
   const showContent = CONTENT_SLUGS.has(slug);
   const showLanguage = LANGUAGE_SLUGS.has(slug);
+  const showMarkdown = MARKDOWN_SLUGS.has(slug);
   const showUrl = URL_SLUGS.has(slug);
 
   function handleOpenChange(nextOpen: boolean) {
@@ -182,6 +185,12 @@ export function NewItemDialog({
                   onChange={(value) => setForm({ ...form, content: value })}
                   language={form.language || undefined}
                   placeholder="Paste your code here"
+                />
+              ) : showMarkdown ? (
+                <MarkdownEditor
+                  value={form.content}
+                  onChange={(value) => setForm({ ...form, content: value })}
+                  placeholder="Write the content here"
                 />
               ) : (
                 <Textarea

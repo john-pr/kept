@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CodeEditor } from "@/components/items/CodeEditor";
+import { MarkdownEditor } from "@/components/items/MarkdownEditor";
 import { iconMap } from "@/lib/icon-map";
 import type { ItemDetail } from "@/lib/db/items";
 import { deleteItem, updateItem } from "@/actions/items";
@@ -45,6 +46,7 @@ interface ItemDrawerProps {
 
 const CONTENT_TYPES = new Set(["snippet", "prompt", "command", "note"]);
 const LANGUAGE_TYPES = new Set(["snippet", "command"]);
+const MARKDOWN_TYPES = new Set(["prompt", "note"]);
 const URL_TYPES = new Set(["link"]);
 
 interface EditFormState {
@@ -115,6 +117,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   const typeName = item?.itemType.name.toLowerCase() ?? "";
   const showContent = CONTENT_TYPES.has(typeName);
   const showLanguage = LANGUAGE_TYPES.has(typeName);
+  const showMarkdown = MARKDOWN_TYPES.has(typeName);
   const showUrl = URL_TYPES.has(typeName);
 
   function handleCopy() {
@@ -256,6 +259,11 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                           onChange={(value) => setForm({ ...form, content: value })}
                           language={form.language || undefined}
                         />
+                      ) : showMarkdown ? (
+                        <MarkdownEditor
+                          value={form.content}
+                          onChange={(value) => setForm({ ...form, content: value })}
+                        />
                       ) : (
                         <Textarea
                           id="item-content"
@@ -395,6 +403,8 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                       <h4 className="text-sm font-medium text-foreground">Content</h4>
                       {showLanguage && item.content ? (
                         <CodeEditor value={item.content} language={item.language} readOnly />
+                      ) : showMarkdown && item.content ? (
+                        <MarkdownEditor value={item.content} readOnly />
                       ) : (
                         <pre className="max-h-80 overflow-auto rounded-md bg-muted p-3 font-mono text-xs text-foreground whitespace-pre-wrap">
                           {item.content ?? item.url}
