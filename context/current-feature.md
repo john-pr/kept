@@ -1,30 +1,11 @@
-# Current Feature: Markdown Editor
-
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
-
+N/A
 ## Goals
-- Create a `MarkdownEditor` component with a tabbed interface (Write/Preview)
-- Replace `Textarea` with `MarkdownEditor` for notes and prompts content only (keep `CodeEditor` unchanged for snippets/commands)
-- Use `react-markdown` + `remark-gfm` for GitHub Flavored Markdown rendering
-- Match existing dark theme styling (`bg-[#1e1e1e]` container, `bg-[#2d2d2d]` header), consistent with `CodeEditor`
-- Add a copy-to-clipboard button in the header (same style as `CodeEditor`)
-- Support both display (readonly) and edit modes
-  - Readonly mode: only show the Preview tab
-  - Edit mode: default to Write tab, with Preview available
-- Wire into `NewItemDialog`, `ItemDrawer` (edit mode), and `ItemDrawer` (view mode) for note/prompt content fields
-
+N/A
 ## Notes
-- Styling requirements for rendered markdown (use a dedicated CSS class, e.g. `.markdown-preview`, for reliable dark-mode styling):
-  - Headings (h1-h6): visually distinct sizing/weight
-  - Code blocks: dark background, monospace font
-  - Inline code: subtle background highlight
-  - Lists (ordered/unordered): proper indentation and bullets
-  - Blockquotes: left border accent
-  - Links: blue with hover state
-  - Tables: borders and header background
-- Fluid height with 400px max, matching `CodeEditor` behavior
-- New dependencies needed: `react-markdown`, `remark-gfm`
+N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -84,4 +65,6 @@ In Progress
 - 2026-08-04: Completed Code Editor — added `@monaco-editor/react` dependency and a new `CodeEditor` component (`src/components/items/CodeEditor.tsx`): a client component wrapping Monaco with a `vs-dark` theme, a header with macOS-style red/yellow/green window dots plus a language label and copy-to-clipboard button, and a body that auto-grows with content (via `onDidContentSizeChange`) between a 120px min and 400px max height, with a themed thin scrollbar (`scrollbar.verticalScrollbarSize`/`horizontalScrollbarSize`); supports a `readOnly` prop for display vs. edit modes and an optional `placeholder`. Wired into `ItemDrawer.tsx` (both display and edit modes) and `NewItemDialog.tsx` (create mode) for snippet/command content only — notes, prompts, and other non-code types keep the existing `Textarea`. UI-only change in client components — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (26/26) pass.
 - 2026-08-04: Documented Type-Specific Add Button + Preselected Type spec
 - 2026-08-04: Completed Type-Specific Add Button + Preselected Type — each `/items/[type]` page (`src/app/items/[type]/page.tsx`) now shows an "Add {Type}" button (singular, capitalized, e.g. "Add Snippet") next to the page heading, hidden on `files`/`images` pages since file upload isn't implemented; `NewItemDialog.tsx` gained an optional `defaultItemTypeId` prop that preselects and disables the type `Select` when it matches a selectable type, used by the new page-level button while `TopBar`'s existing "New Item" button (unchanged) keeps its free-choice default-to-first-type behavior. UI-only change in client/server components — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (26/26) pass.
+- 2026-08-04: Documented Markdown Editor spec
+- 2026-08-04: Completed Markdown Editor — added `MarkdownEditor` component (`src/components/items/MarkdownEditor.tsx`) with a Write/Preview tabbed interface (new shadcn `Tabs` component) using `react-markdown` + `remark-gfm` for GFM rendering; matches `CodeEditor`'s dark theme (`bg-[#1e1e1e]` container, `bg-[#2d2d2d]` header) with the same copy-to-clipboard button; readonly mode shows only a "Preview" label (no tab switcher), edit mode defaults to Write with Preview available; fluid height with a 400px max on both panels. Added a `.markdown-preview` CSS class in `globals.css` styling headings, code blocks, inline code, lists, blockquotes, links, and tables for the dark theme. Wired into `NewItemDialog.tsx` and `ItemDrawer.tsx` (edit and view modes) for prompt/note content only, gated by new `MARKDOWN_SLUGS`/`MARKDOWN_TYPES` sets — `CodeEditor` remains unchanged for snippet/command content. Along the way, diagnosed a false "markdown isn't rendering" report: the CSS was correct all along, but a stale `npm run dev` process (started before the `globals.css` edit) was serving an old CSS bundle with no `.markdown-preview` rules; restarting the dev server fixed it, confirmed visually via Playwright (headings, bold/italic, bulleted list, blockquote border, inline/fenced code all rendering correctly). UI-only change — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (26/26) pass.
 </content>
