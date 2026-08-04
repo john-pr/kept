@@ -1,11 +1,17 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: Type-Specific Add Button + Preselected Type
 ## Status
-N/A
+In Progress
 ## Goals
-N/A
+- Each `/items/[type]` page (e.g. `/items/snippets`) shows an "Add {Type}" button (singular, e.g. "Add Snippet") near the page heading, not just the global "New Item" button in the TopBar.
+- Clicking that button opens the existing `NewItemDialog`, but with its item type `Select` preselected/locked to the current page's type instead of defaulting to the first selectable type.
+- The global "New Item" button in `TopBar` keeps its current behavior (defaults to the first selectable type, user picks freely).
+- File/Image type pages are out of scope for this button per the existing `FILE_SLUGS` exclusion in `NewItemDialog` (file upload isn't implemented) — either hide the add button on those pages or leave the type picker functional there; decide during implementation based on what's least surprising.
+
 ## Notes
-N/A
+- Relevant files: `src/app/items/[type]/page.tsx` (page needing the new button), `src/components/dashboard/NewItemDialog.tsx` (dialog currently always defaults `itemTypeId` to `selectableTypes[0]?.id`), `src/components/dashboard/TopBar.tsx` (existing usage pattern for `NewItemDialog` trigger/children).
+- `NewItemDialog` will likely need an optional prop (e.g. `defaultItemTypeId` or `lockedItemTypeId`) so the type page can pass the current type's id in, while `TopBar`'s usage stays unchanged.
+- Follow existing singular-label pattern (`singularize` helper) for the button text.
+- No server action or `src/lib/` utility changes expected — likely no new unit tests needed (UI-only), matching prior UI-only features in history below.
 
 ## History
 [//]: # (keep this updated. earliest to latest)
