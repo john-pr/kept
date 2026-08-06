@@ -1,42 +1,11 @@
-# Current Feature: File Upload with Cloudflare R2
+# Current Feature
+None — awaiting next feature/fix.
 ## Status
-In Progress
+N/A
 ## Goals
-- Create upload API route for R2
-- Stick to `src/lib/db/items.ts` for prisma/db functions
-- Create `FileUpload` component with drag-and-drop
-- Update create item modal (`NewItemDialog`) to use `FileUpload` for file/image types
-- Delete files from R2 when items are deleted
-- Create download proxy API route (avoids CORS issues)
-- Add download button in `ItemDrawer` for file types
-- Show upload progress indicator
-- Display image preview for images, file info for files
-
+N/A
 ## Notes
-### File Constraints
-| Type   | Max Size | Extensions                                            |
-| ------ | -------- | ----------------------------------------------------- |
-| Images | 5 MB     | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.svg`      |
-| Files  | 10 MB    | `.pdf`, `.txt`, `.md`, `.json`, `.yaml`, `.yml`, `.xml`, `.csv`, `.toml`, `.ini` |
-
-### MIME Types
-**Images:**
-- `image/png`
-- `image/jpeg`
-- `image/gif`
-- `image/webp`
-- `image/svg+xml`
-
-**Files:**
-- `application/pdf`
-- `text/plain`
-- `text/markdown`
-- `application/json`
-- `application/x-yaml`, `text/yaml`
-- `application/xml`, `text/xml`
-- `text/csv`
-- `application/toml`
-- `text/plain` (for `.ini`)
+N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -99,4 +68,5 @@ In Progress
 - 2026-08-04: Documented Markdown Editor spec
 - 2026-08-04: Completed Markdown Editor — added `MarkdownEditor` component (`src/components/items/MarkdownEditor.tsx`) with a Write/Preview tabbed interface (new shadcn `Tabs` component) using `react-markdown` + `remark-gfm` for GFM rendering; matches `CodeEditor`'s dark theme (`bg-[#1e1e1e]` container, `bg-[#2d2d2d]` header) with the same copy-to-clipboard button; readonly mode shows only a "Preview" label (no tab switcher), edit mode defaults to Write with Preview available; fluid height with a 400px max on both panels. Added a `.markdown-preview` CSS class in `globals.css` styling headings, code blocks, inline code, lists, blockquotes, links, and tables for the dark theme. Wired into `NewItemDialog.tsx` and `ItemDrawer.tsx` (edit and view modes) for prompt/note content only, gated by new `MARKDOWN_SLUGS`/`MARKDOWN_TYPES` sets — `CodeEditor` remains unchanged for snippet/command content. Along the way, diagnosed a false "markdown isn't rendering" report: the CSS was correct all along, but a stale `npm run dev` process (started before the `globals.css` edit) was serving an old CSS bundle with no `.markdown-preview` rules; restarting the dev server fixed it, confirmed visually via Playwright (headings, bold/italic, bulleted list, blockquote border, inline/fenced code all rendering correctly). UI-only change — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (26/26) pass.
 - 2026-08-06: Documented File Upload with Cloudflare R2 spec
+- 2026-08-06: Completed File Upload with Cloudflare R2 — added `src/lib/r2.ts` (S3-compatible client for Cloudflare R2 via `@aws-sdk/client-s3`: `uploadToR2`, `deleteFromR2`, `getObjectFromR2`, `getPublicUrl`/`getKeyFromPublicUrl`) and `src/lib/file-constraints.ts` (extension/MIME/size validation per spec, `formatFileSize`); `POST /api/upload` (session-authenticated) validates and uploads to R2, returning `{fileUrl, fileName, fileSize}`; `GET /api/download/[id]` proxies the file back with `Content-Disposition: attachment` to avoid CORS; new `FileUpload` component (`src/components/items/FileUpload.tsx`) with drag-and-drop, `XMLHttpRequest`-based upload progress bar, and an image-thumbnail/file-info card once uploaded. `NewItemDialog.tsx` no longer excludes file/image types from the type picker and renders `FileUpload` for them (Create disabled until a file is uploaded); `ItemDrawer.tsx` gained a Download button (swaps in for Copy when `fileUrl` is set), an image preview panel, and a formatted file size; `/items/[type]/page.tsx` no longer hides the "Add File"/"Add Image" buttons. `createItem`/`deleteItem` (`src/actions/items.ts`, `src/lib/db/items.ts`) persist `fileUrl`/`fileName`/`fileSize` and set `contentType: "FILE"`, require an uploaded file for file/image types, and delete the R2 object (via a new `getItemForDeletion`) before deleting the DB row. R2 credentials were already present in `.env` (`R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`) so no new env setup was needed. Along the way, found and fixed an unrelated pre-existing bug surfaced by this feature: `DialogContent` (`src/components/ui/dialog.tsx`) is a CSS grid without `min-width: 0` on its children, so a long unbroken filename (via the `truncate`/`white-space:nowrap` span) triggered a "grid blowout," visually overflowing the dialog's rounded border (most visible on the footer, which has a background reaching the edge) — fixed generally for all dialogs by adding `[&>*]:min-w-0` to `DialogContent`; verified live in the browser by reproducing with a long filename, confirming a short filename didn't trigger it, bisecting the DOM to isolate the fix, then re-verifying against the real hot-reloaded page. Added tests: `src/lib/file-constraints.test.ts` (validation + `formatFileSize`), `src/lib/r2.test.ts` (pure `getPublicUrl`/`getKeyFromPublicUrl` logic; the AWS SDK passthroughs are intentionally untested, matching the project's existing pattern for external-service wrappers), and extended `src/actions/items.test.ts` for the file-required-on-create and R2-cleanup-on-delete paths. Build, lint, and test (43/43) pass.
 </content>
