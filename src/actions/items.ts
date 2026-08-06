@@ -5,11 +5,13 @@ import { auth } from "@/auth";
 import {
   createItem as createItemQuery,
   deleteItem as deleteItemQuery,
+  getItemForDeletion,
   getItemOwnerId,
   getItemTypeById,
   updateItem as updateItemQuery,
   type ItemDetail,
 } from "@/lib/db/items";
+import { deleteFromR2, getKeyFromPublicUrl } from "@/lib/r2";
 
 const updateItemSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -29,6 +31,9 @@ const createItemSchema = z.object({
   content: z.string().nullable(),
   url: z.union([z.string().trim().url("Invalid URL"), z.null()]),
   language: z.string().nullable(),
+  fileUrl: z.union([z.string().trim().url("Invalid file URL"), z.null()]),
+  fileName: z.string().nullable(),
+  fileSize: z.number().nullable(),
   tags: z.array(z.string().trim().min(1)),
 });
 
@@ -81,8 +86,12 @@ export async function createItem(data: CreateItemPayload): Promise<ActionResult<
   if (!itemType) {
     return { success: false, error: "Invalid item type" };
   }
-  if (itemType.name.toLowerCase() === "link" && !parsed.data.url) {
+  const typeName = itemType.name.toLowerCase();
+  if (typeName === "link" && !parsed.data.url) {
     return { success: false, error: "URL is required for link items" };
+  }
+  if ((typeName === "file" || typeName === "image") && !parsed.data.fileUrl) {
+    return { success: false, error: "A file upload is required" };
   }
 
   const created = await createItemQuery({ ...parsed.data, userId: session.user.id });
@@ -95,12 +104,19 @@ export async function deleteItem(itemId: string): Promise<ActionResult<null>> {
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownerId = await getItemOwnerId(itemId);
-  if (!ownerId) {
+  const item = await getItemForDeletion(itemId);
+  if (!item) {
     return { success: false, error: "Item not found" };
   }
-  if (ownerId !== session.user.id) {
+  if (item.userId !== session.user.id) {
     return { success: false, error: "Not authorized to delete this item" };
+  }
+
+  if (item.fileUrl) {
+    const key = getKeyFromPublicUrl(item.fileUrl);
+    if (key) {
+      await deleteFromR2(key);
+    }
   }
 
   await deleteItemQuery(itemId);

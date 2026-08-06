@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CodeEditor } from "@/components/items/CodeEditor";
 import { MarkdownEditor } from "@/components/items/MarkdownEditor";
+import { FileUpload, type UploadedFile } from "@/components/items/FileUpload";
 import {
   Select,
   SelectContent,
@@ -47,7 +48,15 @@ interface NewItemDialogProps {
   defaultItemTypeId?: string;
 }
 
-const EMPTY_FORM = { title: "", description: "", content: "", language: "", url: "", tags: "" };
+const EMPTY_FORM = {
+  title: "",
+  description: "",
+  content: "",
+  language: "",
+  url: "",
+  tags: "",
+  file: null as UploadedFile | null,
+};
 
 export function NewItemDialog({
   itemTypes,
@@ -56,7 +65,7 @@ export function NewItemDialog({
   defaultItemTypeId,
 }: NewItemDialogProps) {
   const router = useRouter();
-  const selectableTypes = itemTypes.filter((type) => !FILE_SLUGS.has(type.slug));
+  const selectableTypes = itemTypes;
   const isTypeLocked = Boolean(
     defaultItemTypeId && selectableTypes.some((type) => type.id === defaultItemTypeId),
   );
@@ -74,6 +83,8 @@ export function NewItemDialog({
   const showLanguage = LANGUAGE_SLUGS.has(slug);
   const showMarkdown = MARKDOWN_SLUGS.has(slug);
   const showUrl = URL_SLUGS.has(slug);
+  const showFile = FILE_SLUGS.has(slug);
+  const uploadKind = slug === "images" ? "image" : "file";
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
@@ -94,6 +105,9 @@ export function NewItemDialog({
       content: showContent ? (form.content.trim() === "" ? null : form.content) : null,
       language: showLanguage ? (form.language.trim() === "" ? null : form.language) : null,
       url: showUrl ? (form.url.trim() === "" ? null : form.url) : null,
+      fileUrl: showFile ? (form.file?.fileUrl ?? null) : null,
+      fileName: showFile ? (form.file?.fileName ?? null) : null,
+      fileSize: showFile ? (form.file?.fileSize ?? null) : null,
       tags: form.tags
         .split(",")
         .map((tag) => tag.trim())
@@ -116,7 +130,9 @@ export function NewItemDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>New item</DialogTitle>
-          <DialogDescription>Create a new snippet, prompt, command, note, or link.</DialogDescription>
+          <DialogDescription>
+            Create a new snippet, prompt, command, note, link, file, or image.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
@@ -228,6 +244,17 @@ export function NewItemDialog({
             </div>
           )}
 
+          {showFile && (
+            <div className="flex flex-col gap-2">
+              <Label>{uploadKind === "image" ? "Image" : "File"}</Label>
+              <FileUpload
+                kind={uploadKind}
+                value={form.file}
+                onChange={(file) => setForm({ ...form, file })}
+              />
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="new-item-tags">Tags</Label>
             <Input
@@ -246,6 +273,7 @@ export function NewItemDialog({
               !itemTypeId ||
               form.title.trim() === "" ||
               (showUrl && form.url.trim() === "") ||
+              (showFile && !form.file) ||
               isSaving
             }
           >

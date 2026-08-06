@@ -7,20 +7,28 @@ vi.mock("@/auth", () => ({
 
 vi.mock("@/lib/db/items", () => ({
   getItemOwnerId: vi.fn(),
+  getItemForDeletion: vi.fn(),
   updateItem: vi.fn(),
   createItem: vi.fn(),
   deleteItem: vi.fn(),
   getItemTypeById: vi.fn(),
 }));
 
+vi.mock("@/lib/r2", () => ({
+  deleteFromR2: vi.fn(),
+  getKeyFromPublicUrl: vi.fn(),
+}));
+
 import { auth } from "@/auth";
 import {
   createItem as createItemQuery,
   deleteItem as deleteItemQuery,
+  getItemForDeletion,
   getItemOwnerId,
   getItemTypeById,
   updateItem as updateItemQuery,
 } from "@/lib/db/items";
+import { deleteFromR2, getKeyFromPublicUrl } from "@/lib/r2";
 
 const validPayload = {
   title: "Updated title",
@@ -99,6 +107,9 @@ const validCreatePayload = {
   content: null,
   url: null,
   language: null,
+  fileUrl: null,
+  fileName: null,
+  fileSize: null,
   tags: [] as string[],
 };
 
@@ -143,6 +154,16 @@ describe("createItem", () => {
     expect(createItemQuery).not.toHaveBeenCalled();
   });
 
+  it("returns an error when creating a file item without a file upload", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "File" });
+
+    const result = await createItem(validCreatePayload);
+
+    expect(result).toEqual({ success: false, error: "A file upload is required" });
+    expect(createItemQuery).not.toHaveBeenCalled();
+  });
+
   it("creates the item when validation, auth, and item type all pass", async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
     vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "Snippet" });
@@ -167,12 +188,12 @@ describe("deleteItem", () => {
     const result = await deleteItem("item-1");
 
     expect(result).toEqual({ success: false, error: "Not authenticated" });
-    expect(getItemOwnerId).not.toHaveBeenCalled();
+    expect(getItemForDeletion).not.toHaveBeenCalled();
   });
 
   it("returns an error when the item does not exist", async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
-    vi.mocked(getItemOwnerId).mockResolvedValue(null);
+    vi.mocked(getItemForDeletion).mockResolvedValue(null);
 
     const result = await deleteItem("item-1");
 
@@ -182,7 +203,7 @@ describe("deleteItem", () => {
 
   it("returns an error when the session user does not own the item", async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
-    vi.mocked(getItemOwnerId).mockResolvedValue("someone-else");
+    vi.mocked(getItemForDeletion).mockResolvedValue({ userId: "someone-else", fileUrl: null });
 
     const result = await deleteItem("item-1");
 
@@ -192,10 +213,27 @@ describe("deleteItem", () => {
 
   it("deletes the item when auth and ownership both pass", async () => {
     vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
-    vi.mocked(getItemOwnerId).mockResolvedValue("user-1");
+    vi.mocked(getItemForDeletion).mockResolvedValue({ userId: "user-1", fileUrl: null });
 
     const result = await deleteItem("item-1");
 
+    expect(deleteFromR2).not.toHaveBeenCalled();
+    expect(deleteItemQuery).toHaveBeenCalledWith("item-1");
+    expect(result).toEqual({ success: true, data: null });
+  });
+
+  it("deletes the R2 file when the item has an uploaded file", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemForDeletion).mockResolvedValue({
+      userId: "user-1",
+      fileUrl: "https://pub-example.r2.dev/user-1/abc-file.pdf",
+    });
+    vi.mocked(getKeyFromPublicUrl).mockReturnValue("user-1/abc-file.pdf");
+
+    const result = await deleteItem("item-1");
+
+    expect(getKeyFromPublicUrl).toHaveBeenCalledWith("https://pub-example.r2.dev/user-1/abc-file.pdf");
+    expect(deleteFromR2).toHaveBeenCalledWith("user-1/abc-file.pdf");
     expect(deleteItemQuery).toHaveBeenCalledWith("item-1");
     expect(result).toEqual({ success: true, data: null });
   });
