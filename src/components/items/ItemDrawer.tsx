@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, Pencil, Pin, Save, Star, Trash2, X } from "lucide-react";
+import { Copy, Download, Pencil, Pin, Save, Star, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -30,6 +30,7 @@ import { CodeEditor } from "@/components/items/CodeEditor";
 import { MarkdownEditor } from "@/components/items/MarkdownEditor";
 import { iconMap } from "@/lib/icon-map";
 import type { ItemDetail } from "@/lib/db/items";
+import { formatFileSize } from "@/lib/file-constraints";
 import { deleteItem, updateItem } from "@/actions/items";
 
 type ItemDetailResponse = Omit<ItemDetail, "createdAt" | "updatedAt"> & {
@@ -119,6 +120,12 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   const showLanguage = LANGUAGE_TYPES.has(typeName);
   const showMarkdown = MARKDOWN_TYPES.has(typeName);
   const showUrl = URL_TYPES.has(typeName);
+  const isImage = typeName === "image";
+
+  function handleDownload() {
+    if (!item) return;
+    window.open(`/api/download/${item.id}`, "_blank");
+  }
 
   function handleCopy() {
     if (!item) return;
@@ -328,10 +335,17 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
               ) : (
                 <>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={handleCopy}>
-                      <Copy className="size-4" />
-                      Copy
-                    </Button>
+                    {item.fileUrl ? (
+                      <Button variant="outline" size="sm" onClick={handleDownload}>
+                        <Download className="size-4" />
+                        Download
+                      </Button>
+                    ) : (
+                      <Button variant="outline" size="sm" onClick={handleCopy}>
+                        <Copy className="size-4" />
+                        Copy
+                      </Button>
+                    )}
                     <Button variant="outline" size="icon-sm">
                       <Star
                         className={
@@ -413,10 +427,25 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                     </div>
                   )}
 
+                  {item.fileUrl && isImage && (
+                    <div className="flex flex-col gap-2">
+                      <h4 className="text-sm font-medium text-foreground">Preview</h4>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.fileUrl}
+                        alt={item.fileName ?? item.title}
+                        className="max-h-80 w-full rounded-md object-contain"
+                      />
+                    </div>
+                  )}
+
                   {item.fileName && (
                     <div className="flex flex-col gap-2">
                       <h4 className="text-sm font-medium text-foreground">File</h4>
-                      <p className="text-sm text-muted-foreground">{item.fileName}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {item.fileName}
+                        {item.fileSize != null && ` · ${formatFileSize(item.fileSize)}`}
+                      </p>
                     </div>
                   )}
 

@@ -210,6 +210,9 @@ export interface CreateItemInput {
   content: string | null;
   url: string | null;
   language: string | null;
+  fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
   tags: string[];
   itemTypeId: string;
   userId: string;
@@ -223,7 +226,10 @@ export async function createItem(data: CreateItemInput): Promise<ItemDetail> {
       content: data.content,
       url: data.url,
       language: data.language,
-      contentType: "TEXT",
+      fileUrl: data.fileUrl,
+      fileName: data.fileName,
+      fileSize: data.fileSize,
+      contentType: data.fileUrl ? "FILE" : "TEXT",
       itemTypeId: data.itemTypeId,
       userId: data.userId,
       tags: {
@@ -269,6 +275,19 @@ export async function createItem(data: CreateItemInput): Promise<ItemDetail> {
 
 export async function deleteItem(id: string): Promise<void> {
   await prisma.item.delete({ where: { id } });
+}
+
+export interface ItemDeletionInfo {
+  userId: string;
+  fileUrl: string | null;
+}
+
+export async function getItemForDeletion(id: string): Promise<ItemDeletionInfo | null> {
+  const item = await prisma.item.findUnique({
+    where: { id },
+    select: { userId: true, fileUrl: true },
+  });
+  return item;
 }
 
 export async function getItemById(id: string): Promise<ItemDetail | null> {

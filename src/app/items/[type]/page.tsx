@@ -9,8 +9,6 @@ import { getItemTypes, getItemTypeBySlug, getItemsByType } from "@/lib/db/items"
 import { getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
 
-const FILE_SLUGS = new Set(["files", "images"]);
-
 function singularize(name: string): string {
   return name.endsWith("s") ? name.slice(0, -1) : name;
 }
@@ -56,7 +54,7 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
               <h1 className="text-2xl font-semibold capitalize text-foreground">
                 {itemType.slug}
               </h1>
-              {!FILE_SLUGS.has(itemType.slug) && typeSummary && (
+              {typeSummary && (
                 <NewItemDialog
                   itemTypes={itemTypes}
                   defaultItemTypeId={itemType.id}

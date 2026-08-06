@@ -1,11 +1,42 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: File Upload with Cloudflare R2
 ## Status
-N/A
+In Progress
 ## Goals
-N/A
+- Create upload API route for R2
+- Stick to `src/lib/db/items.ts` for prisma/db functions
+- Create `FileUpload` component with drag-and-drop
+- Update create item modal (`NewItemDialog`) to use `FileUpload` for file/image types
+- Delete files from R2 when items are deleted
+- Create download proxy API route (avoids CORS issues)
+- Add download button in `ItemDrawer` for file types
+- Show upload progress indicator
+- Display image preview for images, file info for files
+
 ## Notes
-N/A
+### File Constraints
+| Type   | Max Size | Extensions                                            |
+| ------ | -------- | ----------------------------------------------------- |
+| Images | 5 MB     | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.svg`      |
+| Files  | 10 MB    | `.pdf`, `.txt`, `.md`, `.json`, `.yaml`, `.yml`, `.xml`, `.csv`, `.toml`, `.ini` |
+
+### MIME Types
+**Images:**
+- `image/png`
+- `image/jpeg`
+- `image/gif`
+- `image/webp`
+- `image/svg+xml`
+
+**Files:**
+- `application/pdf`
+- `text/plain`
+- `text/markdown`
+- `application/json`
+- `application/x-yaml`, `text/yaml`
+- `application/xml`, `text/xml`
+- `text/csv`
+- `application/toml`
+- `text/plain` (for `.ini`)
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -67,4 +98,5 @@ N/A
 - 2026-08-04: Completed Type-Specific Add Button + Preselected Type — each `/items/[type]` page (`src/app/items/[type]/page.tsx`) now shows an "Add {Type}" button (singular, capitalized, e.g. "Add Snippet") next to the page heading, hidden on `files`/`images` pages since file upload isn't implemented; `NewItemDialog.tsx` gained an optional `defaultItemTypeId` prop that preselects and disables the type `Select` when it matches a selectable type, used by the new page-level button while `TopBar`'s existing "New Item" button (unchanged) keeps its free-choice default-to-first-type behavior. UI-only change in client/server components — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (26/26) pass.
 - 2026-08-04: Documented Markdown Editor spec
 - 2026-08-04: Completed Markdown Editor — added `MarkdownEditor` component (`src/components/items/MarkdownEditor.tsx`) with a Write/Preview tabbed interface (new shadcn `Tabs` component) using `react-markdown` + `remark-gfm` for GFM rendering; matches `CodeEditor`'s dark theme (`bg-[#1e1e1e]` container, `bg-[#2d2d2d]` header) with the same copy-to-clipboard button; readonly mode shows only a "Preview" label (no tab switcher), edit mode defaults to Write with Preview available; fluid height with a 400px max on both panels. Added a `.markdown-preview` CSS class in `globals.css` styling headings, code blocks, inline code, lists, blockquotes, links, and tables for the dark theme. Wired into `NewItemDialog.tsx` and `ItemDrawer.tsx` (edit and view modes) for prompt/note content only, gated by new `MARKDOWN_SLUGS`/`MARKDOWN_TYPES` sets — `CodeEditor` remains unchanged for snippet/command content. Along the way, diagnosed a false "markdown isn't rendering" report: the CSS was correct all along, but a stale `npm run dev` process (started before the `globals.css` edit) was serving an old CSS bundle with no `.markdown-preview` rules; restarting the dev server fixed it, confirmed visually via Playwright (headings, bold/italic, bulleted list, blockquote border, inline/fenced code all rendering correctly). UI-only change — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (26/26) pass.
+- 2026-08-06: Documented File Upload with Cloudflare R2 spec
 </content>
