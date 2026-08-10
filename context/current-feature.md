@@ -1,6 +1,6 @@
 # Current Feature: File List View
 ## Status
-Not Started
+In Progress
 ## Goals
 - Update `/items/files` to display as a single-column list (like Google Drive/Dropbox) instead of grid cards
 - Single-column list layout with rows

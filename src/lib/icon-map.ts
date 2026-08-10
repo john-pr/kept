@@ -6,6 +6,11 @@ import {
   Link,
   File,
   Image,
+  FileText,
+  FileJson,
+  FileCode,
+  FileSpreadsheet,
+  FileCog,
   type LucideIcon,
 } from "lucide-react";
 
@@ -17,4 +22,9 @@ export const iconMap: Record<string, LucideIcon> = {
   Link,
   File,
   Image,
+  FileText,
+  FileJson,
+  FileCode,
+  FileSpreadsheet,
+  FileCog,
 };

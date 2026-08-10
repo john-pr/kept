@@ -45,6 +45,9 @@ export interface ItemSummary {
   typeIcon: string;
   typeColor: string;
   fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
+  createdAt: Date;
 }
 
 function toItemSummary(item: {
@@ -58,6 +61,9 @@ function toItemSummary(item: {
   itemType: { icon: string; color: string };
   tags: { name: string }[];
   fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
+  createdAt: Date;
 }): ItemSummary {
   return {
     id: item.id,
@@ -69,6 +75,9 @@ function toItemSummary(item: {
     typeIcon: item.itemType.icon,
     typeColor: item.itemType.color,
     fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    fileSize: item.fileSize,
+    createdAt: item.createdAt,
   };
 }
 

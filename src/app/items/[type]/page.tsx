@@ -4,6 +4,7 @@ import { TopBar } from "@/components/dashboard/TopBar";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { ItemCard } from "@/components/dashboard/ItemCard";
 import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
+import { FileListRow } from "@/components/dashboard/FileListRow";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { Button } from "@/components/ui/button";
 import { getItemTypes, getItemTypeBySlug, getItemsByType } from "@/lib/db/items";
@@ -34,6 +35,7 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
   const items = await getItemsByType(itemType.id);
   const typeSummary = itemTypes.find((type) => type.id === itemType.id);
   const isImageGallery = itemType.slug === "images";
+  const isFileList = itemType.slug === "files";
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -73,6 +75,12 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((item) => (
                   <ImageThumbnailCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : isFileList ? (
+              <div className="rounded-xl border border-border [&>*:last-child]:border-b-0">
+                {items.map((item) => (
+                  <FileListRow key={item.id} item={item} />
                 ))}
               </div>
             ) : (
