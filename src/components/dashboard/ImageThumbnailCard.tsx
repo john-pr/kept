@@ -3,22 +3,18 @@
 import { Expand, Heart, Pin } from "lucide-react";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
+import { useClickableCard } from "@/hooks/useClickableCard";
 
 export function ImageThumbnailCard({ item }: { item: ItemSummary }) {
   const { openItem } = useItemDrawer();
+  const clickableCard = useClickableCard(() => openItem(item.id));
 
   return (
     <div
       className="group flex h-44 cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow duration-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       role="button"
       tabIndex={0}
-      onClick={() => openItem(item.id)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openItem(item.id);
-        }
-      }}
+      {...clickableCard}
     >
       <div className="relative min-h-0 flex-1 overflow-hidden">
         {item.fileUrl ? (

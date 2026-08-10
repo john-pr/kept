@@ -9,10 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { iconMap } from "@/lib/icon-map";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
+import { useClickableCard } from "@/hooks/useClickableCard";
 
 export function ItemCard({ item }: { item: ItemSummary }) {
   const Icon = iconMap[item.typeIcon];
   const { openItem } = useItemDrawer();
+  const clickableCard = useClickableCard(() => openItem(item.id));
 
   function handleCopy(event: MouseEvent) {
     event.stopPropagation();
@@ -26,13 +28,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
       style={{ "--tw-ring-color": item.typeColor } as CSSProperties}
       role="button"
       tabIndex={0}
-      onClick={() => openItem(item.id)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openItem(item.id);
-        }
-      }}
+      {...clickableCard}
     >
       <CardHeader>
         <CardTitle className="flex items-start justify-between gap-2">

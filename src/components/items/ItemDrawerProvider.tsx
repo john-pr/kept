@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { ItemDrawer } from "@/components/items/ItemDrawer";
 
 interface ItemDrawerContextValue {
@@ -21,13 +21,18 @@ export function ItemDrawerProvider({ children }: { children: ReactNode }) {
   const [itemId, setItemId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
-  function openItem(id: string) {
+  const openItem = useCallback((id: string) => {
     setItemId(id);
     setOpen(true);
-  }
+  }, []);
+
+  // Memoized so consumers of useItemDrawer() (every ItemCard/ImageThumbnailCard/
+  // FileListRow on the page) don't re-render whenever this provider's own
+  // itemId/open state changes on drawer open/close.
+  const value = useMemo(() => ({ openItem }), [openItem]);
 
   return (
-    <ItemDrawerContext.Provider value={{ openItem }}>
+    <ItemDrawerContext.Provider value={value}>
       {children}
       <ItemDrawer itemId={itemId} open={open} onOpenChange={setOpen} />
     </ItemDrawerContext.Provider>

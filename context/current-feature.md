@@ -1,11 +1,21 @@
 # Current Feature
-None — awaiting next feature/fix.
+Fix Code Scanner Findings — Medium 1/4/5/6 + all Low
 
 ## Status
-N/A
+Complete — build, lint, and test (51/51) pass
 
 ## Goals
-N/A
+Address the following findings from the 2026-08-10 code-scanner audit:
+
+- **Medium 1**: SVG upload enables stored XSS on the R2 origin — drop `.svg`/`image/svg+xml` from allowed image upload types (no sanitization lib in the stack).
+- **Medium 4**: `ItemDrawerProvider` context value isn't memoized — wrap `openItem` in `useCallback` and the context value in `useMemo`.
+- **Medium 5**: `ItemDrawer.tsx` (484 lines) mixes view/edit/delete concerns — split into `ItemDrawerView.tsx`, `ItemDrawerEditForm.tsx`, `DeleteItemDialog.tsx`.
+- **Medium 6**: Duplicated clickable-card interaction logic across `ItemCard`, `ImageThumbnailCard`, `FileListRow` — extract a shared `useClickableCard` hook.
+- **Low 1**: Rate limiter's `getRequestIp` returns `"unknown"` for all clients missing `x-forwarded-for`, grouping them into one bucket — fall back to `x-real-ip` before `"unknown"`.
+- **Low 2**: `getItemTypeBySlug` duplicates the `getItemTypes` query on `/items/[type]` — derive the matching type from the already-fetched `itemTypes` list instead of a second DB call.
+- **Low 3**: `change-password`/`delete-account` routes have no rate limiting — add limits matching the existing auth-route pattern.
+
+Not in scope: Medium 2 (MIME sniffing), Medium 3 (dead `/collections` links) — not requested this round.
 
 ## Notes
 N/A

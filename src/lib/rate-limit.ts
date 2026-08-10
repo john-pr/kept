@@ -63,6 +63,13 @@ export function getRequestIp(request: Request): string {
   if (forwardedFor) {
     return forwardedFor.split(",")[0].trim();
   }
+  // Some proxies (or platforms that don't set x-forwarded-for) expose the
+  // client IP via x-real-ip instead. Falling straight to "unknown" would
+  // otherwise bucket every such client into one shared rate limit.
+  const realIp = request.headers.get("x-real-ip");
+  if (realIp) {
+    return realIp.trim();
+  }
   return "unknown";
 }
 
