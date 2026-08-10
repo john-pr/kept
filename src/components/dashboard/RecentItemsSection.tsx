@@ -1,8 +1,12 @@
 import { getRecentItems } from "@/lib/db/items";
 import { ItemCard } from "@/components/dashboard/ItemCard";
 
-export async function RecentItemsSection() {
-  const recentItems = await getRecentItems(9);
+interface RecentItemsSectionProps {
+  userId: string;
+}
+
+export async function RecentItemsSection({ userId }: RecentItemsSectionProps) {
+  const recentItems = await getRecentItems(userId, 9);
 
   return (
     <section className="flex flex-col gap-3">

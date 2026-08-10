@@ -22,17 +22,17 @@ interface ItemsByTypePageProps {
 export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) {
   const { type: slug } = await params;
 
-  const [itemTypes, favoriteCollections, recentCollections, user, itemType] = await Promise.all([
-    getItemTypes(),
-    getFavoriteCollections(),
-    getRecentCollections(6),
-    getCurrentUser(),
+  const user = await getCurrentUser();
+  const [itemTypes, favoriteCollections, recentCollections, itemType] = await Promise.all([
+    getItemTypes(user.id),
+    getFavoriteCollections(user.id),
+    getRecentCollections(user.id, 6),
     getItemTypeBySlug(slug),
   ]);
 
   if (!itemType) notFound();
 
-  const items = await getItemsByType(itemType.id);
+  const items = await getItemsByType(itemType.id, user.id);
   const typeSummary = itemTypes.find((type) => type.id === itemType.id);
   const isImageGallery = itemType.slug === "images";
   const isFileList = itemType.slug === "files";

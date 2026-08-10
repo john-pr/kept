@@ -2,8 +2,12 @@ import { Package, FolderOpen, Heart, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { getDashboardStats } from "@/lib/db/stats";
 
-export async function StatsCards() {
-  const dashboardStats = await getDashboardStats();
+interface StatsCardsProps {
+  userId: string;
+}
+
+export async function StatsCards({ userId }: StatsCardsProps) {
+  const dashboardStats = await getDashboardStats(userId);
 
   const stats = [
     { label: "Total Items", value: dashboardStats.totalItems, icon: Package },
