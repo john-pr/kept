@@ -7,7 +7,7 @@ import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
 import { FileListRow } from "@/components/dashboard/FileListRow";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { Button } from "@/components/ui/button";
-import { getItemTypes, getItemTypeBySlug, getItemsByType } from "@/lib/db/items";
+import { getItemTypes, getItemsByType } from "@/lib/db/items";
 import { getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
 
@@ -23,19 +23,19 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
   const { type: slug } = await params;
 
   const user = await getCurrentUser();
-  const [itemTypes, favoriteCollections, recentCollections, itemType] = await Promise.all([
+  const [itemTypes, favoriteCollections, recentCollections] = await Promise.all([
     getItemTypes(user.id),
     getFavoriteCollections(user.id),
     getRecentCollections(user.id, 6),
-    getItemTypeBySlug(slug),
   ]);
 
-  if (!itemType) notFound();
+  const typeSummary = itemTypes.find((type) => type.slug === slug);
 
-  const items = await getItemsByType(itemType.id, user.id);
-  const typeSummary = itemTypes.find((type) => type.id === itemType.id);
-  const isImageGallery = itemType.slug === "images";
-  const isFileList = itemType.slug === "files";
+  if (!typeSummary) notFound();
+
+  const items = await getItemsByType(typeSummary.id, user.id);
+  const isImageGallery = typeSummary.slug === "images";
+  const isFileList = typeSummary.slug === "files";
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -56,18 +56,16 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
           <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-semibold capitalize text-foreground">
-                {itemType.slug}
+                {typeSummary.slug}
               </h1>
-              {typeSummary && (
-                <NewItemDialog
-                  itemTypes={itemTypes}
-                  defaultItemTypeId={itemType.id}
-                  trigger={<Button />}
-                >
-                  <Plus />
-                  Add {singularize(typeSummary.name)}
-                </NewItemDialog>
-              )}
+              <NewItemDialog
+                itemTypes={itemTypes}
+                defaultItemTypeId={typeSummary.id}
+                trigger={<Button />}
+              >
+                <Plus />
+                Add {singularize(typeSummary.name)}
+              </NewItemDialog>
             </div>
             {items.length === 0 ? (
               <p className="text-sm text-muted-foreground">No items yet.</p>

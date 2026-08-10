@@ -103,21 +103,6 @@ export async function getRecentItems(userId: string, limit = 10): Promise<ItemSu
   return items.map(toItemSummary);
 }
 
-export interface ItemTypeDetail {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-export async function getItemTypeBySlug(slug: string): Promise<ItemTypeDetail | null> {
-  const itemTypes = await prisma.itemType.findMany({ where: { isSystem: true } });
-  const itemType = itemTypes.find((type) => `${type.name.toLowerCase()}s` === slug);
-
-  if (!itemType) return null;
-
-  return { id: itemType.id, name: itemType.name, slug };
-}
-
 export async function getItemsByType(itemTypeId: string, userId: string): Promise<ItemSummary[]> {
   const items = await prisma.item.findMany({
     where: { itemTypeId, userId },

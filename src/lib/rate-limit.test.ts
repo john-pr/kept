@@ -9,7 +9,14 @@ describe("getRequestIp", () => {
     expect(getRequestIp(request)).toBe("203.0.113.1");
   });
 
-  it("falls back to 'unknown' when the header is missing", () => {
+  it("falls back to x-real-ip when x-forwarded-for is missing", () => {
+    const request = new Request("https://example.com", {
+      headers: { "x-real-ip": "203.0.113.9" },
+    });
+    expect(getRequestIp(request)).toBe("203.0.113.9");
+  });
+
+  it("falls back to 'unknown' when both headers are missing", () => {
     const request = new Request("https://example.com");
     expect(getRequestIp(request)).toBe("unknown");
   });

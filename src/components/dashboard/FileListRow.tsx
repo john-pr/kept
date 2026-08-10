@@ -7,9 +7,11 @@ import { getFileIconName } from "@/lib/file-icon";
 import { formatFileSize } from "@/lib/file-constraints";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
+import { useClickableCard } from "@/hooks/useClickableCard";
 
 export function FileListRow({ item }: { item: ItemSummary }) {
   const { openItem } = useItemDrawer();
+  const clickableCard = useClickableCard(() => openItem(item.id));
   const Icon = iconMap[getFileIconName(item.fileName ?? item.title)];
 
   function handleDownload(event: React.MouseEvent) {
@@ -22,13 +24,7 @@ export function FileListRow({ item }: { item: ItemSummary }) {
       className="flex cursor-pointer flex-col gap-2 border-b border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:gap-4"
       role="button"
       tabIndex={0}
-      onClick={() => openItem(item.id)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openItem(item.id);
-        }
-      }}
+      {...clickableCard}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <span

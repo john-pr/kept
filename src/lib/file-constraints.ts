@@ -6,12 +6,15 @@ export const MAX_FILE_SIZE_BYTES: Record<UploadKind, number> = {
 };
 
 export const ALLOWED_EXTENSIONS: Record<UploadKind, string[]> = {
-  image: [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"],
+  // .svg is intentionally excluded: SVGs can embed <script>/event-handler attributes,
+  // and files are served back from a raw R2 URL with no sanitization step, which
+  // would let an uploaded SVG execute script in the R2 origin's context if opened directly.
+  image: [".png", ".jpg", ".jpeg", ".gif", ".webp"],
   file: [".pdf", ".txt", ".md", ".json", ".yaml", ".yml", ".xml", ".csv", ".toml", ".ini"],
 };
 
 export const ALLOWED_MIME_TYPES: Record<UploadKind, string[]> = {
-  image: ["image/png", "image/jpeg", "image/gif", "image/webp", "image/svg+xml"],
+  image: ["image/png", "image/jpeg", "image/gif", "image/webp"],
   file: [
     "application/pdf",
     "text/plain",

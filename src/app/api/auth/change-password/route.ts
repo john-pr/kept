@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
 
 const changePasswordSchema = z
   .object({
@@ -19,6 +20,18 @@ export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
+  }
+
+  // Rate limit by session user (not just IP) since this guards a current-password
+  // brute-force check against a specific, already-authenticated account.
+  const rateLimit = await checkRateLimit(
+    "change-password",
+    `${getRequestIp(request)}:${session.user.id}`,
+    5,
+    15 * 60
+  );
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit.reset);
   }
 
   const body = await request.json();
