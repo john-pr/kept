@@ -1,8 +1,10 @@
 "use client";
 
-import type { CSSProperties } from "react";
-import { Heart, Pin } from "lucide-react";
+import type { CSSProperties, MouseEvent } from "react";
+import { Copy, Heart, Pin } from "lucide-react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { iconMap } from "@/lib/icon-map";
 import type { ItemSummary } from "@/lib/db/items";
@@ -11,6 +13,12 @@ import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 export function ItemCard({ item }: { item: ItemSummary }) {
   const Icon = iconMap[item.typeIcon];
   const { openItem } = useItemDrawer();
+
+  function handleCopy(event: MouseEvent) {
+    event.stopPropagation();
+    navigator.clipboard.writeText(item.content);
+    toast.success("Copied to clipboard");
+  }
 
   return (
     <Card
@@ -38,6 +46,15 @@ export function ItemCard({ item }: { item: ItemSummary }) {
             {item.isFavorite && (
               <Heart className="size-3.5 fill-red-500 text-red-500" />
             )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-6 text-muted-foreground hover:text-foreground"
+              onClick={handleCopy}
+              aria-label="Copy to clipboard"
+            >
+              <Copy className="size-3.5" />
+            </Button>
           </div>
         </CardTitle>
       </CardHeader>
