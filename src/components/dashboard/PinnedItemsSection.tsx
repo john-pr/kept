@@ -1,8 +1,12 @@
 import { getPinnedItems } from "@/lib/db/items";
 import { ItemCard } from "@/components/dashboard/ItemCard";
 
-export async function PinnedItemsSection() {
-  const pinnedItems = await getPinnedItems();
+interface PinnedItemsSectionProps {
+  userId: string;
+}
+
+export async function PinnedItemsSection({ userId }: PinnedItemsSectionProps) {
+  const pinnedItems = await getPinnedItems(userId);
 
   if (pinnedItems.length === 0) return null;
 

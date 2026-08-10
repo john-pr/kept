@@ -13,7 +13,7 @@ export async function GET(
   }
 
   const { id } = await params;
-  const item = await getItemById(id);
+  const item = await getItemById(id, session.user.id);
   if (!item || !item.fileUrl) {
     return NextResponse.json({ success: false, error: "File not found" }, { status: 404 });
   }

@@ -13,13 +13,13 @@ import { getFavoriteCollections, getRecentCollections } from "@/lib/db/collectio
 import { iconMap } from "@/lib/icon-map";
 
 export default async function ProfilePage() {
-  const [itemTypes, favoriteCollections, recentCollections, user] = await Promise.all([
-    getItemTypes(),
-    getFavoriteCollections(),
-    getRecentCollections(6),
-    getCurrentUser(),
+  const user = await getCurrentUser();
+  const [itemTypes, favoriteCollections, recentCollections, stats] = await Promise.all([
+    getItemTypes(user.id),
+    getFavoriteCollections(user.id),
+    getRecentCollections(user.id, 6),
+    getProfileStats(user.id),
   ]);
-  const stats = await getProfileStats(user.id);
 
   const memberSince = user.createdAt.toLocaleDateString("en-US", {
     year: "numeric",

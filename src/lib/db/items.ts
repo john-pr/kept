@@ -12,10 +12,10 @@ export interface ItemTypeSummary {
 
 const PRO_TYPE_NAMES = new Set(["file", "image"]);
 
-export async function getItemTypes(): Promise<ItemTypeSummary[]> {
+export async function getItemTypes(userId: string): Promise<ItemTypeSummary[]> {
   const itemTypes = await prisma.itemType.findMany({
     where: { isSystem: true },
-    include: { _count: { select: { items: true } } },
+    include: { _count: { select: { items: { where: { userId } } } } },
   });
 
   return itemTypes
@@ -81,9 +81,9 @@ function toItemSummary(item: {
   };
 }
 
-export async function getPinnedItems(limit = 10): Promise<ItemSummary[]> {
+export async function getPinnedItems(userId: string, limit = 10): Promise<ItemSummary[]> {
   const items = await prisma.item.findMany({
-    where: { isPinned: true },
+    where: { userId, isPinned: true },
     take: limit,
     orderBy: { createdAt: "desc" },
     include: { itemType: true, tags: true },
@@ -92,8 +92,9 @@ export async function getPinnedItems(limit = 10): Promise<ItemSummary[]> {
   return items.map(toItemSummary);
 }
 
-export async function getRecentItems(limit = 10): Promise<ItemSummary[]> {
+export async function getRecentItems(userId: string, limit = 10): Promise<ItemSummary[]> {
   const items = await prisma.item.findMany({
+    where: { userId },
     take: limit,
     orderBy: { createdAt: "desc" },
     include: { itemType: true, tags: true },
@@ -117,9 +118,9 @@ export async function getItemTypeBySlug(slug: string): Promise<ItemTypeDetail | 
   return { id: itemType.id, name: itemType.name, slug };
 }
 
-export async function getItemsByType(itemTypeId: string): Promise<ItemSummary[]> {
+export async function getItemsByType(itemTypeId: string, userId: string): Promise<ItemSummary[]> {
   const items = await prisma.item.findMany({
-    where: { itemTypeId },
+    where: { itemTypeId, userId },
     orderBy: { createdAt: "desc" },
     include: { itemType: true, tags: true },
   });
@@ -302,9 +303,9 @@ export async function getItemForDeletion(id: string): Promise<ItemDeletionInfo |
   return item;
 }
 
-export async function getItemById(id: string): Promise<ItemDetail | null> {
-  const item = await prisma.item.findUnique({
-    where: { id },
+export async function getItemById(id: string, userId: string): Promise<ItemDetail | null> {
+  const item = await prisma.item.findFirst({
+    where: { id, userId },
     include: {
       itemType: true,
       tags: true,

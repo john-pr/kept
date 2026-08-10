@@ -64,8 +64,9 @@ const collectionWithItemsInclude = {
   },
 } as const;
 
-export async function getRecentCollections(limit = 6): Promise<CollectionSummary[]> {
+export async function getRecentCollections(userId: string, limit = 6): Promise<CollectionSummary[]> {
   const collections = await prisma.collection.findMany({
+    where: { userId },
     take: limit,
     orderBy: { createdAt: "desc" },
     include: collectionWithItemsInclude,
@@ -74,9 +75,9 @@ export async function getRecentCollections(limit = 6): Promise<CollectionSummary
   return collections.map(toCollectionSummary);
 }
 
-export async function getFavoriteCollections(): Promise<CollectionSummary[]> {
+export async function getFavoriteCollections(userId: string): Promise<CollectionSummary[]> {
   const collections = await prisma.collection.findMany({
-    where: { isFavorite: true },
+    where: { userId, isFavorite: true },
     orderBy: { createdAt: "desc" },
     include: collectionWithItemsInclude,
   });

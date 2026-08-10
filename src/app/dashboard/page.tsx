@@ -9,11 +9,11 @@ import { getFavoriteCollections, getRecentCollections } from "@/lib/db/collectio
 import { getCurrentUser } from "@/lib/db/users";
 
 export default async function DashboardPage() {
-  const [itemTypes, favoriteCollections, recentCollections, user] = await Promise.all([
-    getItemTypes(),
-    getFavoriteCollections(),
-    getRecentCollections(6),
-    getCurrentUser(),
+  const user = await getCurrentUser();
+  const [itemTypes, favoriteCollections, recentCollections] = await Promise.all([
+    getItemTypes(user.id),
+    getFavoriteCollections(user.id),
+    getRecentCollections(user.id, 6),
   ]);
 
   return (
@@ -34,10 +34,10 @@ export default async function DashboardPage() {
         <main className="flex-1 overflow-y-auto p-4">
           <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
-            <StatsCards />
+            <StatsCards userId={user.id} />
             <CollectionsSection recentCollections={recentCollections} />
-            <PinnedItemsSection />
-            <RecentItemsSection />
+            <PinnedItemsSection userId={user.id} />
+            <RecentItemsSection userId={user.id} />
           </div>
         </main>
       </div>
