@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { ItemCard } from "@/components/dashboard/ItemCard";
+import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { Button } from "@/components/ui/button";
 import { getItemTypes, getItemTypeBySlug, getItemsByType } from "@/lib/db/items";
@@ -32,6 +33,7 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
 
   const items = await getItemsByType(itemType.id);
   const typeSummary = itemTypes.find((type) => type.id === itemType.id);
+  const isImageGallery = itemType.slug === "images";
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -67,6 +69,12 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
             </div>
             {items.length === 0 ? (
               <p className="text-sm text-muted-foreground">No items yet.</p>
+            ) : isImageGallery ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {items.map((item) => (
+                  <ImageThumbnailCard key={item.id} item={item} />
+                ))}
+              </div>
             ) : (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {items.map((item) => (

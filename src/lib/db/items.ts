@@ -44,6 +44,7 @@ export interface ItemSummary {
   isPinned: boolean;
   typeIcon: string;
   typeColor: string;
+  fileUrl: string | null;
 }
 
 function toItemSummary(item: {
@@ -56,6 +57,7 @@ function toItemSummary(item: {
   isPinned: boolean;
   itemType: { icon: string; color: string };
   tags: { name: string }[];
+  fileUrl: string | null;
 }): ItemSummary {
   return {
     id: item.id,
@@ -66,6 +68,7 @@ function toItemSummary(item: {
     isPinned: item.isPinned,
     typeIcon: item.itemType.icon,
     typeColor: item.itemType.color,
+    fileUrl: item.fileUrl,
   };
 }
 
