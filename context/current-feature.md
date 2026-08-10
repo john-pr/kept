@@ -1,56 +1,14 @@
 # Current Feature
-Fix Critical/High Security Findings — Per-User Data Isolation
+None — awaiting next feature/fix.
 
 ## Status
-2026-08-11 wt.Implemented — build, lint, and test (50/50) pass. Awaiting review/commit approval.
+N/A
 
 ## Goals
-
-Fix the two related findings from the 2026-08-10 code-scanner audit:
-
-1. **Critical — No per-user data isolation on reads.** Most read queries in `src/lib/db/items.ts` and `src/lib/db/collections.ts` aren't scoped by `userId`, even though every caller is an authenticated page/route. Any signed-in user currently sees (and via the drawer/download routes can fetch) every other user's items, files, and collections.
-2. **High — `GET /api/items/[id]` and `GET /api/download/[id]` don't check ownership.** Direct consequence of #1: both only verify a session exists, not that the session user owns the requested item, so item detail and file bytes are fetchable by ID regardless of owner.
-
-Mutations (`updateItem`/`deleteItem` server actions) already check ownership correctly via `getItemOwnerId` — this feature only touches reads.
-
-## Scope
-
-### `src/lib/db/items.ts`
-- `getPinnedItems(limit)` → add required `userId: string` param, `where: { userId, isPinned: true }`
-- `getRecentItems(limit)` → add required `userId: string` param, `where: { userId }`
-- `getItemsByType(itemTypeId)` → add required `userId: string` param, `where: { itemTypeId, userId }`
-- `getItemById(id)` → add required `userId: string` param, `where: { id, userId }` (returns `null` if the item exists but belongs to someone else — same shape as "not found", so callers don't need new branching)
-- `getItemTypes()` — item *type* rows are system-wide (not per-user), but `itemCount` (`_count.select.items`) currently counts every user's items. Scope the count: `items: { where: { userId } }`. Add required `userId: string` param.
-
-### `src/lib/db/collections.ts`
-- `getRecentCollections(userId, limit)` → add required `userId` param, `where: { userId }`
-- `getFavoriteCollections(userId)` → add required `userId` param, `where: { userId, isFavorite: true }`
-
-### `src/lib/db/stats.ts`
-- `getDashboardStats(userId)` → add required `userId` param, scope all four counts (`item.count`, `collection.count`, favorite variants) by `userId`. (`getProfileStats` is already scoped — no change.)
-
-### Call sites — thread `user.id` through
-All of these already call `getCurrentUser()`; restructure so `user` resolves before the now-user-scoped queries run (can no longer all sit in one unconditional `Promise.all`):
-- `src/app/dashboard/page.tsx`
-- `src/app/items/[type]/page.tsx`
-- `src/app/profile/page.tsx` (uses `getItemTypes`/`getFavoriteCollections`/`getRecentCollections` too)
-- `src/components/dashboard/StatsCards.tsx` (needs `getCurrentUser()` added — currently takes no props)
-- `src/components/dashboard/PinnedItemsSection.tsx` (same)
-- `src/components/dashboard/RecentItemsSection.tsx` (same)
-
-### `src/app/api/items/[id]/route.ts`
-- Pass `session.user.id` into `getItemById`. Since it now returns `null` for items you don't own, the existing 404 branch already handles it correctly — no new status code needed. `getItemOwnerId`/`canEdit` logic can be simplified/removed since a non-owned item is now unreachable (404s before that point), but keep `canEdit: true` in the response for consistency, or drop the field — decide during implementation based on whether `ItemDrawer.tsx` still needs it for anything beyond "can I edit," given ownership is now implicit.
-
-### `src/app/api/download/[id]/route.ts`
-- Pass `session.user.id` into `getItemById`. Same 404-on-not-owned behavior as above — no separate ownership check needed.
-
-## Out of scope
-- The Medium/Low findings (unmemoized drawer context, duplicated clickable-card logic, dead `/collections` link, duplicate `ItemType` scans, rate-limit IP fallback) — separate follow-up, not part of this fix.
-- Seed data: seeded demo items belong to the seed's demo user. Once reads are scoped, a real signed-in user (registered via credentials/GitHub) will correctly see an empty dashboard instead of the demo data — this is the intended fix, not a regression to work around.
+N/A
 
 ## Notes
-- No schema changes.
-- No new server actions — this is read-path scoping in existing query functions and their callers.
+N/A
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -122,4 +80,5 @@ All of these already call `getCurrentUser()`; restructure so `user` resolves bef
 - 2026-08-10: Completed Quick Copy Icon on Item Cards — `ItemCard.tsx` gained a small ghost-variant `Copy` icon button next to the pin/favorite indicators that copies `item.content` (already resolves to content ?? url ?? description) to the clipboard via `navigator.clipboard.writeText`, toasting "Copied to clipboard" (`sonner`) to match `ItemDrawer.tsx`'s existing `handleCopy`; the button stops event propagation so it doesn't also trigger the card's click-to-open-drawer handler. `ImageThumbnailCard`/`FileListRow` (file/image types) were left unchanged — no text content to copy, and they already have a Download action. UI-only change in a client component — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build, lint, and test (50/50) pass.
 - 2026-08-10: Ran code-scanner audit (security, performance, duplication, quality). Findings: Critical — most item/collection read queries not scoped by userId (cross-tenant data leak); High — `GET /api/items/[id]`/`GET /api/download/[id]` don't check ownership; Medium — unmemoized `ItemDrawerProvider` context value causes app-wide re-renders, duplicated clickable-card click/keydown logic across `ItemCard`/`ImageThumbnailCard`/`FileListRow`, dead `/collections` sidebar link; Low — duplicate `ItemType` table scans per `/items/[type]` load, rate-limit IP fallback groups all clients as "unknown" when header absent. `.env`/`.env.production` confirmed git-ignored.
 - 2026-08-10: Documented Fix Critical/High Security Findings — Per-User Data Isolation spec (this feature), scoping `getPinnedItems`/`getRecentItems`/`getItemsByType`/`getItemById`/`getItemTypes` (`src/lib/db/items.ts`), `getRecentCollections`/`getFavoriteCollections` (`src/lib/db/collections.ts`), and `getDashboardStats` (`src/lib/db/stats.ts`) by `userId`, and threading it through all callers plus the two API routes.
+- 2026-08-11: Completed Fix Critical/High Security Findings — Per-User Data Isolation — scoped `getPinnedItems`, `getRecentItems`, `getItemsByType`, `getItemById` (switched to `findFirst({ id, userId })`, returns `null` for non-owned items so callers get the existing 404 branch for free), and `getItemTypes`'s per-type `_count` (`src/lib/db/items.ts`); scoped `getRecentCollections`/`getFavoriteCollections` (`src/lib/db/collections.ts`) and all four `getDashboardStats` counts (`src/lib/db/stats.ts`) by `userId`. Threaded `user.id` through `dashboard/page.tsx`, `items/[type]/page.tsx`, and `profile/page.tsx` (each now resolves `getCurrentUser()` before the now-scoped queries instead of one unconditional `Promise.all`); `StatsCards`/`PinnedItemsSection`/`RecentItemsSection` take a `userId` prop from `dashboard/page.tsx` rather than each independently re-calling `getCurrentUser()` (a redundant-DB-round-trip finding caught by a `/code-review medium` pass on the diff and fixed before commit). `GET /api/items/[id]` and `GET /api/download/[id]` now pass `session.user.id` into `getItemById`; removed the now-redundant separate `getItemOwnerId` ownership check from the items route (a non-owned item 404s before that point) while keeping `canEdit: true` in the response since `ItemDrawer.tsx` still reads it. No schema changes, no new server actions — read-path scoping only; `getItemOwnerId`/`updateItem`/`deleteItem` mutation ownership checks were already correct and untouched. Verified manually in the browser via Playwright: seeded demo user still saw its 23 items/5 collections; a freshly registered second user saw an empty dashboard (0 across all types/collections) instead of the previous cross-tenant leak; direct `fetch()` calls to a demo-owned item's `/api/items/[id]` and a demo-owned file's `/api/download/[id]` both returned 404 as the second user; the second user's own newly-created item still loaded normally (200, `canEdit: true`). Build, lint, and test (50/50) pass. Merged `fix/per-user-data-isolation` into `master` (`dce4ad0`) and deleted the branch locally and on origin.
 </content>
