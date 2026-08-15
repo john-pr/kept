@@ -142,3 +142,37 @@ export async function createCollection(data: CreateCollectionData): Promise<Coll
 
   return toCollectionSummary(collection);
 }
+
+export async function getCollectionOwnerId(id: string): Promise<string | null> {
+  const collection = await prisma.collection.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+
+  return collection?.userId ?? null;
+}
+
+export interface UpdateCollectionData {
+  name: string;
+  description: string | null;
+}
+
+export async function updateCollection(
+  id: string,
+  data: UpdateCollectionData
+): Promise<CollectionSummary> {
+  const collection = await prisma.collection.update({
+    where: { id },
+    data: {
+      name: data.name,
+      description: data.description,
+    },
+    include: collectionWithItemsInclude,
+  });
+
+  return toCollectionSummary(collection);
+}
+
+export async function deleteCollection(id: string): Promise<void> {
+  await prisma.collection.delete({ where: { id } });
+}
