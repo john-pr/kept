@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { iconMap } from "@/lib/icon-map";
 import type { ItemDetail } from "@/lib/db/items";
+import type { CollectionOption } from "@/lib/db/collections";
 import { deleteItem, updateItem } from "@/actions/items";
 import { ItemDrawerView } from "@/components/items/ItemDrawerView";
 import { ItemDrawerEditForm } from "@/components/items/ItemDrawerEditForm";
@@ -14,6 +15,7 @@ export type ItemDetailResponse = Omit<ItemDetail, "createdAt" | "updatedAt"> & {
   createdAt: string;
   updatedAt: string;
   canEdit: boolean;
+  collectionOptions: CollectionOption[];
 };
 
 interface ItemDrawerProps {
@@ -34,6 +36,7 @@ export interface EditFormState {
   language: string;
   url: string;
   tags: string;
+  collectionIds: string[];
 }
 
 function toFormState(item: ItemDetailResponse): EditFormState {
@@ -44,6 +47,7 @@ function toFormState(item: ItemDetailResponse): EditFormState {
     language: item.language ?? "",
     url: item.url ?? "",
     tags: item.tags.join(", "),
+    collectionIds: item.collections.map((collection) => collection.id),
   };
 }
 
@@ -136,6 +140,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0),
+      collectionIds: form.collectionIds,
     });
     setIsSaving(false);
 
@@ -145,6 +150,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
         createdAt: result.data.createdAt.toString(),
         updatedAt: result.data.updatedAt.toString(),
         canEdit: item.canEdit,
+        collectionOptions: item.collectionOptions,
       });
       setIsEditing(false);
       setForm(null);
@@ -212,6 +218,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   showLanguage={showLanguage}
                   showMarkdown={showMarkdown}
                   showUrl={showUrl}
+                  collectionOptions={item.collectionOptions}
                   isSaving={isSaving}
                   onSave={handleSave}
                   onCancel={handleCancel}

@@ -19,6 +19,10 @@ vi.mock("@/lib/r2", () => ({
   getKeyFromPublicUrl: vi.fn(),
 }));
 
+vi.mock("@/lib/db/collections", () => ({
+  getCollectionOptions: vi.fn(),
+}));
+
 import { auth } from "@/auth";
 import {
   createItem as createItemQuery,
@@ -28,6 +32,7 @@ import {
   getItemTypeById,
   updateItem as updateItemQuery,
 } from "@/lib/db/items";
+import { getCollectionOptions } from "@/lib/db/collections";
 import { deleteFromR2, getKeyFromPublicUrl } from "@/lib/r2";
 
 const validPayload = {
@@ -37,6 +42,7 @@ const validPayload = {
   url: null,
   language: null,
   tags: [] as string[],
+  collectionIds: [] as string[],
 };
 
 describe("updateItem", () => {
@@ -95,7 +101,28 @@ describe("updateItem", () => {
 
     const result = await updateItem("item-1", validPayload);
 
+    expect(getCollectionOptions).not.toHaveBeenCalled();
     expect(updateItemQuery).toHaveBeenCalledWith("item-1", validPayload);
+    expect(result).toEqual({ success: true, data: updated });
+  });
+
+  it("drops collection ids the session user does not own", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemOwnerId).mockResolvedValue("user-1");
+    vi.mocked(getCollectionOptions).mockResolvedValue([{ id: "col-1", name: "Owned" }]);
+    const updated = { id: "item-1", title: "Updated title" };
+    vi.mocked(updateItemQuery).mockResolvedValue(updated as never);
+
+    const result = await updateItem("item-1", {
+      ...validPayload,
+      collectionIds: ["col-1", "not-owned"],
+    });
+
+    expect(getCollectionOptions).toHaveBeenCalledWith("user-1");
+    expect(updateItemQuery).toHaveBeenCalledWith("item-1", {
+      ...validPayload,
+      collectionIds: ["col-1"],
+    });
     expect(result).toEqual({ success: true, data: updated });
   });
 });
@@ -111,6 +138,7 @@ const validCreatePayload = {
   fileName: null,
   fileSize: null,
   tags: [] as string[],
+  collectionIds: [] as string[],
 };
 
 describe("createItem", () => {
@@ -172,7 +200,29 @@ describe("createItem", () => {
 
     const result = await createItem(validCreatePayload);
 
+    expect(getCollectionOptions).not.toHaveBeenCalled();
     expect(createItemQuery).toHaveBeenCalledWith({ ...validCreatePayload, userId: "user-1" });
+    expect(result).toEqual({ success: true, data: created });
+  });
+
+  it("drops collection ids the session user does not own", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "Snippet" });
+    vi.mocked(getCollectionOptions).mockResolvedValue([{ id: "col-1", name: "Owned" }]);
+    const created = { id: "item-1", title: "New title" };
+    vi.mocked(createItemQuery).mockResolvedValue(created as never);
+
+    const result = await createItem({
+      ...validCreatePayload,
+      collectionIds: ["col-1", "not-owned"],
+    });
+
+    expect(getCollectionOptions).toHaveBeenCalledWith("user-1");
+    expect(createItemQuery).toHaveBeenCalledWith({
+      ...validCreatePayload,
+      collectionIds: ["col-1"],
+      userId: "user-1",
+    });
     expect(result).toEqual({ success: true, data: created });
   });
 });

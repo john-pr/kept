@@ -9,16 +9,17 @@ import { DeleteAccountDialog } from "@/components/profile/DeleteAccountDialog";
 import { getCurrentUser } from "@/lib/db/users";
 import { getProfileStats } from "@/lib/db/stats";
 import { getItemTypes } from "@/lib/db/items";
-import { getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
+import { getCollectionOptions, getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
 import { iconMap } from "@/lib/icon-map";
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
-  const [itemTypes, favoriteCollections, recentCollections, stats] = await Promise.all([
+  const [itemTypes, favoriteCollections, recentCollections, stats, collectionOptions] = await Promise.all([
     getItemTypes(user.id),
     getFavoriteCollections(user.id),
     getRecentCollections(user.id, 6),
     getProfileStats(user.id),
+    getCollectionOptions(user.id),
   ]);
 
   const memberSince = user.createdAt.toLocaleDateString("en-US", {
@@ -33,6 +34,7 @@ export default async function ProfilePage() {
         itemTypes={itemTypes}
         favoriteCollections={favoriteCollections}
         recentCollections={recentCollections}
+        collectionOptions={collectionOptions}
         user={user}
       />
       <div className="flex min-h-0 flex-1">

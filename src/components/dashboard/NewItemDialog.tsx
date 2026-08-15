@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { CodeEditor } from "@/components/items/CodeEditor";
 import { MarkdownEditor } from "@/components/items/MarkdownEditor";
 import { FileUpload, type UploadedFile } from "@/components/items/FileUpload";
+import { CollectionMultiSelect } from "@/components/items/CollectionMultiSelect";
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ItemTypeSummary } from "@/lib/db/items";
+import type { CollectionOption } from "@/lib/db/collections";
 import { createItem } from "@/actions/items";
 import { iconMap } from "@/lib/icon-map";
 
@@ -42,6 +44,7 @@ function singularize(name: string): string {
 
 interface NewItemDialogProps {
   itemTypes: ItemTypeSummary[];
+  collectionOptions: CollectionOption[];
   trigger: ReactElement;
   children: ReactNode;
   /** Preselect and lock the type picker to this item type id (e.g. from a type-specific page). */
@@ -56,10 +59,12 @@ const EMPTY_FORM = {
   url: "",
   tags: "",
   file: null as UploadedFile | null,
+  collectionIds: [] as string[],
 };
 
 export function NewItemDialog({
   itemTypes,
+  collectionOptions,
   trigger,
   children,
   defaultItemTypeId,
@@ -112,6 +117,7 @@ export function NewItemDialog({
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0),
+      collectionIds: form.collectionIds,
     });
     setIsSaving(false);
 
@@ -264,6 +270,12 @@ export function NewItemDialog({
               onChange={(e) => setForm({ ...form, tags: e.target.value })}
             />
           </div>
+
+          <CollectionMultiSelect
+            options={collectionOptions}
+            selectedIds={form.collectionIds}
+            onChange={(collectionIds) => setForm({ ...form, collectionIds })}
+          />
         </div>
 
         <DialogFooter>

@@ -85,6 +85,19 @@ export async function getFavoriteCollections(userId: string): Promise<Collection
   return collections.map(toCollectionSummary);
 }
 
+export interface CollectionOption {
+  id: string;
+  name: string;
+}
+
+export async function getCollectionOptions(userId: string): Promise<CollectionOption[]> {
+  return prisma.collection.findMany({
+    where: { userId },
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
+}
+
 export interface CreateCollectionData {
   name: string;
   description: string | null;

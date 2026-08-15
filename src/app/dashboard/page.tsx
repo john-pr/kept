@@ -5,15 +5,16 @@ import { CollectionsSection } from "@/components/dashboard/CollectionsSection";
 import { PinnedItemsSection } from "@/components/dashboard/PinnedItemsSection";
 import { RecentItemsSection } from "@/components/dashboard/RecentItemsSection";
 import { getItemTypes } from "@/lib/db/items";
-import { getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
+import { getCollectionOptions, getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
-  const [itemTypes, favoriteCollections, recentCollections] = await Promise.all([
+  const [itemTypes, favoriteCollections, recentCollections, collectionOptions] = await Promise.all([
     getItemTypes(user.id),
     getFavoriteCollections(user.id),
     getRecentCollections(user.id, 6),
+    getCollectionOptions(user.id),
   ]);
 
   return (
@@ -22,6 +23,7 @@ export default async function DashboardPage() {
         itemTypes={itemTypes}
         favoriteCollections={favoriteCollections}
         recentCollections={recentCollections}
+        collectionOptions={collectionOptions}
         user={user}
       />
       <div className="flex min-h-0 flex-1">
