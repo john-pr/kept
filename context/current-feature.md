@@ -1,14 +1,22 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: Add Item to Collection(s)
 
 ## Status
-N/A
+Not Started
 
 ## Goals
-N/A
+- Add a multi-select "Collections" input to `NewItemDialog.tsx` (create) and `ItemDrawerEditForm.tsx` (edit) letting the user pick zero or more of their existing collections to add the item to.
+- On item create, the new item is linked (`ItemCollection`) to every selected collection.
+- On item edit/save, the item's collection membership is updated to match the selected set (add newly-checked, remove unchecked) — same connect/disconnect pattern already used for tags in `updateItem`.
+- Don't build collection detail/listing pages (`/collections/[id]`) — out of scope. This is purely about associating an item with collection(s) from the item forms.
 
 ## Notes
-N/A
+- `ItemCollection` is an explicit join table (`itemId`, `collectionId`, `addedAt`) — see `prisma/schema.prisma`. Use `connect`/`disconnect` (or `create`/`deleteMany`) on it, following the existing tag-handling pattern in `src/lib/db/items.ts`'s `updateItem` (disconnect all, then connect-or-create the new set — collections already exist here so just connect/disconnect, no create-or-connect needed).
+- Collections to choose from = the current user's own collections. Need a `userId`-scoped list of `{id, name}` (lightweight, not the full `CollectionSummary`) — add a new query function in `src/lib/db/collections.ts` if one doesn't already exist, or reuse a slimmed version.
+- `NewItemDialog.tsx` will need the collections list passed in as a prop (mirrors how it already gets item types) — check its callers (`TopBar.tsx`, `/items/[type]/page.tsx`) to thread the new prop through, since those pages already fetch collections for the sidebar/dashboard in several cases.
+- `createItem`/`createItemSchema` (`src/actions/items.ts`) and `createItem` query (`src/lib/db/items.ts`) need a new `collectionIds: string[]` field; same for `updateItem`/`updateItemSchema` and the `updateItem` query.
+- `ItemDrawer.tsx`/`ItemDrawerEditForm.tsx` already display read-only collections in view mode (`ItemDrawerView.tsx`) — edit mode needs the new multi-select input; on save, the drawer refetches via `router.refresh()` + re-fetch of item detail, so the read-only view should reflect updated collections automatically once wired.
+- Reuse existing UI patterns (shadcn checkboxes/popover-command multiselect, or a simple checkbox list) — check what's already in the component library (`src/components/ui/`) before adding a new shadcn component; ask if a multiselect combobox isn't already present and one seems warranted.
+- Add/extend unit tests in `src/actions/items.test.ts` for the new `collectionIds` handling on both `createItem` and `updateItem` actions, per the project's testing scope (server actions only, DB passthroughs stay untested).
 
 ## History
 [//]: # (keep this updated. earliest to latest)
