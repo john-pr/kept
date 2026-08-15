@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import { Star } from "lucide-react";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { ItemCard } from "@/components/dashboard/ItemCard";
 import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
 import { FileListRow } from "@/components/dashboard/FileListRow";
+import { CollectionDetailHeader } from "@/components/dashboard/CollectionDetailHeader";
 import { getItemTypes, getItemsByCollection } from "@/lib/db/items";
 import {
   getCollectionById,
@@ -55,17 +55,7 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
         />
         <main className="flex-1 overflow-y-auto p-4">
           <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-semibold text-foreground">{collection.name}</h1>
-                {collection.isFavorite && (
-                  <Star className="size-5 shrink-0 fill-yellow-400 text-yellow-400" />
-                )}
-              </div>
-              {collection.description && (
-                <p className="text-sm text-muted-foreground">{collection.description}</p>
-              )}
-            </div>
+            <CollectionDetailHeader collection={collection} />
             {items.length === 0 ? (
               <p className="text-sm text-muted-foreground">No items in this collection yet.</p>
             ) : (

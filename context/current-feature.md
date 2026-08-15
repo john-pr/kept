@@ -1,13 +1,25 @@
-# Current Feature
+# Current Feature: Collection Edit/Delete/Favorite Actions
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- On `/collections/[id]`, add Edit, Delete, and Favorite buttons/icons near the collection name.
+  - Favorite: icon/button only, not wired to any mutation yet (no favorite toggle action in this feature).
+  - Edit: opens a modal to edit the collection's metadata (name, description) — reuse the `NewCollectionDialog` pattern but as an edit form pre-filled with current values.
+  - Delete: opens a confirmation dialog (`AlertDialog`, matching `DeleteAccountDialog`/`DeleteItemDialog` pattern) before deleting. Deleting a collection must NOT delete its items — only remove the `ItemCollection` join rows (items keep existing independently, via cascade on `ItemCollection` only).
+- On `CollectionCard` (used on both `/collections` and the dashboard's recent/favorite collections grids), replace click-anywhere-navigates with:
+  - A 3-dots (`MoreVertical`/`MoreHorizontal`) icon button that opens a dropdown menu with Edit, Delete, Favorite items.
+  - Clicking anywhere else on the card still navigates to `/collections/[id]`.
+  - Edit/Delete from the card dropdown should reuse the same modal/confirmation components as the detail page (not separate implementations).
 
 ## Notes
-[//]: # (empty)
+- New server actions needed in `src/actions/collections.ts`: `updateCollection(id, data)` (Zod-validated name/description, session + ownership checked) and `deleteCollection(id)` (session + ownership checked, deletes the `Collection` row — `ItemCollection` rows cascade via the schema's `onDelete: Cascade` on that join table only, items themselves are untouched).
+- New `lib/db/collections.ts` query functions: `updateCollection`, `deleteCollection`, and an ownership-check helper if not already covered by `getCollectionById`.
+- Favorite toggle is out of scope for the underlying mutation — just render the icon/button (e.g. a star, matching `CollectionCard`'s existing favorite star styling) in a disabled or inert state, or wired to a no-op — clarify exact behavior during `start` if ambiguous.
+- `CollectionCard` becomes a client component (currently a server-renderable `Link` wrapper) since it needs a dropdown with click handlers; card navigation should stop propagation from the dropdown trigger so opening the menu doesn't also navigate.
+- Reuse existing patterns: `AlertDialog` for delete confirmation (see `DeleteItemDialog.tsx`, `DeleteAccountDialog.tsx`), `Dialog` for the edit modal (see `NewCollectionDialog.tsx`), shadcn `dropdown-menu` (already used in `UserFooter.tsx`) for the 3-dots menu.
+- `/collections/[id]/page.tsx` and both places `CollectionCard` is rendered (`/collections/page.tsx`, dashboard `CollectionsSection`) will need `router.refresh()` after edit/delete, same as existing item mutations.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

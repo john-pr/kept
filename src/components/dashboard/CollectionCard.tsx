@@ -1,23 +1,77 @@
-import Link from "next/link";
-import type { CSSProperties } from "react";
-import { Star } from "lucide-react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState, type CSSProperties, type MouseEvent } from "react";
+import { MoreVertical, Pencil, Star, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { EditCollectionDialog } from "@/components/dashboard/EditCollectionDialog";
+import { DeleteCollectionDialog } from "@/components/dashboard/DeleteCollectionDialog";
 import { iconMap } from "@/lib/icon-map";
 import type { CollectionSummary } from "@/lib/db/collections";
+import { useClickableCard } from "@/hooks/useClickableCard";
 
 export function CollectionCard({ collection }: { collection: CollectionSummary }) {
+  const router = useRouter();
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const clickableCard = useClickableCard(() => router.push(`/collections/${collection.id}`));
+
+  function stopPropagation(event: MouseEvent) {
+    event.stopPropagation();
+  }
+
   return (
-    <Link href={`/collections/${collection.id}`}>
+    <>
       <Card
-        className="h-full ring-2 transition-colors"
+        className="h-full cursor-pointer ring-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         style={{ "--tw-ring-color": collection.borderColor } as CSSProperties}
+        role="button"
+        tabIndex={0}
+        {...clickableCard}
       >
         <CardHeader>
           <CardTitle className="flex items-center justify-between gap-2">
             <span className="truncate">{collection.name}</span>
-            {collection.isFavorite && (
-              <Star className="size-4 shrink-0 fill-yellow-400 text-yellow-400" />
-            )}
+            <div className="flex shrink-0 items-center gap-1" onClick={stopPropagation}>
+              {collection.isFavorite && (
+                <Star className="size-4 fill-yellow-400 text-yellow-400" />
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-6 text-muted-foreground hover:text-foreground"
+                      aria-label="Collection actions"
+                    />
+                  }
+                >
+                  <MoreVertical className="size-3.5" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Star className="size-4" />
+                    Favorite
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                    <Pencil className="size-4" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem variant="destructive" onClick={() => setDeleteOpen(true)}>
+                    <Trash2 className="size-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col justify-between gap-3">
@@ -45,6 +99,15 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
           </div>
         </CardContent>
       </Card>
-    </Link>
+
+      <EditCollectionDialog collection={collection} open={editOpen} onOpenChange={setEditOpen} />
+      <DeleteCollectionDialog
+        collectionId={collection.id}
+        collectionName={collection.name}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onDeleted={() => router.refresh()}
+      />
+    </>
   );
 }

@@ -2,7 +2,13 @@
 
 import { z } from "zod";
 import { auth } from "@/auth";
-import { createCollection as createCollectionQuery, type CollectionSummary } from "@/lib/db/collections";
+import {
+  createCollection as createCollectionQuery,
+  deleteCollection as deleteCollectionQuery,
+  getCollectionOwnerId,
+  updateCollection as updateCollectionQuery,
+  type CollectionSummary,
+} from "@/lib/db/collections";
 
 const createCollectionSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -10,6 +16,13 @@ const createCollectionSchema = z.object({
 });
 
 export type CreateCollectionPayload = z.infer<typeof createCollectionSchema>;
+
+const updateCollectionSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  description: z.string().nullable(),
+});
+
+export type UpdateCollectionPayload = z.infer<typeof updateCollectionSchema>;
 
 interface ActionResult<T> {
   success: boolean;
@@ -32,4 +45,48 @@ export async function createCollection(
 
   const created = await createCollectionQuery({ ...parsed.data, userId: session.user.id });
   return { success: true, data: created };
+}
+
+export async function updateCollection(
+  id: string,
+  data: UpdateCollectionPayload
+): Promise<ActionResult<CollectionSummary>> {
+  const parsed = updateCollectionSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  const ownerId = await getCollectionOwnerId(id);
+  if (!ownerId) {
+    return { success: false, error: "Collection not found" };
+  }
+  if (ownerId !== session.user.id) {
+    return { success: false, error: "Not authorized to edit this collection" };
+  }
+
+  const updated = await updateCollectionQuery(id, parsed.data);
+  return { success: true, data: updated };
+}
+
+export async function deleteCollection(id: string): Promise<ActionResult<null>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  const ownerId = await getCollectionOwnerId(id);
+  if (!ownerId) {
+    return { success: false, error: "Collection not found" };
+  }
+  if (ownerId !== session.user.id) {
+    return { success: false, error: "Not authorized to delete this collection" };
+  }
+
+  await deleteCollectionQuery(id);
+  return { success: true, data: null };
 }
