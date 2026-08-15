@@ -1,13 +1,25 @@
-# Current Feature
+# Current Feature: Collections Pages
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- Add a `/collections` page listing all of the current user's collections as a grid, reusing the existing `CollectionCard` component (same as the dashboard's "Recent Collections" grid).
+- Add a `/collections/[id]` page showing a single collection's details (name, description, favorite indicator) and its items, reusing the existing `ItemCard`/`ImageThumbnailCard`/`FileListRow` cards per item type (same per-type branching already used on `/items/[type]`).
+- The sidebar's "View all collections" link (`SidebarNav.tsx`) already points at `/collections` — just needs the route to exist (currently 404s).
+- `CollectionCard` already links each card to `/collections/${collection.id}` — same, just needs the route to exist.
+- Unknown collection IDs (or collections not owned by the current user) should 404 via `notFound()`, matching `/items/[type]`'s pattern.
 
 ## Notes
-[//]: # (empty)
+- Follow the exact page shell/pattern used by `src/app/items/[type]/page.tsx` (TopBar + Sidebar, `getCurrentUser()`, `Promise.all` for itemTypes/favoriteCollections/recentCollections/collectionOptions, `mx-auto max-w-7xl` content area).
+- New `lib/db` query functions needed in `src/lib/db/collections.ts`:
+  - `getAllCollections(userId)` — all of the user's collections as `CollectionSummary[]` (reuse existing `toCollectionSummary`/`collectionWithItemsInclude`), for the `/collections` grid.
+  - `getCollectionById(id, userId)` — single collection scoped by owner (name, description, isFavorite), or `null` if not found/not owned, for the `/collections/[id]` header.
+- New query function needed in `src/lib/db/items.ts`: `getItemsByCollection(collectionId, userId)` — items belonging to a collection, scoped by owner, returning `ItemSummary[]` (mirror `getItemsByType`'s shape/signature so it slots into the same per-type-branch rendering as `/items/[type]`).
+- On `/collections/[id]`, branch item rendering per-type the same way `/items/[type]/page.tsx` does (`ImageThumbnailCard` for images, `FileListRow` for files, `ItemCard` otherwise) — a collection can contain mixed item types, so this needs to check each item's own type rather than a single page-level type like `/items/[type]` does.
+- No new server actions/mutations in scope — these are read-only list/detail pages. No schema changes.
+- Follow existing per-user data isolation pattern (queries scoped by `userId` from the start, not bolted on later).
+- Add unit tests only if genuinely testable logic lands in `src/actions/` or `src/lib/` — the new `lib/db` functions are expected to be thin Prisma passthroughs like their siblings (untested, per project convention), unless per-type item grouping logic ends up nontrivial enough to warrant a pure-function extraction.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

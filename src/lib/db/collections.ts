@@ -85,6 +85,32 @@ export async function getFavoriteCollections(userId: string): Promise<Collection
   return collections.map(toCollectionSummary);
 }
 
+export async function getAllCollections(userId: string): Promise<CollectionSummary[]> {
+  const collections = await prisma.collection.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    include: collectionWithItemsInclude,
+  });
+
+  return collections.map(toCollectionSummary);
+}
+
+export interface CollectionDetail {
+  id: string;
+  name: string;
+  description: string | null;
+  isFavorite: boolean;
+}
+
+export async function getCollectionById(id: string, userId: string): Promise<CollectionDetail | null> {
+  const collection = await prisma.collection.findFirst({
+    where: { id, userId },
+    select: { id: true, name: true, description: true, isFavorite: true },
+  });
+
+  return collection;
+}
+
 export interface CollectionOption {
   id: string;
   name: string;

@@ -42,6 +42,7 @@ export interface ItemSummary {
   tags: string[];
   isFavorite: boolean;
   isPinned: boolean;
+  typeName: string;
   typeIcon: string;
   typeColor: string;
   fileUrl: string | null;
@@ -58,7 +59,7 @@ function toItemSummary(item: {
   description: string | null;
   isFavorite: boolean;
   isPinned: boolean;
-  itemType: { icon: string; color: string };
+  itemType: { name: string; icon: string; color: string };
   tags: { name: string }[];
   fileUrl: string | null;
   fileName: string | null;
@@ -72,6 +73,7 @@ function toItemSummary(item: {
     tags: item.tags.map((tag) => tag.name),
     isFavorite: item.isFavorite,
     isPinned: item.isPinned,
+    typeName: item.itemType.name,
     typeIcon: item.itemType.icon,
     typeColor: item.itemType.color,
     fileUrl: item.fileUrl,
@@ -106,6 +108,16 @@ export async function getRecentItems(userId: string, limit = 10): Promise<ItemSu
 export async function getItemsByType(itemTypeId: string, userId: string): Promise<ItemSummary[]> {
   const items = await prisma.item.findMany({
     where: { itemTypeId, userId },
+    orderBy: { createdAt: "desc" },
+    include: { itemType: true, tags: true },
+  });
+
+  return items.map(toItemSummary);
+}
+
+export async function getItemsByCollection(collectionId: string, userId: string): Promise<ItemSummary[]> {
+  const items = await prisma.item.findMany({
+    where: { userId, collections: { some: { collectionId } } },
     orderBy: { createdAt: "desc" },
     include: { itemType: true, tags: true },
   });
