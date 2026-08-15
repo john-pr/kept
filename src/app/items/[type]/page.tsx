@@ -8,7 +8,7 @@ import { FileListRow } from "@/components/dashboard/FileListRow";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { Button } from "@/components/ui/button";
 import { getItemTypes, getItemsByType } from "@/lib/db/items";
-import { getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
+import { getCollectionOptions, getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
 
 function singularize(name: string): string {
@@ -23,10 +23,11 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
   const { type: slug } = await params;
 
   const user = await getCurrentUser();
-  const [itemTypes, favoriteCollections, recentCollections] = await Promise.all([
+  const [itemTypes, favoriteCollections, recentCollections, collectionOptions] = await Promise.all([
     getItemTypes(user.id),
     getFavoriteCollections(user.id),
     getRecentCollections(user.id, 6),
+    getCollectionOptions(user.id),
   ]);
 
   const typeSummary = itemTypes.find((type) => type.slug === slug);
@@ -43,6 +44,7 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
         itemTypes={itemTypes}
         favoriteCollections={favoriteCollections}
         recentCollections={recentCollections}
+        collectionOptions={collectionOptions}
         user={user}
       />
       <div className="flex min-h-0 flex-1">
@@ -60,6 +62,7 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
               </h1>
               <NewItemDialog
                 itemTypes={itemTypes}
+                collectionOptions={collectionOptions}
                 defaultItemTypeId={typeSummary.id}
                 trigger={<Button />}
               >

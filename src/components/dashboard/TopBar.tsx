@@ -6,17 +6,24 @@ import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { NewCollectionDialog } from "@/components/dashboard/NewCollectionDialog";
 import type { ItemTypeSummary } from "@/lib/db/items";
-import type { CollectionSummary } from "@/lib/db/collections";
+import type { CollectionOption, CollectionSummary } from "@/lib/db/collections";
 import type { CurrentUser } from "@/lib/db/users";
 
 interface TopBarProps {
   itemTypes: ItemTypeSummary[];
   favoriteCollections: CollectionSummary[];
   recentCollections: CollectionSummary[];
+  collectionOptions: CollectionOption[];
   user: CurrentUser;
 }
 
-export function TopBar({ itemTypes, favoriteCollections, recentCollections, user }: TopBarProps) {
+export function TopBar({
+  itemTypes,
+  favoriteCollections,
+  recentCollections,
+  collectionOptions,
+  user,
+}: TopBarProps) {
   return (
     <header className="flex flex-col gap-3 border-b border-border px-4 py-3 md:grid md:grid-cols-3 md:items-center md:gap-4">
       <div className="flex items-center justify-between gap-2 md:justify-start">
@@ -45,6 +52,7 @@ export function TopBar({ itemTypes, favoriteCollections, recentCollections, user
           </NewCollectionDialog>
           <NewItemDialog
             itemTypes={itemTypes}
+            collectionOptions={collectionOptions}
             trigger={<Button size="icon-sm" aria-label="New Item" />}
           >
             <Plus />
@@ -62,7 +70,7 @@ export function TopBar({ itemTypes, favoriteCollections, recentCollections, user
           <FolderPlus />
           New Collection
         </NewCollectionDialog>
-        <NewItemDialog itemTypes={itemTypes} trigger={<Button />}>
+        <NewItemDialog itemTypes={itemTypes} collectionOptions={collectionOptions} trigger={<Button />}>
           <Plus />
           New Item
         </NewItemDialog>

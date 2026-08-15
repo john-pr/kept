@@ -11,7 +11,15 @@ import {
   updateItem as updateItemQuery,
   type ItemDetail,
 } from "@/lib/db/items";
+import { getCollectionOptions } from "@/lib/db/collections";
 import { deleteFromR2, getKeyFromPublicUrl } from "@/lib/r2";
+
+async function getOwnedCollectionIds(userId: string, collectionIds: string[]): Promise<string[]> {
+  if (collectionIds.length === 0) return [];
+  const owned = await getCollectionOptions(userId);
+  const ownedIds = new Set(owned.map((collection) => collection.id));
+  return collectionIds.filter((id) => ownedIds.has(id));
+}
 
 const updateItemSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -20,6 +28,7 @@ const updateItemSchema = z.object({
   url: z.union([z.string().trim().url("Invalid URL"), z.null()]),
   language: z.string().nullable(),
   tags: z.array(z.string().trim().min(1)),
+  collectionIds: z.array(z.string().trim().min(1)),
 });
 
 export type UpdateItemPayload = z.infer<typeof updateItemSchema>;
@@ -35,6 +44,7 @@ const createItemSchema = z.object({
   fileName: z.string().nullable(),
   fileSize: z.number().nullable(),
   tags: z.array(z.string().trim().min(1)),
+  collectionIds: z.array(z.string().trim().min(1)),
 });
 
 export type CreateItemPayload = z.infer<typeof createItemSchema>;
@@ -67,7 +77,9 @@ export async function updateItem(
     return { success: false, error: "Not authorized to edit this item" };
   }
 
-  const updated = await updateItemQuery(itemId, parsed.data);
+  const collectionIds = await getOwnedCollectionIds(session.user.id, parsed.data.collectionIds);
+
+  const updated = await updateItemQuery(itemId, { ...parsed.data, collectionIds });
   return { success: true, data: updated };
 }
 
@@ -94,7 +106,9 @@ export async function createItem(data: CreateItemPayload): Promise<ActionResult<
     return { success: false, error: "A file upload is required" };
   }
 
-  const created = await createItemQuery({ ...parsed.data, userId: session.user.id });
+  const collectionIds = await getOwnedCollectionIds(session.user.id, parsed.data.collectionIds);
+
+  const created = await createItemQuery({ ...parsed.data, collectionIds, userId: session.user.id });
   return { success: true, data: created };
 }
 

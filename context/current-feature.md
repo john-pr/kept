@@ -1,7 +1,7 @@
 # Current Feature: Add Item to Collection(s)
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
 - Add a multi-select "Collections" input to `NewItemDialog.tsx` (create) and `ItemDrawerEditForm.tsx` (edit) letting the user pick zero or more of their existing collections to add the item to.

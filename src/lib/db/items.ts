@@ -144,6 +144,7 @@ export interface UpdateItemInput {
   url: string | null;
   language: string | null;
   tags: string[];
+  collectionIds: string[];
 }
 
 export async function updateItem(id: string, data: UpdateItemInput): Promise<ItemDetail> {
@@ -161,6 +162,10 @@ export async function updateItem(id: string, data: UpdateItemInput): Promise<Ite
           where: { name },
           create: { name },
         })),
+      },
+      collections: {
+        deleteMany: {},
+        create: data.collectionIds.map((collectionId) => ({ collectionId })),
       },
     },
     include: {
@@ -214,6 +219,7 @@ export interface CreateItemInput {
   tags: string[];
   itemTypeId: string;
   userId: string;
+  collectionIds: string[];
 }
 
 export async function createItem(data: CreateItemInput): Promise<ItemDetail> {
@@ -235,6 +241,9 @@ export async function createItem(data: CreateItemInput): Promise<ItemDetail> {
           where: { name },
           create: { name },
         })),
+      },
+      collections: {
+        create: data.collectionIds.map((collectionId) => ({ collectionId })),
       },
     },
     include: {

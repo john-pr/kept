@@ -1,14 +1,15 @@
 "use client";
 
 import { Save, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CodeEditor } from "@/components/items/CodeEditor";
 import { MarkdownEditor } from "@/components/items/MarkdownEditor";
+import { CollectionMultiSelect } from "@/components/items/CollectionMultiSelect";
 import type { ItemDetailResponse, EditFormState } from "@/components/items/ItemDrawer";
+import type { CollectionOption } from "@/lib/db/collections";
 
 interface ItemDrawerEditFormProps {
   item: ItemDetailResponse;
@@ -18,6 +19,7 @@ interface ItemDrawerEditFormProps {
   showLanguage: boolean;
   showMarkdown: boolean;
   showUrl: boolean;
+  collectionOptions: CollectionOption[];
   isSaving: boolean;
   onSave: () => void;
   onCancel: () => void;
@@ -31,6 +33,7 @@ export function ItemDrawerEditForm({
   showLanguage,
   showMarkdown,
   showUrl,
+  collectionOptions,
   isSaving,
   onSave,
   onCancel,
@@ -128,18 +131,11 @@ export function ItemDrawerEditForm({
         <p className="text-sm text-muted-foreground">{item.itemType.name}</p>
       </div>
 
-      {item.collections.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-foreground">Collections</h4>
-          <div className="flex flex-wrap gap-1.5">
-            {item.collections.map((collection) => (
-              <Badge key={collection.id} variant="secondary">
-                {collection.name}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
+      <CollectionMultiSelect
+        options={collectionOptions}
+        selectedIds={form.collectionIds}
+        onChange={(collectionIds) => setForm({ ...form, collectionIds })}
+      />
     </>
   );
 }
