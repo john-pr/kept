@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
+import { NewCollectionDialog } from "@/components/dashboard/NewCollectionDialog";
 import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionSummary } from "@/lib/db/collections";
 import type { CurrentUser } from "@/lib/db/users";
@@ -37,9 +38,11 @@ export function TopBar({ itemTypes, favoriteCollections, recentCollections, user
           </Link>
         </div>
         <div className="flex items-center gap-2 md:hidden">
-          <Button variant="outline" size="icon-sm" aria-label="New Collection">
+          <NewCollectionDialog
+            trigger={<Button variant="outline" size="icon-sm" aria-label="New Collection" />}
+          >
             <FolderPlus />
-          </Button>
+          </NewCollectionDialog>
           <NewItemDialog
             itemTypes={itemTypes}
             trigger={<Button size="icon-sm" aria-label="New Item" />}
@@ -55,10 +58,10 @@ export function TopBar({ itemTypes, favoriteCollections, recentCollections, user
       </div>
 
       <div className="hidden items-center justify-end gap-2 md:flex">
-        <Button variant="outline">
+        <NewCollectionDialog trigger={<Button variant="outline" />}>
           <FolderPlus />
           New Collection
-        </Button>
+        </NewCollectionDialog>
         <NewItemDialog itemTypes={itemTypes} trigger={<Button />}>
           <Plus />
           New Item

@@ -84,3 +84,22 @@ export async function getFavoriteCollections(userId: string): Promise<Collection
 
   return collections.map(toCollectionSummary);
 }
+
+export interface CreateCollectionData {
+  name: string;
+  description: string | null;
+  userId: string;
+}
+
+export async function createCollection(data: CreateCollectionData): Promise<CollectionSummary> {
+  const collection = await prisma.collection.create({
+    data: {
+      name: data.name,
+      description: data.description,
+      userId: data.userId,
+    },
+    include: collectionWithItemsInclude,
+  });
+
+  return toCollectionSummary(collection);
+}

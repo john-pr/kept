@@ -1,14 +1,21 @@
-# Current Feature
-None — awaiting next feature/fix.
+# Current Feature: Collection Create
 
 ## Status
-N/A
+In Progress
 
 ## Goals
-N/A
+- Add a `createCollection` server action (`src/actions/collections.ts`), following the exact pattern of `createItem` in `src/actions/items.ts`: Zod-validates `{ name, description }` (name required trimmed, description string-or-null), checks the session via `auth()`, calls a new `createCollection` query in `src/lib/db/collections.ts`, returns `ActionResult<CollectionSummary>`.
+- Add `createCollection(data)` to `src/lib/db/collections.ts` — a thin Prisma passthrough (`prisma.collection.create`) scoped to `userId`, returning a `CollectionSummary` (reuse `toCollectionSummary`, itemCount 0 / no types on creation).
+- Wire up the already-present but unwired "New Collection" buttons in `TopBar.tsx` (desktop `FolderPlus` button + mobile icon-only button) to open a new `NewCollectionDialog` client component (`src/components/dashboard/NewCollectionDialog.tsx`), modeled on `NewItemDialog.tsx`: shadcn `Dialog` with `name` (required) and `description` (optional, textarea) fields, Create button disabled while name is empty or saving.
+- On save: call the `createCollection` server action, toast success/error via `sonner` (matching `NewItemDialog`'s toast pattern), close dialog, and `router.refresh()` so the collections grid/sidebar reflect the new collection immediately.
+- Collections must remain user-scoped end-to-end — no unscoped queries, matching the existing per-user data isolation fix.
 
 ## Notes
-N/A
+- Follow the item-creation pattern exactly: this project uses a `"use server"` Server Action (`src/actions/items.ts` / `createItem`) for item creation, not an API route — despite the request mentioning "api routes for any client-side calls," the actual established pattern for *mutations* in this codebase is Server Actions (per `context/coding-standards.md`: "Use Server Actions for form submissions and simple mutations"). API routes are reserved for things like webhooks/uploads/downloads. Collections should follow the same Server Action pattern as items for consistency — flag this deviation from the literal request if it comes up in review.
+- `CollectionSummary` (`src/lib/db/collections.ts`) already has the shape needed for card rendering (`id`, `name`, `description`, `isFavorite`, `itemCount`, `borderColor`, `types`) — a freshly created collection will just have `itemCount: 0`, `types: []`, `borderColor: "var(--border)"`.
+- No schema changes needed — `Collection.name`/`description` already exist in the Prisma schema.
+- Add unit tests for the new `createCollection` server action in `src/actions/collections.test.ts`, following `src/actions/items.test.ts`'s pattern (Zod-rejection, no-session, happy path). The new `lib/db/collections.ts` query function stays untested as a thin Prisma passthrough, matching the project's existing pattern.
+- Out of scope: editing/deleting collections, adding items to a collection at creation time, favoriting on create.
 
 ## History
 [//]: # (keep this updated. earliest to latest)
