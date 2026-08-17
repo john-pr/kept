@@ -1,20 +1,13 @@
-# Current Feature: Pinned Items
+# Current Feature
 
 ## Status
-In Progress
+Not Started
 
 ## Goals
-- Add a `toggleItemPin` server action (mirrors the existing `toggleItemFavorite` in `src/actions/items.ts`: session-checked, ownership-checked via `getItemOwnerId`, thin `setItemPin`-style Prisma passthrough in `src/lib/db/items.ts`)
-- Wire the existing (currently static/unwired) Pin button in `ItemDrawerView.tsx` to call it, threaded through `ItemDrawer.tsx` like `onToggleFavorite`
-- Optimistic local state update on click, reverting with an error toast on failure — same pattern as the favorite toggle
-- Toast notification on success/error (`sonner`)
-- Pinned items sort to the top wherever items are listed (item type listings, collection pages, dashboard's pinned/recent sections, favorites, search, etc. — anywhere `isPinned` is already read)
-- Items only — no pin concept for collections
-- `ItemCard`'s pin icon stays a static/display-only indicator (no click handler added there), unlike the favorite star which is already interactive on cards
+[//]: # (empty)
 
 ## Notes
-- Follows the Favorite Toggle feature's pattern closely (see `toggleItemFavorite`/`setItemFavorite` in `src/actions/items.ts` / `src/lib/db/items.ts`, and `ItemDrawerView.tsx`'s `onToggleFavorite` prop wiring) — reuse the same shape/structure for pin instead of favorite.
-- `Item.isPinned` already exists on the schema (no migration needed) and is already read by `PinnedItemsSection`/dashboard queries; check whether those queries need explicit sort-by-`isPinned` ordering added for other listings (item type pages, collection pages) per the "sort to top" requirement.
+[//]: # (empty)
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -110,3 +103,4 @@ In Progress
 - 2026-08-17: Documented Favorites Page Sorting spec — client-side sort control (Name/Date/Item Type) for `FavoritesList.tsx`.
 - 2026-08-17: Completed Favorites Page Sorting — added a "Sort by" `Select` inline with the "Items"/"Collections" section heading on `/favorites` with five options: Newest, Oldest, Name A-Z, Name Z-A, and Item Type (defaults to Newest); iterated through several rounds of feedback — colored the item-type text as a bordered pill matching each item's type color (icon was already colored), fixed the `Select` trigger showing the raw lowercase enum value instead of the matched option's label (this project's base-ui `SelectValue` needs an explicit `children` render function, unlike Radix — a `FAVORITES_SORT_LABELS` lookup fixes it), set `alignItemWithTrigger={false}` on `SelectContent` so the dropdown opens directly below the trigger instead of vertically aligning the selected item with it, and moved the control from a standalone "Sort by" bar into the Items section heading row itself (falls back to the Collections heading if there are no favorited items). Extracted the sort comparators into `src/lib/favorites-sort.ts` (`sortFavoriteItems`, `sortFavoriteCollections`, plus the shared `FavoritesSortOption` type/options/labels) since the logic grew genuine branching worth covering, matching the project's pattern for extracting pure functions (`item-grouping.ts`, `search-preview.ts`); added `src/lib/favorites-sort.test.ts` (11 tests covering all five sort options for both items and collections, the collections' "type→name" fallback, and a no-mutation check) — while extracting, caught and fixed a real bug in a shared `byDate` helper that had a leftover unused parameter, which had silently broken collections' newest/oldest sort (caught by both the TypeScript build and the new tests). Collections have no item type, so "Item Type" falls back to sorting them by name. No schema changes, no new server actions. Build (24 routes), lint, and test (119/119) pass. Merged `feature/favorites-sorting` into `master` and deleted the branch locally.
 - 2026-08-17: Documented Pinned Items spec.
+- 2026-08-17: Completed Pinned Items — added `toggleItemPin` server action (`src/actions/items.ts`, session-checked, ownership-checked via `getItemOwnerId`) and `setItemPin` thin Prisma passthrough (`src/lib/db/items.ts`), mirroring the existing `toggleItemFavorite`/`setItemFavorite` pair; wired the previously static Pin button in `ItemDrawerView.tsx` via a new `onTogglePin` prop threaded from `ItemDrawer.tsx`, with optimistic local state update, revert-on-failure, and success/error toasts; per follow-up feedback, the Favorite and Pin buttons in the drawer's action bar now show icon+text ("Favorite"/"Unfavorite", "Pin"/"Unpin") instead of icon-only, matching the Download/Copy buttons' style. Pinned items now sort to the top via `orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }]` in `getRecentItems`, `getItemsByType`, and `getItemsByCollection` (`src/lib/db/items.ts`) — `getPinnedItems` didn't need it since it already filters to `isPinned: true` only. Items only, no collection pinning; `ItemCard`'s pin icon stays a static/display-only indicator per spec. Added 4 new unit tests to `src/actions/items.test.ts` covering `toggleItemPin` (no-session, not-found, ownership-mismatch, happy path) — `setItemPin` and the `orderBy` changes stay untested as thin Prisma passthroughs/pure ordering with no branching logic, matching the project's existing pattern. Build (24 routes), lint, and test (123/123) pass. Merged `feature/pinned-items` into `master` and deleted the branch locally.
