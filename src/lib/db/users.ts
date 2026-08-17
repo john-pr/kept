@@ -1,5 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
+import { parseEditorPreferences, type EditorPreferences } from "@/lib/editor-preferences";
 
 export interface CurrentUser {
   id: string;
@@ -30,4 +32,26 @@ export async function getCurrentUser(): Promise<CurrentUser> {
     createdAt: user.createdAt,
     hasPassword: user.password !== null,
   };
+}
+
+export async function getEditorPreferences(userId: string): Promise<EditorPreferences> {
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: userId },
+    select: { editorPreferences: true },
+  });
+
+  return parseEditorPreferences(user.editorPreferences);
+}
+
+export async function updateEditorPreferences(
+  userId: string,
+  preferences: EditorPreferences
+): Promise<EditorPreferences> {
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: { editorPreferences: preferences as unknown as Prisma.InputJsonValue },
+    select: { editorPreferences: true },
+  });
+
+  return parseEditorPreferences(user.editorPreferences);
 }

@@ -1,13 +1,29 @@
-# Current Feature
+# Current Feature: Editor Preferences Settings
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- Add an "Editor Preferences" section to `/settings`
+- Font size dropdown
+- Tab size dropdown
+- Word wrap toggle (default: on)
+- Minimap toggle (default: off)
+- Theme dropdown: `vs-dark`, `monokai`, `github-dark` (default: `vs-dark`)
+- Persist preferences in a JSON column `editorPreferences` on `User`
+- Create and run a Prisma migration for the new column (never `db push`)
+- Create a server action to update preferences
+- Apply the saved preferences to the Monaco `CodeEditor` component
+- Auto-save on change (no explicit save button)
+- Show a success toast on save
+- Create an `EditorPreferencesContext` for client components to consume the current preferences
 
 ## Notes
-[//]: # (empty)
+- Source spec: `context/features/editor-settings-spec.md`
+- `CodeEditor` (`src/components/items/CodeEditor.tsx`) currently hardcodes `vs-dark` theme and other Monaco options — this feature should thread preferences into it.
+- Monaco only ships `vs-dark`/`light`/`hc-black`/`hc-light` themes natively; `monokai`/`github-dark` will need custom Monaco themes defined (e.g. via `monaco.editor.defineTheme`) since they aren't built in.
+- Follow existing server action pattern (`src/actions/items.ts`, `src/actions/collections.ts`): Zod validation, session check via `auth()`, `{success, data/error}` return shape.
+- Settings page already exists (`src/app/settings/page.tsx`) with Security/Danger Zone cards — add Editor Preferences as a new card there.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

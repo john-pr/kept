@@ -3,6 +3,7 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChangePasswordSection } from "@/components/settings/ChangePasswordSection";
 import { DeleteAccountDialog } from "@/components/settings/DeleteAccountDialog";
+import { EditorPreferencesSection } from "@/components/settings/EditorPreferencesSection";
 import { getCurrentUser } from "@/lib/db/users";
 import { getAllItemsForSearch, getItemTypes } from "@/lib/db/items";
 import {
@@ -51,6 +52,18 @@ export default async function SettingsPage() {
         <main className="flex-1 overflow-y-auto p-4">
           <div className="mx-auto max-w-3xl space-y-8 px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Editor Preferences</CardTitle>
+                <CardDescription>
+                  Customize how the code editor looks and behaves. Changes save automatically.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EditorPreferencesSection />
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
