@@ -1,23 +1,13 @@
-# Current Feature: Favorites Page
+# Current Feature
 
 ## Status
-In Progress
+Not Started
 
 ## Goals
-- Add a star icon button to `TopBar` linking to `/favorites`
-- Create a protected `/favorites` route (add to `proxy.ts` matcher, same pattern as `/collections`, `/settings`, etc.)
-- Fetch all of the current user's favorite items and favorite collections
-- Render a compact, dev-focused list view (VS Code/terminal style — not cards)
-- Each row shows: type icon, title, type badge, date added
-- Separate "Items" and "Collections" sections, each with a count
-- Clicking an item opens `ItemDrawer` (via `useItemDrawer().openItem(id)`); clicking a collection navigates to `/collections/[id]`
-- Empty state when there are no favorites
-- Sort each section by most recently favorited (`updatedAt`)
+[//]: # (empty)
 
 ## Notes
-- UI style: monospace or semi-monospace font, minimal padding, high density, subtle hover states, no cards/heavy borders — clean lines only
-- Reuse existing patterns: `getFavoriteCollections` (`src/lib/db/collections.ts`) already exists for the sidebar — likely needs a variant/reuse for the full list; will need a new favorite-items query in `src/lib/db/items.ts` (userId-scoped, `isFavorite: true`, ordered by `updatedAt` desc)
-- Reuse `getItemTypes`/icon-map conventions for per-item type icons and badges already used elsewhere (`ItemCard`, `GlobalSearch`)
+[//]: # (empty)
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -107,3 +97,4 @@ In Progress
 - 2026-08-17: Documented Editor Preferences Settings spec.
 - 2026-08-17: Completed Editor Preferences Settings — added `editorPreferences Json?` to `User` (migration `20260817083230_add_editor_preferences_to_user`, applied via `prisma migrate dev`); `src/lib/editor-preferences.ts` defines the type, defaults (fontSize 13, tabSize 2, wordWrap on, minimap off, theme `vs-dark`), and a pure `parseEditorPreferences` that merges/validates untrusted JSON field-by-field; `getEditorPreferences`/`updateEditorPreferences` (`src/lib/db/users.ts`) are thin Prisma passthroughs; new server action `updateEditorPreferences` (`src/actions/editor-preferences.ts`, Zod-validated, session-checked, `{success, data/error}` shape matching `items.ts`/`collections.ts`); new `GET /api/editor-preferences` route (returns defaults for unauthenticated requests rather than 401, since it's a background prefetch) feeds a new globally-mounted `EditorPreferencesProvider`/`useEditorPreferences()` context (`src/components/editor/`, alongside `ItemDrawerProvider` in root layout) that optimistically applies changes and reverts + toasts on save failure. `CodeEditor.tsx` now reads the context for theme/fontSize/tabSize/wordWrap/minimap, and registers `monokai`/`github-dark` as custom Monaco themes via `beforeMount` (Monaco only ships `vs-dark`/`light`/`hc-black`/`hc-light` natively). New "Editor Preferences" card on `/settings` (`EditorPreferencesSection.tsx`, new shadcn `switch` component) with font size/tab size/theme dropdowns and word wrap/minimap toggles, auto-saving on every change via the context (no save button), toasting success/error. Added `src/lib/editor-preferences.test.ts` (6 tests: defaults fallback for null/non-object/empty/malformed input, full valid passthrough, unknown-theme rejection) and `src/actions/editor-preferences.test.ts` (4 tests: Zod-rejection, no-session, happy path) — the `lib/db/users.ts` query functions stay untested as thin Prisma passthroughs, matching the project's existing pattern. Build (23 routes), lint, and test (100/100) pass. Merged `feature/editor-preferences-settings` into `master` and deleted the branch locally.
 - 2026-08-17: Documented Favorites Page spec.
+- 2026-08-17: Completed Favorites Page — added `getFavoriteItems` (`src/lib/db/items.ts`) and `getFavoriteCollectionsList` (`src/lib/db/collections.ts`), both thin `userId`-scoped Prisma passthroughs sorted by `updatedAt` desc; new `/favorites` page (protected via `proxy.ts` matcher) rendered in the same TopBar/Sidebar shell as the other authenticated pages; new `FavoritesList` client component renders a compact monospace, terminal-style list (no cards, thin dividers, subtle hover) with separate "Items (N)"/"Collections (N)" sections, each row showing type icon, title/name, type badge or item count, and date; reuses `useItemDrawer().openItem(id)` for item clicks and `router.push` to `/collections/[id]` for collection clicks, both via the existing `useClickableCard` hook; empty state when there are no favorites. Added a star icon button (mobile + desktop) to `TopBar.tsx` linking to `/favorites`, using the project's `render={<Link/>}` + `nativeButton={false}` base-ui Button-as-link pattern (matching `PaginationLink`). No new tests — both `lib/db` functions are thin Prisma passthroughs with no branching logic, matching the project's existing untested pattern for this kind of query. Build (24 routes), lint, and test (100/100) pass. Merged `feature/favorites-page` into `master` and deleted the branch locally.
