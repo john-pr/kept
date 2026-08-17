@@ -1,13 +1,18 @@
-# Current Feature
+# Current Feature: Favorites Page Sorting
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- Add a client-side sort control to the `/favorites` page (`FavoritesList.tsx`) letting the user sort by Name, Date, or Item Type.
+- Sort control affects both the Items and Collections sections (no server round-trip, no `router.refresh()` — pure client-side re-sort of the already-fetched arrays).
+- Default sort stays as-is (currently `updatedAt` desc, as returned by `getFavoriteItems`/`getFavoriteCollectionsList`) unless the user picks a different option.
 
 ## Notes
-[//]: # (empty)
+- Sort options: Name (A-Z), Date (newest first, using `updatedAt`), Type (A-Z by `typeName`).
+- Collections have no item type — when "Type" is selected, sort collections by name instead (documented fallback, not a bug).
+- Implement with a small shadcn `Select` (matches existing patterns, e.g. `NewItemDialog.tsx`) placed above the list, likely in `FavoritesList.tsx` itself (already `"use client"`) using `useState` + `useMemo` for the sorted arrays — no new server action or `lib/db` query needed since `getFavoriteItems`/`getFavoriteCollectionsList` already fetch everything.
+- No schema changes. No new tests expected (UI-only client-side sort logic in a component, outside the `src/actions/`/`src/lib/` testing scope) unless the sort comparator gets extracted into a `src/lib/` utility, in which case add unit tests for it per the project's existing pattern.
 
 ## History
 [//]: # (keep this updated. earliest to latest)
