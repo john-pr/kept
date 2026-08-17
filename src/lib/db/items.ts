@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { toSearchPreview } from "@/lib/search-preview";
 
 export interface ItemTypeSummary {
   id: string;
@@ -307,6 +308,39 @@ export async function getItemForDeletion(id: string): Promise<ItemDeletionInfo |
     select: { userId: true, fileUrl: true },
   });
   return item;
+}
+
+export interface ItemSearchEntry {
+  id: string;
+  title: string;
+  contentPreview: string;
+  typeName: string;
+  typeIcon: string;
+  typeColor: string;
+}
+
+export async function getAllItemsForSearch(userId: string): Promise<ItemSearchEntry[]> {
+  const items = await prisma.item.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      url: true,
+      description: true,
+      itemType: { select: { name: true, icon: true, color: true } },
+    },
+  });
+
+  return items.map((item) => ({
+    id: item.id,
+    title: item.title,
+    contentPreview: toSearchPreview(item.content ?? item.url ?? item.description ?? ""),
+    typeName: item.itemType.name,
+    typeIcon: item.itemType.icon,
+    typeColor: item.itemType.color,
+  }));
 }
 
 export async function getItemById(id: string, userId: string): Promise<ItemDetail | null> {

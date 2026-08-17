@@ -8,18 +8,33 @@ import { ChangePasswordSection } from "@/components/profile/ChangePasswordSectio
 import { DeleteAccountDialog } from "@/components/profile/DeleteAccountDialog";
 import { getCurrentUser } from "@/lib/db/users";
 import { getProfileStats } from "@/lib/db/stats";
-import { getItemTypes } from "@/lib/db/items";
-import { getCollectionOptions, getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
+import { getAllItemsForSearch, getItemTypes } from "@/lib/db/items";
+import {
+  getCollectionOptions,
+  getCollectionsForSearch,
+  getFavoriteCollections,
+  getRecentCollections,
+} from "@/lib/db/collections";
 import { iconMap } from "@/lib/icon-map";
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
-  const [itemTypes, favoriteCollections, recentCollections, stats, collectionOptions] = await Promise.all([
+  const [
+    itemTypes,
+    favoriteCollections,
+    recentCollections,
+    stats,
+    collectionOptions,
+    searchItems,
+    searchCollections,
+  ] = await Promise.all([
     getItemTypes(user.id),
     getFavoriteCollections(user.id),
     getRecentCollections(user.id, 6),
     getProfileStats(user.id),
     getCollectionOptions(user.id),
+    getAllItemsForSearch(user.id),
+    getCollectionsForSearch(user.id),
   ]);
 
   const memberSince = user.createdAt.toLocaleDateString("en-US", {
@@ -35,6 +50,8 @@ export default async function ProfilePage() {
         favoriteCollections={favoriteCollections}
         recentCollections={recentCollections}
         collectionOptions={collectionOptions}
+        searchItems={searchItems}
+        searchCollections={searchCollections}
         user={user}
       />
       <div className="flex min-h-0 flex-1">

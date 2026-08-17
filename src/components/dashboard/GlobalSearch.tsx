@@ -1,0 +1,152 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Search, FolderOpen, CornerDownLeft, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
+import { iconMap } from "@/lib/icon-map";
+import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
+import type { ItemSearchEntry } from "@/lib/db/items";
+import type { CollectionSearchEntry } from "@/lib/db/collections";
+
+interface GlobalSearchProps {
+  items: ItemSearchEntry[];
+  collections: CollectionSearchEntry[];
+}
+
+export function GlobalSearch({ items, collections }: GlobalSearchProps) {
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const { openItem } = useItemDrawer();
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        setOpen((prev) => !prev);
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  function handleSelectItem(id: string) {
+    setOpen(false);
+    openItem(id);
+  }
+
+  function handleSelectCollection(id: string) {
+    setOpen(false);
+    router.push(`/collections/${id}`);
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="flex h-9 w-full items-center gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm text-muted-foreground shadow-xs transition-colors hover:bg-accent/50"
+      >
+        <Search className="size-4 shrink-0" />
+        <span className="flex-1 text-left">Search items, collections, tags...</span>
+        <CommandShortcut className="hidden sm:inline">⌘K</CommandShortcut>
+      </button>
+
+      <CommandDialog open={open} onOpenChange={setOpen} title="Search" description="Search items and collections">
+        <Command>
+          <CommandInput placeholder="Search items, collections, tags..." />
+          <CommandList className="max-h-96 px-1 pb-1">
+            <CommandEmpty className="flex flex-col items-center gap-2 py-10 text-sm text-muted-foreground">
+              <Search className="size-5 opacity-50" />
+              No results found.
+            </CommandEmpty>
+            {items.length > 0 && (
+              <CommandGroup heading="Items">
+                {items.map((item) => {
+                  const Icon = iconMap[item.typeIcon];
+                  return (
+                    <CommandItem
+                      key={item.id}
+                      value={`${item.title} ${item.contentPreview} ${item.typeName}`}
+                      onSelect={() => handleSelectItem(item.id)}
+                      className="gap-3 py-2"
+                    >
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted">
+                        {Icon && <Icon className="size-3.5" style={{ color: item.typeColor }} />}
+                      </span>
+                      <span className="truncate">{item.title}</span>
+                      <Badge
+                        variant="outline"
+                        data-slot="command-shortcut"
+                        className="ml-auto shrink-0 text-muted-foreground"
+                      >
+                        {item.typeName}
+                      </Badge>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            )}
+            {items.length > 0 && collections.length > 0 && <CommandSeparator className="my-1" />}
+            {collections.length > 0 && (
+              <CommandGroup heading="Collections">
+                {collections.map((collection) => (
+                  <CommandItem
+                    key={collection.id}
+                    value={collection.name}
+                    onSelect={() => handleSelectCollection(collection.id)}
+                    className="gap-3 py-2"
+                  >
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted">
+                      <FolderOpen className="size-3.5 text-muted-foreground" />
+                    </span>
+                    <span className="truncate">{collection.name}</span>
+                    <span
+                      data-slot="command-shortcut"
+                      className="ml-auto shrink-0 text-xs text-muted-foreground"
+                    >
+                      {collection.itemCount} {collection.itemCount === 1 ? "item" : "items"}
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+          </CommandList>
+          <div className="flex items-center gap-4 border-t border-border px-3 py-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <kbd className="flex size-4 items-center justify-center rounded border border-border bg-muted">
+                <ArrowUp className="size-2.5" />
+              </kbd>
+              <kbd className="flex size-4 items-center justify-center rounded border border-border bg-muted">
+                <ArrowDown className="size-2.5" />
+              </kbd>
+              Navigate
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="flex size-4 items-center justify-center rounded border border-border bg-muted">
+                <CornerDownLeft className="size-2.5" />
+              </kbd>
+              Select
+            </span>
+            <span className="ml-auto flex items-center gap-1">
+              <kbd className="rounded border border-border bg-muted px-1">esc</kbd>
+              Close
+            </span>
+          </div>
+        </Command>
+      </CommandDialog>
+    </>
+  );
+}

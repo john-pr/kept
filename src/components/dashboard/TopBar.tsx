@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Search, FolderPlus, Plus, Code } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { FolderPlus, Plus, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { NewCollectionDialog } from "@/components/dashboard/NewCollectionDialog";
-import type { ItemTypeSummary } from "@/lib/db/items";
-import type { CollectionOption, CollectionSummary } from "@/lib/db/collections";
+import { GlobalSearch } from "@/components/dashboard/GlobalSearch";
+import type { ItemSearchEntry, ItemTypeSummary } from "@/lib/db/items";
+import type { CollectionOption, CollectionSearchEntry, CollectionSummary } from "@/lib/db/collections";
 import type { CurrentUser } from "@/lib/db/users";
 
 interface TopBarProps {
@@ -14,6 +14,8 @@ interface TopBarProps {
   favoriteCollections: CollectionSummary[];
   recentCollections: CollectionSummary[];
   collectionOptions: CollectionOption[];
+  searchItems: ItemSearchEntry[];
+  searchCollections: CollectionSearchEntry[];
   user: CurrentUser;
 }
 
@@ -22,6 +24,8 @@ export function TopBar({
   favoriteCollections,
   recentCollections,
   collectionOptions,
+  searchItems,
+  searchCollections,
   user,
 }: TopBarProps) {
   return (
@@ -60,9 +64,8 @@ export function TopBar({
         </div>
       </div>
 
-      <div className="relative w-full md:mx-auto md:max-w-md">
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Search items, collections, tags..." className="pl-9" />
+      <div className="w-full md:mx-auto md:max-w-md">
+        <GlobalSearch items={searchItems} collections={searchCollections} />
       </div>
 
       <div className="hidden items-center justify-end gap-2 md:flex">

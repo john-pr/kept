@@ -5,10 +5,11 @@ import { ItemCard } from "@/components/dashboard/ItemCard";
 import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
 import { FileListRow } from "@/components/dashboard/FileListRow";
 import { CollectionDetailHeader } from "@/components/dashboard/CollectionDetailHeader";
-import { getItemTypes, getItemsByCollection } from "@/lib/db/items";
+import { getAllItemsForSearch, getItemTypes, getItemsByCollection } from "@/lib/db/items";
 import {
   getCollectionById,
   getCollectionOptions,
+  getCollectionsForSearch,
   getFavoriteCollections,
   getRecentCollections,
 } from "@/lib/db/collections";
@@ -23,14 +24,23 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
   const { id } = await params;
 
   const user = await getCurrentUser();
-  const [itemTypes, favoriteCollections, recentCollections, collectionOptions, collection] =
-    await Promise.all([
-      getItemTypes(user.id),
-      getFavoriteCollections(user.id),
-      getRecentCollections(user.id, 6),
-      getCollectionOptions(user.id),
-      getCollectionById(id, user.id),
-    ]);
+  const [
+    itemTypes,
+    favoriteCollections,
+    recentCollections,
+    collectionOptions,
+    collection,
+    searchItems,
+    searchCollections,
+  ] = await Promise.all([
+    getItemTypes(user.id),
+    getFavoriteCollections(user.id),
+    getRecentCollections(user.id, 6),
+    getCollectionOptions(user.id),
+    getCollectionById(id, user.id),
+    getAllItemsForSearch(user.id),
+    getCollectionsForSearch(user.id),
+  ]);
 
   if (!collection) notFound();
 
@@ -44,6 +54,8 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
         favoriteCollections={favoriteCollections}
         recentCollections={recentCollections}
         collectionOptions={collectionOptions}
+        searchItems={searchItems}
+        searchCollections={searchCollections}
         user={user}
       />
       <div className="flex min-h-0 flex-1">

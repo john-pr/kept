@@ -4,18 +4,26 @@ import { StatsCards } from "@/components/dashboard/StatsCards";
 import { CollectionsSection } from "@/components/dashboard/CollectionsSection";
 import { PinnedItemsSection } from "@/components/dashboard/PinnedItemsSection";
 import { RecentItemsSection } from "@/components/dashboard/RecentItemsSection";
-import { getItemTypes } from "@/lib/db/items";
-import { getCollectionOptions, getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
+import { getAllItemsForSearch, getItemTypes } from "@/lib/db/items";
+import {
+  getCollectionOptions,
+  getCollectionsForSearch,
+  getFavoriteCollections,
+  getRecentCollections,
+} from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
-  const [itemTypes, favoriteCollections, recentCollections, collectionOptions] = await Promise.all([
-    getItemTypes(user.id),
-    getFavoriteCollections(user.id),
-    getRecentCollections(user.id, 6),
-    getCollectionOptions(user.id),
-  ]);
+  const [itemTypes, favoriteCollections, recentCollections, collectionOptions, searchItems, searchCollections] =
+    await Promise.all([
+      getItemTypes(user.id),
+      getFavoriteCollections(user.id),
+      getRecentCollections(user.id, 6),
+      getCollectionOptions(user.id),
+      getAllItemsForSearch(user.id),
+      getCollectionsForSearch(user.id),
+    ]);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -24,6 +32,8 @@ export default async function DashboardPage() {
         favoriteCollections={favoriteCollections}
         recentCollections={recentCollections}
         collectionOptions={collectionOptions}
+        searchItems={searchItems}
+        searchCollections={searchCollections}
         user={user}
       />
       <div className="flex min-h-0 flex-1">

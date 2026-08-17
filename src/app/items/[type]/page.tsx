@@ -7,8 +7,13 @@ import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
 import { FileListRow } from "@/components/dashboard/FileListRow";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { Button } from "@/components/ui/button";
-import { getItemTypes, getItemsByType } from "@/lib/db/items";
-import { getCollectionOptions, getFavoriteCollections, getRecentCollections } from "@/lib/db/collections";
+import { getAllItemsForSearch, getItemTypes, getItemsByType } from "@/lib/db/items";
+import {
+  getCollectionOptions,
+  getCollectionsForSearch,
+  getFavoriteCollections,
+  getRecentCollections,
+} from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
 
 function singularize(name: string): string {
@@ -23,12 +28,15 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
   const { type: slug } = await params;
 
   const user = await getCurrentUser();
-  const [itemTypes, favoriteCollections, recentCollections, collectionOptions] = await Promise.all([
-    getItemTypes(user.id),
-    getFavoriteCollections(user.id),
-    getRecentCollections(user.id, 6),
-    getCollectionOptions(user.id),
-  ]);
+  const [itemTypes, favoriteCollections, recentCollections, collectionOptions, searchItems, searchCollections] =
+    await Promise.all([
+      getItemTypes(user.id),
+      getFavoriteCollections(user.id),
+      getRecentCollections(user.id, 6),
+      getCollectionOptions(user.id),
+      getAllItemsForSearch(user.id),
+      getCollectionsForSearch(user.id),
+    ]);
 
   const typeSummary = itemTypes.find((type) => type.slug === slug);
 
@@ -45,6 +53,8 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
         favoriteCollections={favoriteCollections}
         recentCollections={recentCollections}
         collectionOptions={collectionOptions}
+        searchItems={searchItems}
+        searchCollections={searchCollections}
         user={user}
       />
       <div className="flex min-h-0 flex-1">
