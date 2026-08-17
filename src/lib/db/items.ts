@@ -331,6 +331,10 @@ export async function deleteItem(id: string): Promise<void> {
   await prisma.item.delete({ where: { id } });
 }
 
+export async function setItemFavorite(id: string, isFavorite: boolean): Promise<void> {
+  await prisma.item.update({ where: { id }, data: { isFavorite } });
+}
+
 export interface ItemDeletionInfo {
   userId: string;
   fileUrl: string | null;

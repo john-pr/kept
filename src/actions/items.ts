@@ -8,6 +8,7 @@ import {
   getItemForDeletion,
   getItemOwnerId,
   getItemTypeById,
+  setItemFavorite,
   updateItem as updateItemQuery,
   type ItemDetail,
 } from "@/lib/db/items";
@@ -135,4 +136,25 @@ export async function deleteItem(itemId: string): Promise<ActionResult<null>> {
 
   await deleteItemQuery(itemId);
   return { success: true, data: null };
+}
+
+export async function toggleItemFavorite(
+  itemId: string,
+  isFavorite: boolean
+): Promise<ActionResult<{ isFavorite: boolean }>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  const ownerId = await getItemOwnerId(itemId);
+  if (!ownerId) {
+    return { success: false, error: "Item not found" };
+  }
+  if (ownerId !== session.user.id) {
+    return { success: false, error: "Not authorized to edit this item" };
+  }
+
+  await setItemFavorite(itemId, isFavorite);
+  return { success: true, data: { isFavorite } };
 }

@@ -17,6 +17,7 @@ interface ItemDrawerViewProps {
   isDeleting: boolean;
   onCopy: () => void;
   onDownload: () => void;
+  onToggleFavorite: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -29,6 +30,7 @@ export function ItemDrawerView({
   isDeleting,
   onCopy,
   onDownload,
+  onToggleFavorite,
   onEdit,
   onDelete,
 }: ItemDrawerViewProps) {
@@ -46,7 +48,12 @@ export function ItemDrawerView({
             Copy
           </Button>
         )}
-        <Button variant="outline" size="icon-sm">
+        <Button
+          variant="outline"
+          size="icon-sm"
+          onClick={onToggleFavorite}
+          title={item.isFavorite ? "Unfavorite" : "Favorite"}
+        >
           <Star className={item.isFavorite ? "size-4 fill-yellow-400 text-yellow-400" : "size-4"} />
         </Button>
         <Button variant="outline" size="icon-sm">

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, type CSSProperties, type MouseEvent } from "react";
 import { MoreVertical, Pencil, Star, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,15 +17,27 @@ import { DeleteCollectionDialog } from "@/components/dashboard/DeleteCollectionD
 import { iconMap } from "@/lib/icon-map";
 import type { CollectionSummary } from "@/lib/db/collections";
 import { useClickableCard } from "@/hooks/useClickableCard";
+import { toggleCollectionFavorite } from "@/actions/collections";
 
 export function CollectionCard({ collection }: { collection: CollectionSummary }) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(collection.isFavorite);
   const clickableCard = useClickableCard(() => router.push(`/collections/${collection.id}`));
 
   function stopPropagation(event: MouseEvent) {
     event.stopPropagation();
+  }
+
+  async function handleToggleFavorite() {
+    const next = !isFavorite;
+    setIsFavorite(next);
+    const result = await toggleCollectionFavorite(collection.id, next);
+    if (!result.success) {
+      setIsFavorite(!next);
+      toast.error(result.error ?? "Failed to update favorite");
+    }
   }
 
   return (
@@ -40,9 +53,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
           <CardTitle className="flex items-center justify-between gap-2">
             <span className="truncate">{collection.name}</span>
             <div className="flex shrink-0 items-center gap-1" onClick={stopPropagation}>
-              {collection.isFavorite && (
-                <Star className="size-4 fill-yellow-400 text-yellow-400" />
-              )}
+              {isFavorite && <Star className="size-4 fill-yellow-400 text-yellow-400" />}
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
@@ -57,9 +68,9 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
                   <MoreVertical className="size-3.5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleToggleFavorite}>
                     <Star className="size-4" />
-                    Favorite
+                    {isFavorite ? "Unfavorite" : "Favorite"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setEditOpen(true)}>
                     <Pencil className="size-4" />

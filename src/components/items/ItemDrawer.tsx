@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { iconMap } from "@/lib/icon-map";
 import type { ItemDetail } from "@/lib/db/items";
 import type { CollectionOption } from "@/lib/db/collections";
-import { deleteItem, updateItem } from "@/actions/items";
+import { deleteItem, toggleItemFavorite, updateItem } from "@/actions/items";
 import { ItemDrawerView } from "@/components/items/ItemDrawerView";
 import { ItemDrawerEditForm } from "@/components/items/ItemDrawerEditForm";
 
@@ -161,6 +161,19 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     }
   }
 
+  async function handleToggleFavorite() {
+    if (!item) return;
+
+    const next = !item.isFavorite;
+    setItem({ ...item, isFavorite: next });
+    const result = await toggleItemFavorite(item.id, next);
+    if (!result.success) {
+      setItem((current) => (current ? { ...current, isFavorite: !next } : current));
+      toast.error(result.error ?? "Failed to update favorite");
+    }
+    router.refresh();
+  }
+
   async function handleDelete() {
     if (!item) return;
 
@@ -232,6 +245,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   isDeleting={isDeleting}
                   onCopy={handleCopy}
                   onDownload={handleDownload}
+                  onToggleFavorite={handleToggleFavorite}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                 />
