@@ -9,6 +9,7 @@ import {
   getItemOwnerId,
   getItemTypeById,
   setItemFavorite,
+  setItemPin,
   updateItem as updateItemQuery,
   type ItemDetail,
 } from "@/lib/db/items";
@@ -157,4 +158,25 @@ export async function toggleItemFavorite(
 
   await setItemFavorite(itemId, isFavorite);
   return { success: true, data: { isFavorite } };
+}
+
+export async function toggleItemPin(
+  itemId: string,
+  isPinned: boolean
+): Promise<ActionResult<{ isPinned: boolean }>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  const ownerId = await getItemOwnerId(itemId);
+  if (!ownerId) {
+    return { success: false, error: "Item not found" };
+  }
+  if (ownerId !== session.user.id) {
+    return { success: false, error: "Not authorized to edit this item" };
+  }
+
+  await setItemPin(itemId, isPinned);
+  return { success: true, data: { isPinned } };
 }

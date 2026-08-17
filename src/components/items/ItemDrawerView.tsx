@@ -18,6 +18,7 @@ interface ItemDrawerViewProps {
   onCopy: () => void;
   onDownload: () => void;
   onToggleFavorite: () => void;
+  onTogglePin: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -31,6 +32,7 @@ export function ItemDrawerView({
   onCopy,
   onDownload,
   onToggleFavorite,
+  onTogglePin,
   onEdit,
   onDelete,
 }: ItemDrawerViewProps) {
@@ -48,16 +50,13 @@ export function ItemDrawerView({
             Copy
           </Button>
         )}
-        <Button
-          variant="outline"
-          size="icon-sm"
-          onClick={onToggleFavorite}
-          title={item.isFavorite ? "Unfavorite" : "Favorite"}
-        >
+        <Button variant="outline" size="sm" onClick={onToggleFavorite}>
           <Star className={item.isFavorite ? "size-4 fill-yellow-400 text-yellow-400" : "size-4"} />
+          {item.isFavorite ? "Unfavorite" : "Favorite"}
         </Button>
-        <Button variant="outline" size="icon-sm">
+        <Button variant="outline" size="sm" onClick={onTogglePin}>
           <Pin className={item.isPinned ? "size-4 fill-current" : "size-4"} />
+          {item.isPinned ? "Unpin" : "Pin"}
         </Button>
         <Button
           variant="outline"

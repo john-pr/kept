@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { iconMap } from "@/lib/icon-map";
 import type { ItemDetail } from "@/lib/db/items";
 import type { CollectionOption } from "@/lib/db/collections";
-import { deleteItem, toggleItemFavorite, updateItem } from "@/actions/items";
+import { deleteItem, toggleItemFavorite, toggleItemPin, updateItem } from "@/actions/items";
 import { ItemDrawerView } from "@/components/items/ItemDrawerView";
 import { ItemDrawerEditForm } from "@/components/items/ItemDrawerEditForm";
 
@@ -174,6 +174,21 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     router.refresh();
   }
 
+  async function handleTogglePin() {
+    if (!item) return;
+
+    const next = !item.isPinned;
+    setItem({ ...item, isPinned: next });
+    const result = await toggleItemPin(item.id, next);
+    if (!result.success) {
+      setItem((current) => (current ? { ...current, isPinned: !next } : current));
+      toast.error(result.error ?? "Failed to update pin");
+    } else {
+      toast.success(next ? "Item pinned" : "Item unpinned");
+    }
+    router.refresh();
+  }
+
   async function handleDelete() {
     if (!item) return;
 
@@ -246,6 +261,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   onCopy={handleCopy}
                   onDownload={handleDownload}
                   onToggleFavorite={handleToggleFavorite}
+                  onTogglePin={handleTogglePin}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                 />

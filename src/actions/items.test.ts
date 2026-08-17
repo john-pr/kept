@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { createItem, deleteItem, toggleItemFavorite, updateItem } from "./items";
+import { createItem, deleteItem, toggleItemFavorite, toggleItemPin, updateItem } from "./items";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -12,6 +12,7 @@ vi.mock("@/lib/db/items", () => ({
   createItem: vi.fn(),
   deleteItem: vi.fn(),
   setItemFavorite: vi.fn(),
+  setItemPin: vi.fn(),
   getItemTypeById: vi.fn(),
 }));
 
@@ -32,6 +33,7 @@ import {
   getItemOwnerId,
   getItemTypeById,
   setItemFavorite,
+  setItemPin,
   updateItem as updateItemQuery,
 } from "@/lib/db/items";
 import { getCollectionOptions } from "@/lib/db/collections";
@@ -333,5 +335,50 @@ describe("toggleItemFavorite", () => {
 
     expect(setItemFavorite).toHaveBeenCalledWith("item-1", true);
     expect(result).toEqual({ success: true, data: { isFavorite: true } });
+  });
+});
+
+describe("toggleItemPin", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns an error when there is no session", async () => {
+    vi.mocked(auth).mockResolvedValue(null);
+
+    const result = await toggleItemPin("item-1", true);
+
+    expect(result).toEqual({ success: false, error: "Not authenticated" });
+    expect(getItemOwnerId).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the item does not exist", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemOwnerId).mockResolvedValue(null);
+
+    const result = await toggleItemPin("item-1", true);
+
+    expect(result).toEqual({ success: false, error: "Item not found" });
+    expect(setItemPin).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the session user does not own the item", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemOwnerId).mockResolvedValue("someone-else");
+
+    const result = await toggleItemPin("item-1", true);
+
+    expect(result).toEqual({ success: false, error: "Not authorized to edit this item" });
+    expect(setItemPin).not.toHaveBeenCalled();
+  });
+
+  it("sets the pinned flag when auth and ownership both pass", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemOwnerId).mockResolvedValue("user-1");
+
+    const result = await toggleItemPin("item-1", true);
+
+    expect(setItemPin).toHaveBeenCalledWith("item-1", true);
+    expect(result).toEqual({ success: true, data: { isPinned: true } });
   });
 });

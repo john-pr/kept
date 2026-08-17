@@ -106,7 +106,7 @@ export async function getRecentItems(
   const items = await prisma.item.findMany({
     where: { userId },
     take: limit,
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
     include: { itemType: true, tags: true },
   });
 
@@ -128,7 +128,7 @@ export async function getItemsByType(
   const [items, totalCount] = await Promise.all([
     prisma.item.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
       include: { itemType: true, tags: true },
       skip,
       take,
@@ -149,7 +149,7 @@ export async function getItemsByCollection(
   const [items, totalCount] = await Promise.all([
     prisma.item.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
       include: { itemType: true, tags: true },
       skip,
       take,
@@ -333,6 +333,10 @@ export async function deleteItem(id: string): Promise<void> {
 
 export async function setItemFavorite(id: string, isFavorite: boolean): Promise<void> {
   await prisma.item.update({ where: { id }, data: { isFavorite } });
+}
+
+export async function setItemPin(id: string, isPinned: boolean): Promise<void> {
+  await prisma.item.update({ where: { id }, data: { isPinned } });
 }
 
 export interface ItemDeletionInfo {
