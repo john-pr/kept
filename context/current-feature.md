@@ -1,29 +1,13 @@
-# Current Feature: Editor Preferences Settings
+# Current Feature
 
 ## Status
-In Progress
+Not Started
 
 ## Goals
-- Add an "Editor Preferences" section to `/settings`
-- Font size dropdown
-- Tab size dropdown
-- Word wrap toggle (default: on)
-- Minimap toggle (default: off)
-- Theme dropdown: `vs-dark`, `monokai`, `github-dark` (default: `vs-dark`)
-- Persist preferences in a JSON column `editorPreferences` on `User`
-- Create and run a Prisma migration for the new column (never `db push`)
-- Create a server action to update preferences
-- Apply the saved preferences to the Monaco `CodeEditor` component
-- Auto-save on change (no explicit save button)
-- Show a success toast on save
-- Create an `EditorPreferencesContext` for client components to consume the current preferences
+[//]: # (empty)
 
 ## Notes
-- Source spec: `context/features/editor-settings-spec.md`
-- `CodeEditor` (`src/components/items/CodeEditor.tsx`) currently hardcodes `vs-dark` theme and other Monaco options — this feature should thread preferences into it.
-- Monaco only ships `vs-dark`/`light`/`hc-black`/`hc-light` themes natively; `monokai`/`github-dark` will need custom Monaco themes defined (e.g. via `monaco.editor.defineTheme`) since they aren't built in.
-- Follow existing server action pattern (`src/actions/items.ts`, `src/actions/collections.ts`): Zod validation, session check via `auth()`, `{success, data/error}` return shape.
-- Settings page already exists (`src/app/settings/page.tsx`) with Security/Danger Zone cards — add Editor Preferences as a new card there.
+[//]: # (empty)
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -110,3 +94,5 @@ In Progress
 - 2026-08-17: Completed Pagination — added `src/lib/constants.ts` (`ITEMS_PER_PAGE`/`COLLECTIONS_PER_PAGE = 21`, `DASHBOARD_COLLECTIONS_LIMIT = 6`, `DASHBOARD_RECENT_ITEMS_LIMIT = 10`) and `src/lib/pagination.ts` (`getPageCount`, `getPageSkip`, `getValidPage`, `getPaginationRange` — a windowed page-number list with ellipsis collapsing, 15 unit tests in `pagination.test.ts`); added the shadcn `pagination` component (`src/components/ui/pagination.tsx`, switched its links to `next/link` and added a `disabled` prop for prev/next) plus a `PaginationControls` wrapper (`src/components/dashboard/PaginationControls.tsx`) reading `?page=` and rendering nothing when there's only one page. `getItemsByType`/`getItemsByCollection` (`src/lib/db/items.ts`) and `getAllCollections` (`src/lib/db/collections.ts`) now take `skip`/`take` and return `{items/collections, totalCount}` instead of fetching every row; wired `?page=` + `PaginationControls` into `/items/[type]`, `/collections`, and `/collections/[id]` (the latter paginates the collection's combined item list via `skip`/`take` before splitting into Items/Images/Files sections, rather than paginating each section separately). Dashboard's `PinnedItemsSection`/`RecentItemsSection` now default to `DASHBOARD_RECENT_ITEMS_LIMIT` (was 10/9), and `getRecentCollections` defaults to `DASHBOARD_COLLECTIONS_LIMIT` (was a literal 6) used consistently across `dashboard`, `items/[type]`, `collections`, and `collections/[id]`. Verified in the browser via Playwright MCP (seeded 25 temporary "Pagination Test" snippets/collections for the demo user, cleaned up after): found and fixed a hydration mismatch in `PaginationLink` — base-ui `Button`'s hardcoded `data-slot="button"` and the `render`-prop `Link`'s own `data-slot` resolved differently server vs. client — fixed by passing `data-slot`/`disabled` as literal props on `<Button>` itself so base-ui's own `useButton`/`useFocusableWhenDisabled` compute `tabIndex`/`aria-disabled` consistently, instead of manually spreading those onto the nested `Link`. Confirmed page 1/2 navigation, prev/next enabling/disabling at boundaries, and correct item counts across `/items/snippets`, `/collections`, and `/collections/[id]` — zero console errors after the fix. Build (20 routes), lint, and test (90/90) pass. Merged `feature/pagination` into `master` and deleted the branch locally.
 - 2026-08-17: Documented Settings Page spec — new protected `/settings` page, "Settings" link in the user dropdown, moving the change-password/delete-account cards off `/profile`.
 - 2026-08-17: Completed Settings Page — added `src/app/settings/page.tsx`, a new protected page rendered in the same TopBar/Sidebar shell as the other authenticated pages, fetching the same item-types/collections/search props as `/profile`; `proxy.ts` matcher now also protects `/settings/:path*`; `UserFooter.tsx`'s avatar dropdown gained a "Settings" item (linking to `/settings`) between "Profile" and "Sign out". Moved the Security (`ChangePasswordSection`/`ChangePasswordForm`) and Danger Zone (`DeleteAccountDialog`) cards from `/profile` to `/settings` — relocated the three components from `src/components/profile/` to `src/components/settings/` for naming consistency (import path updated, no logic changes) and removed the two cards from `profile/page.tsx`, which now shows identity/usage content only. Confirmed "forgot password" in the request meant the existing change-password action, not the separate `/forgot-password` flow. No schema changes, no new server actions/utilities — reused the existing session-authenticated `change-password`/`delete-account` API routes as-is, so no new tests were needed (nothing added under `src/actions/` or `src/lib/`). Build (22 routes), lint, and test (90/90) pass. Merged `feature/settings-page` into `master` and deleted the branch locally.
+- 2026-08-17: Documented Editor Preferences Settings spec.
+- 2026-08-17: Completed Editor Preferences Settings — added `editorPreferences Json?` to `User` (migration `20260817083230_add_editor_preferences_to_user`, applied via `prisma migrate dev`); `src/lib/editor-preferences.ts` defines the type, defaults (fontSize 13, tabSize 2, wordWrap on, minimap off, theme `vs-dark`), and a pure `parseEditorPreferences` that merges/validates untrusted JSON field-by-field; `getEditorPreferences`/`updateEditorPreferences` (`src/lib/db/users.ts`) are thin Prisma passthroughs; new server action `updateEditorPreferences` (`src/actions/editor-preferences.ts`, Zod-validated, session-checked, `{success, data/error}` shape matching `items.ts`/`collections.ts`); new `GET /api/editor-preferences` route (returns defaults for unauthenticated requests rather than 401, since it's a background prefetch) feeds a new globally-mounted `EditorPreferencesProvider`/`useEditorPreferences()` context (`src/components/editor/`, alongside `ItemDrawerProvider` in root layout) that optimistically applies changes and reverts + toasts on save failure. `CodeEditor.tsx` now reads the context for theme/fontSize/tabSize/wordWrap/minimap, and registers `monokai`/`github-dark` as custom Monaco themes via `beforeMount` (Monaco only ships `vs-dark`/`light`/`hc-black`/`hc-light` natively). New "Editor Preferences" card on `/settings` (`EditorPreferencesSection.tsx`, new shadcn `switch` component) with font size/tab size/theme dropdowns and word wrap/minimap toggles, auto-saving on every change via the context (no save button), toasting success/error. Added `src/lib/editor-preferences.test.ts` (6 tests: defaults fallback for null/non-object/empty/malformed input, full valid passthrough, unknown-theme rejection) and `src/actions/editor-preferences.test.ts` (4 tests: Zod-rejection, no-session, happy path) — the `lib/db/users.ts` query functions stay untested as thin Prisma passthroughs, matching the project's existing pattern. Build (23 routes), lint, and test (100/100) pass. Merged `feature/editor-preferences-settings` into `master` and deleted the branch locally.
