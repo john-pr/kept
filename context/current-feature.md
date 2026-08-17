@@ -1,24 +1,13 @@
-# Current Feature: Global Search / Command Palette
+# Current Feature
 
 ## Status
-In Progress
+Not Started
 
 ## Goals
-- Open a global command palette with Cmd+K (Mac) / Ctrl+K (Windows)
-- Fuzzy search across all items and collections, client-side (no server round-trips)
-- Grouped results: Items section, Collections section
-- Full keyboard navigation (arrow keys, Enter to select)
-- Show item type icon and collection item count in results
-- Selecting an item opens its drawer; selecting a collection navigates to its page
-- TopBar search input opens the palette on click
-- TopBar search input placeholder shows a ⌘K hint
+[//]: # (empty)
 
 ## Notes
-- Use shadcn `cmdk`-based `Command` component (likely needs `npx shadcn@latest add command`, similar to `command`/`popover` already used by `CollectionMultiSelect`).
-- Pre-fetch searchable data on app load: items (id, title, type, content preview) and collections (id, name, itemCount).
-- Reuse existing data fetching functions (`src/lib/db/items.ts`, `src/lib/db/collections.ts`) rather than writing new queries where possible — scope by `userId` per the existing per-user data isolation pattern.
-- Opening an item's drawer should reuse `ItemDrawerProvider`'s `useItemDrawer().openItem(id)` (see item-drawer-spec.md) instead of navigating.
-- No schema changes expected.
+[//]: # (empty)
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -100,4 +89,5 @@ In Progress
 - 2026-08-15: Documented Collections Pages spec — `/collections` list page and `/collections/[id]` detail page, reusing `CollectionCard`/`ItemCard`/`ImageThumbnailCard`/`FileListRow`, wiring up the previously dead sidebar "View all collections" link and `CollectionCard`'s per-card link.
 - 2026-08-15: Completed Collections Pages — added `getAllCollections(userId)` and `getCollectionById(id, userId)` to `src/lib/db/collections.ts`, and `getItemsByCollection(collectionId, userId)` plus a new `typeName` field on `ItemSummary` (needed to branch rendering per item type) to `src/lib/db/items.ts`, all scoped by owner; new `/collections` page lists all of the user's collections in the same grid as the dashboard's "Recent Collections" (`CollectionCard`); new `/collections/[id]` page shows the collection's name/description/favorite star and its items split into three labeled sections — Items (`ItemCard`), Images (`ImageThumbnailCard`), Files (`FileListRow`) — since a collection can mix item types, unlike `/items/[type]`'s single-type page; unknown/non-owned IDs 404 via `notFound()`. `proxy.ts` now protects `/collections/:path*` alongside the other authenticated routes. While verifying in the browser, found that comparing `item.typeName === "image"`/`"file"` case-sensitively never matched because `ItemType.name` is stored capitalized ("Image"/"File") rather than lowercase like `prisma/seed.ts` defines it (likely from items created via the UI rather than the seed script) — fixed by extracting the per-type bucketing into a new `groupItemsByType` pure function (`src/lib/item-grouping.ts`) that lowercases before comparing, matching every other type-name comparison already in the codebase; added `src/lib/item-grouping.test.ts` (4 tests, including the case-insensitivity regression) since this is genuine branching logic worth covering, per the spec's own note about extracting per-type grouping if it got nontrivial — the new `lib/db` query functions stay untested as thin Prisma passthroughs, matching the project's existing pattern. Build (21/21 pages), lint, and test (60/60) pass. Merged `feature/collection-edit-delete-favorite` into `master` and deleted the branch locally.
 - 2026-08-17: Documented Global Search / Command Palette spec
+- 2026-08-17: Completed Global Search / Command Palette — added `getAllItemsForSearch` (`src/lib/db/items.ts`) and `getCollectionsForSearch` (`src/lib/db/collections.ts`), both lightweight, `userId`-scoped queries feeding a new `GlobalSearch` client component (`src/components/dashboard/GlobalSearch.tsx`) built on the existing shadcn `Command`/`cmdk` primitives; opens via Cmd+K/Ctrl+K (global `keydown` listener) or by clicking the TopBar search input (now a styled button showing a ⌘K hint), with grouped "Items"/"Collections" results, per-item type icons, a right-aligned type badge/item count, a keyboard-hint footer (↑↓ Navigate, ↵ Select, esc Close), and an empty state; selecting an item opens its drawer via the existing `useItemDrawer().openItem(id)`, selecting a collection navigates to `/collections/[id]`; fuzzy filtering is `cmdk`'s built-in client-side matcher, no server round-trips. Threaded `searchItems`/`searchCollections` props through `TopBar.tsx` and all four pages that render it (`dashboard`, `items/[type]`, `collections`, `collections/[id]`, `profile`). Fixed two bugs found during manual testing: (1) this project's `CommandDialog` (`src/components/ui/command.tsx`) doesn't wrap its children in `<Command>` itself (unlike upstream shadcn), so `GlobalSearch` was missing that provider, throwing "Cannot read properties of undefined (reading 'subscribe')" — fixed by wrapping `CommandInput`/`CommandList` in `<Command>`; (2) typing into the search box froze the UI because `CommandItem`'s `value` (used for fuzzy scoring on every keystroke) carried each item's full raw content — for large snippets/notes this made `cmdk` re-score thousands of characters per item per keystroke — fixed by extracting a `toSearchPreview` helper (`src/lib/search-preview.ts`) that collapses whitespace/newlines and truncates to 200 chars server-side before the content ever reaches the client. Also fixed a right-edge alignment issue: `CommandItem` reserves space for a built-in (normally invisible) trailing checkmark icon used for multi-select UIs, which was pushing the type badge/item-count away from the container's true right edge — fixed by adding `data-slot="command-shortcut"` to those trailing elements, which the component recognizes to hide the checkmark and its reserved space entirely. Added `src/lib/search-preview.test.ts` (6 tests: short text passthrough, whitespace/newline collapsing, trimming, truncation + ellipsis, exact-boundary length, empty string) since `toSearchPreview` has genuine branching logic worth covering, matching the project's pattern for extracted pure functions (`item-grouping.ts`, `file-icon.ts`); `getAllItemsForSearch`/`getCollectionsForSearch` stay untested as thin Prisma passthroughs. Build (20 routes), lint, and test (75/75) pass. Merged `feature/global-search` into `master` and deleted the branch locally.
 </content>
