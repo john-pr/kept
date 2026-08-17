@@ -1,13 +1,21 @@
-# Current Feature
+# Current Feature: Homepage
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- Replace the redirect-only `/` route: signed-in users still `redirect("/dashboard")`; signed-out users see a real marketing homepage.
+- Build the homepage from `prototypes/homepage/` (index.html/styles.css/script.js) using Tailwind v4 + shadcn/ui, matching the rest of the app (no hand-written CSS file, reuse existing theme tokens/fonts).
+- Split into server components (static sections: Hero, Features, AI, Pricing copy, Final CTA, Footer) and client components only where interactivity is needed (`HomeNav` scroll/mobile menu, `ChaosToOrder` animation, `PricingToggle`, `ScrollFadeIn`).
+- Use real `ItemType` accent colors and `lucide-react` icons (via `src/lib/icon-map.ts`) instead of the prototype's placeholder palette/inline SVGs.
+- Wire all buttons/links to real destinations per the spec's link table (Sign In → `/sign-in`, Get Started/Go Pro → `/register`, Features/Pricing → in-page anchors, About/Contact/Privacy/Terms stay as `#` placeholders).
+- Keep code clean and DRY (e.g. shared `ScrollFadeIn` wrapper instead of duplicated IntersectionObserver logic per section).
 
 ## Notes
-[//]: # (empty)
+- Full spec: `context/features/homepage-spec.md`.
+- No Stripe/billing wiring, no new About/Contact/Privacy/Terms pages, no live AI features in the AI section mockup (static, like the prototype).
+- `prototypes/homepage/` stays as-is (reference only) — do not delete it.
+- No server actions or `src/lib` utilities expected; only add tests if a genuine pure helper gets extracted (e.g. yearly price formatting).
 
 ## History
 [//]: # (keep this updated. earliest to latest)

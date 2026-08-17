@@ -41,7 +41,7 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
             <Settings className="size-4" />
             Settings
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/sign-in" })}>
+          <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
             <LogOut className="size-4" />
             Sign out
           </DropdownMenuItem>
