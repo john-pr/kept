@@ -1,28 +1,13 @@
-# Current Feature: Homepage Mockup
+# Current Feature
 
 ## Status
-In Progress
+Not Started
 
 ## Goals
-- Build a standalone marketing homepage prototype at `prototypes/homepage/` (`index.html`, `styles.css`, `script.js`) — not part of the Next.js app.
-- Dark theme using the item-type accent palette: Snippet `#3b82f6`, Prompt `#f59e0b`, Command `#06b6d4`, Note `#22c55e`, File `#64748b`, Image `#ec4899`, URL `#6366f1`.
-- Hero section (main focus): "chaos to order" concept —
-  - Left: "Your knowledge today..." box with 8 floating icons (Notion, GitHub, Slack, VS Code, browser tabs, terminal, text file, bookmark) that drift/bounce off walls, subtly rotate/pulse, and repel from the mouse cursor (requestAnimationFrame).
-  - Center: pulsing arrow (CSS animation) pointing from chaos to order.
-  - Right: "...with DevStash" simplified dashboard mockup (sidebar nav + item card grid with colored top borders matching item-type colors).
-- Nav: fixed top nav, logo, Features/Pricing links, Sign In/Get Started buttons; gets more opaque on scroll.
-- Hero text above the visual: "Stop Losing Your Developer Knowledge" gradient headline, subheadline, CTA buttons.
-- Features section: 6 cards (Code Snippets, AI Prompts, Instant Search, Commands, Files & Docs, Collections), each in its item-type accent color.
-- AI section: two columns — left "Pro Feature" badge + AI capability checklist; right code-editor mockup demoing "AI Generated Tags".
-- Pricing section: Free ($0, 50 items, 3 collections) vs Pro ($8/mo, unlimited, AI features) with "Most Popular" badge on Pro, plus a monthly/yearly ($72) toggle.
-- Final CTA: "Ready to Organize Your Knowledge?" with button.
-- Footer: logo, link columns, copyright with current year.
-- Scroll-triggered fade-in animations for sections.
-- Responsive: chaos/arrow/dashboard stack vertically on mobile (single-column grids), arrow rotates 90° to point down.
+[//]: # (empty)
 
 ## Notes
-- This is a static prototype/mockup, separate from the main Next.js app — plain HTML/CSS/JS, no framework, no build step, no server data.
-- Full spec: `context/features/homepage-mockup-spec.md`.
+[//]: # (empty)
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -119,3 +104,5 @@ In Progress
 - 2026-08-17: Completed Favorites Page Sorting — added a "Sort by" `Select` inline with the "Items"/"Collections" section heading on `/favorites` with five options: Newest, Oldest, Name A-Z, Name Z-A, and Item Type (defaults to Newest); iterated through several rounds of feedback — colored the item-type text as a bordered pill matching each item's type color (icon was already colored), fixed the `Select` trigger showing the raw lowercase enum value instead of the matched option's label (this project's base-ui `SelectValue` needs an explicit `children` render function, unlike Radix — a `FAVORITES_SORT_LABELS` lookup fixes it), set `alignItemWithTrigger={false}` on `SelectContent` so the dropdown opens directly below the trigger instead of vertically aligning the selected item with it, and moved the control from a standalone "Sort by" bar into the Items section heading row itself (falls back to the Collections heading if there are no favorited items). Extracted the sort comparators into `src/lib/favorites-sort.ts` (`sortFavoriteItems`, `sortFavoriteCollections`, plus the shared `FavoritesSortOption` type/options/labels) since the logic grew genuine branching worth covering, matching the project's pattern for extracting pure functions (`item-grouping.ts`, `search-preview.ts`); added `src/lib/favorites-sort.test.ts` (11 tests covering all five sort options for both items and collections, the collections' "type→name" fallback, and a no-mutation check) — while extracting, caught and fixed a real bug in a shared `byDate` helper that had a leftover unused parameter, which had silently broken collections' newest/oldest sort (caught by both the TypeScript build and the new tests). Collections have no item type, so "Item Type" falls back to sorting them by name. No schema changes, no new server actions. Build (24 routes), lint, and test (119/119) pass. Merged `feature/favorites-sorting` into `master` and deleted the branch locally.
 - 2026-08-17: Documented Pinned Items spec.
 - 2026-08-17: Completed Pinned Items — added `toggleItemPin` server action (`src/actions/items.ts`, session-checked, ownership-checked via `getItemOwnerId`) and `setItemPin` thin Prisma passthrough (`src/lib/db/items.ts`), mirroring the existing `toggleItemFavorite`/`setItemFavorite` pair; wired the previously static Pin button in `ItemDrawerView.tsx` via a new `onTogglePin` prop threaded from `ItemDrawer.tsx`, with optimistic local state update, revert-on-failure, and success/error toasts; per follow-up feedback, the Favorite and Pin buttons in the drawer's action bar now show icon+text ("Favorite"/"Unfavorite", "Pin"/"Unpin") instead of icon-only, matching the Download/Copy buttons' style. Pinned items now sort to the top via `orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }]` in `getRecentItems`, `getItemsByType`, and `getItemsByCollection` (`src/lib/db/items.ts`) — `getPinnedItems` didn't need it since it already filters to `isPinned: true` only. Items only, no collection pinning; `ItemCard`'s pin icon stays a static/display-only indicator per spec. Added 4 new unit tests to `src/actions/items.test.ts` covering `toggleItemPin` (no-session, not-found, ownership-mismatch, happy path) — `setItemPin` and the `orderBy` changes stay untested as thin Prisma passthroughs/pure ordering with no branching logic, matching the project's existing pattern. Build (24 routes), lint, and test (123/123) pass. Merged `feature/pinned-items` into `master` and deleted the branch locally.
+- 2026-08-17: Documented Homepage Mockup spec.
+- 2026-08-17: Completed Homepage Mockup — added a standalone static marketing homepage prototype at `prototypes/homepage/` (`index.html`, `styles.css`, `script.js`), separate from the Next.js app (no framework, no build step, no server data). Hero section is the main focus: a "chaos to order" visual with a left box of 8 floating tool icons (Notion, GitHub, Slack, VS Code, browser tabs, terminal, text file, bookmark) animated via `requestAnimationFrame` — drifting, bouncing off walls, subtle rotation/scale pulsing, and repelling away from the mouse cursor — a center CSS-pulsing arrow, and a right box with a simplified DevStash dashboard mockup (sidebar nav + item-card grid with colored top borders). Also built: fixed nav with scroll-based opacity and a mobile hamburger menu, gradient hero headline/CTAs, a 6-card features grid (Code Snippets, AI Prompts, Instant Search, Commands, Files & Docs, Collections) each colored by its item-type accent, an AI Pro section (checklist + code-editor mockup with an "AI Generated Tags" demo), a pricing section (Free vs Pro) with a working monthly/yearly ($72) toggle and a "Most Popular" badge on Pro, a final CTA, and a footer with a JS-computed copyright year. `IntersectionObserver`-based scroll fade-ins on major sections. Fully responsive: chaos/arrow/dashboard stack vertically on mobile with the arrow rotated 90° to point down, and the feature/pricing grids collapse to fewer columns. Used the palette specified in the spec (Snippet blue, Prompt amber, Command cyan, Note green, File slate, Image pink, URL indigo) rather than the live app's actual `ItemType` colors, per the spec. Lives entirely outside `src/`, so no server actions/utilities were touched — `npm run build` (23 routes) and `npm run test` (123/123) confirmed unaffected. Merged `feature/homepage-mockup` into `master` and deleted the branch locally.
