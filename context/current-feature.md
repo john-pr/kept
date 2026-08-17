@@ -1,13 +1,28 @@
-# Current Feature
+# Current Feature: Homepage Mockup
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- Build a standalone marketing homepage prototype at `prototypes/homepage/` (`index.html`, `styles.css`, `script.js`) — not part of the Next.js app.
+- Dark theme using the item-type accent palette: Snippet `#3b82f6`, Prompt `#f59e0b`, Command `#06b6d4`, Note `#22c55e`, File `#64748b`, Image `#ec4899`, URL `#6366f1`.
+- Hero section (main focus): "chaos to order" concept —
+  - Left: "Your knowledge today..." box with 8 floating icons (Notion, GitHub, Slack, VS Code, browser tabs, terminal, text file, bookmark) that drift/bounce off walls, subtly rotate/pulse, and repel from the mouse cursor (requestAnimationFrame).
+  - Center: pulsing arrow (CSS animation) pointing from chaos to order.
+  - Right: "...with DevStash" simplified dashboard mockup (sidebar nav + item card grid with colored top borders matching item-type colors).
+- Nav: fixed top nav, logo, Features/Pricing links, Sign In/Get Started buttons; gets more opaque on scroll.
+- Hero text above the visual: "Stop Losing Your Developer Knowledge" gradient headline, subheadline, CTA buttons.
+- Features section: 6 cards (Code Snippets, AI Prompts, Instant Search, Commands, Files & Docs, Collections), each in its item-type accent color.
+- AI section: two columns — left "Pro Feature" badge + AI capability checklist; right code-editor mockup demoing "AI Generated Tags".
+- Pricing section: Free ($0, 50 items, 3 collections) vs Pro ($8/mo, unlimited, AI features) with "Most Popular" badge on Pro, plus a monthly/yearly ($72) toggle.
+- Final CTA: "Ready to Organize Your Knowledge?" with button.
+- Footer: logo, link columns, copyright with current year.
+- Scroll-triggered fade-in animations for sections.
+- Responsive: chaos/arrow/dashboard stack vertically on mobile (single-column grids), arrow rotates 90° to point down.
 
 ## Notes
-[//]: # (empty)
+- This is a static prototype/mockup, separate from the main Next.js app — plain HTML/CSS/JS, no framework, no build step, no server data.
+- Full spec: `context/features/homepage-mockup-spec.md`.
 
 ## History
 [//]: # (keep this updated. earliest to latest)
