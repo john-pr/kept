@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
+import { ChangePasswordForm } from "@/components/settings/ChangePasswordForm";
 
 export function ChangePasswordSection() {
   const [isOpen, setIsOpen] = useState(false);

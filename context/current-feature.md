@@ -1,13 +1,20 @@
-# Current Feature
+# Current Feature: Settings Page
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- New protected `/settings` page, rendered inside the same TopBar/Sidebar shell as `/dashboard`/`/profile`/`/items`/`/collections`.
+- `proxy.ts` matcher protects `/settings/:path*` alongside the existing protected routes.
+- `UserFooter.tsx`'s avatar dropdown gets a new "Settings" item (linking to `/settings`), alongside the existing "Profile" and "Sign out" items.
+- Move the account-action cards currently on `/profile` — the "Security" card (`ChangePasswordSection`, change-password form) and the "Danger Zone" card (`DeleteAccountDialog`, delete account) — to the new `/settings` page.
+- `/profile` keeps its identity/usage content (avatar, name, email, Pro badge, member-since, usage stats by type) but no longer renders those two cards.
 
 ## Notes
-[//]: # (empty)
+- Existing components (`ChangePasswordSection`, `DeleteAccountDialog`, both in `src/components/profile/`) can likely be reused as-is on `/settings` — moving their usage, not necessarily their file location. Decide during implementation whether to relocate them to a `src/components/settings/` folder for naming consistency, or leave them under `profile/` and just import from the new page.
+- The request mentions "forgot password" as one of the actions to move — there is no forgot-password UI currently on `/profile` (that flow lives at `/forgot-password`, reachable from `/sign-in`). Treating this as referring to the existing `ChangePasswordSection` (the only password-related action actually on `/profile` today) unless corrected.
+- No schema changes expected. No new server actions expected — `change-password`/`delete-account` API routes already exist and are session-authenticated; reuse as-is.
+- `getCurrentUser()`, `getProfileStats()` etc. already scoped by session user — no new data-fetching helpers anticipated for account actions, though `/settings` will need its own minimal data fetch (item types, collections, search props) to render `TopBar`/`Sidebar` like every other authenticated page does.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

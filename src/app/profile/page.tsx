@@ -4,8 +4,6 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { UserAvatar } from "@/components/auth/UserAvatar";
-import { ChangePasswordSection } from "@/components/profile/ChangePasswordSection";
-import { DeleteAccountDialog } from "@/components/profile/DeleteAccountDialog";
 import { getCurrentUser } from "@/lib/db/users";
 import { getProfileStats } from "@/lib/db/stats";
 import { getAllItemsForSearch, getItemTypes } from "@/lib/db/items";
@@ -139,34 +137,6 @@ export default async function ProfilePage() {
                     })}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Security</CardTitle>
-                <CardDescription>
-                  {user.hasPassword
-                    ? "Update the password used to sign in."
-                    : "You sign in with GitHub, so there's no password to manage."}
-                </CardDescription>
-              </CardHeader>
-              {user.hasPassword && (
-                <CardContent>
-                  <ChangePasswordSection />
-                </CardContent>
-              )}
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Danger Zone</CardTitle>
-                <CardDescription>
-                  Permanently delete your account and all of your items and collections.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DeleteAccountDialog />
               </CardContent>
             </Card>
           </div>

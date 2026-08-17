@@ -1,7 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { User, LogOut } from "lucide-react";
+import { User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -36,6 +36,10 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
           <DropdownMenuItem render={<Link href="/profile" />}>
             <User className="size-4" />
             Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem render={<Link href="/settings" />}>
+            <Settings className="size-4" />
+            Settings
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/sign-in" })}>
             <LogOut className="size-4" />
