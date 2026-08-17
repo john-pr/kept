@@ -12,6 +12,7 @@ import {
   getRecentCollections,
 } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
+import { DASHBOARD_COLLECTIONS_LIMIT } from "@/lib/constants";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -19,7 +20,7 @@ export default async function DashboardPage() {
     await Promise.all([
       getItemTypes(user.id),
       getFavoriteCollections(user.id),
-      getRecentCollections(user.id, 6),
+      getRecentCollections(user.id, DASHBOARD_COLLECTIONS_LIMIT),
       getCollectionOptions(user.id),
       getAllItemsForSearch(user.id),
       getCollectionsForSearch(user.id),

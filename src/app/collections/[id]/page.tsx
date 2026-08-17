@@ -5,6 +5,7 @@ import { ItemCard } from "@/components/dashboard/ItemCard";
 import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
 import { FileListRow } from "@/components/dashboard/FileListRow";
 import { CollectionDetailHeader } from "@/components/dashboard/CollectionDetailHeader";
+import { PaginationControls } from "@/components/dashboard/PaginationControls";
 import { getAllItemsForSearch, getItemTypes, getItemsByCollection } from "@/lib/db/items";
 import {
   getCollectionById,
@@ -15,13 +16,18 @@ import {
 } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
 import { groupItemsByType } from "@/lib/item-grouping";
+import { ITEMS_PER_PAGE } from "@/lib/constants";
+import { getPageCount, getPageSkip, getValidPage } from "@/lib/pagination";
 
 interface CollectionDetailPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
-export default async function CollectionDetailPage({ params }: CollectionDetailPageProps) {
+export default async function CollectionDetailPage({ params, searchParams }: CollectionDetailPageProps) {
   const { id } = await params;
+  const { page: pageParam } = await searchParams;
+  const currentPage = getValidPage(Number(pageParam));
 
   const user = await getCurrentUser();
   const [
@@ -35,7 +41,7 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
   ] = await Promise.all([
     getItemTypes(user.id),
     getFavoriteCollections(user.id),
-    getRecentCollections(user.id, 6),
+    getRecentCollections(user.id),
     getCollectionOptions(user.id),
     getCollectionById(id, user.id),
     getAllItemsForSearch(user.id),
@@ -44,7 +50,13 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
 
   if (!collection) notFound();
 
-  const items = await getItemsByCollection(collection.id, user.id);
+  const { items, totalCount } = await getItemsByCollection(
+    collection.id,
+    user.id,
+    getPageSkip(currentPage, ITEMS_PER_PAGE),
+    ITEMS_PER_PAGE
+  );
+  const totalPages = getPageCount(totalCount, ITEMS_PER_PAGE);
   const { imageItems, fileItems, otherItems } = groupItemsByType(items);
 
   return (
@@ -104,6 +116,11 @@ export default async function CollectionDetailPage({ params }: CollectionDetailP
                 )}
               </div>
             )}
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              basePath={`/collections/${collection.id}`}
+            />
           </div>
         </main>
       </div>

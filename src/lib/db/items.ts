@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { toSearchPreview } from "@/lib/search-preview";
+import { DASHBOARD_RECENT_ITEMS_LIMIT } from "@/lib/constants";
 
 export interface ItemTypeSummary {
   id: string;
@@ -84,7 +85,10 @@ function toItemSummary(item: {
   };
 }
 
-export async function getPinnedItems(userId: string, limit = 10): Promise<ItemSummary[]> {
+export async function getPinnedItems(
+  userId: string,
+  limit = DASHBOARD_RECENT_ITEMS_LIMIT
+): Promise<ItemSummary[]> {
   const items = await prisma.item.findMany({
     where: { userId, isPinned: true },
     take: limit,
@@ -95,7 +99,10 @@ export async function getPinnedItems(userId: string, limit = 10): Promise<ItemSu
   return items.map(toItemSummary);
 }
 
-export async function getRecentItems(userId: string, limit = 10): Promise<ItemSummary[]> {
+export async function getRecentItems(
+  userId: string,
+  limit = DASHBOARD_RECENT_ITEMS_LIMIT
+): Promise<ItemSummary[]> {
   const items = await prisma.item.findMany({
     where: { userId },
     take: limit,
@@ -106,24 +113,51 @@ export async function getRecentItems(userId: string, limit = 10): Promise<ItemSu
   return items.map(toItemSummary);
 }
 
-export async function getItemsByType(itemTypeId: string, userId: string): Promise<ItemSummary[]> {
-  const items = await prisma.item.findMany({
-    where: { itemTypeId, userId },
-    orderBy: { createdAt: "desc" },
-    include: { itemType: true, tags: true },
-  });
-
-  return items.map(toItemSummary);
+export interface PaginatedItems {
+  items: ItemSummary[];
+  totalCount: number;
 }
 
-export async function getItemsByCollection(collectionId: string, userId: string): Promise<ItemSummary[]> {
-  const items = await prisma.item.findMany({
-    where: { userId, collections: { some: { collectionId } } },
-    orderBy: { createdAt: "desc" },
-    include: { itemType: true, tags: true },
-  });
+export async function getItemsByType(
+  itemTypeId: string,
+  userId: string,
+  skip: number,
+  take: number
+): Promise<PaginatedItems> {
+  const where = { itemTypeId, userId };
+  const [items, totalCount] = await Promise.all([
+    prisma.item.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: { itemType: true, tags: true },
+      skip,
+      take,
+    }),
+    prisma.item.count({ where }),
+  ]);
 
-  return items.map(toItemSummary);
+  return { items: items.map(toItemSummary), totalCount };
+}
+
+export async function getItemsByCollection(
+  collectionId: string,
+  userId: string,
+  skip: number,
+  take: number
+): Promise<PaginatedItems> {
+  const where = { userId, collections: { some: { collectionId } } };
+  const [items, totalCount] = await Promise.all([
+    prisma.item.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: { itemType: true, tags: true },
+      skip,
+      take,
+    }),
+    prisma.item.count({ where }),
+  ]);
+
+  return { items: items.map(toItemSummary), totalCount };
 }
 
 export interface ItemDetail {

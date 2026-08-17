@@ -6,6 +6,7 @@ import { ItemCard } from "@/components/dashboard/ItemCard";
 import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
 import { FileListRow } from "@/components/dashboard/FileListRow";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
+import { PaginationControls } from "@/components/dashboard/PaginationControls";
 import { Button } from "@/components/ui/button";
 import { getAllItemsForSearch, getItemTypes, getItemsByType } from "@/lib/db/items";
 import {
@@ -15,6 +16,8 @@ import {
   getRecentCollections,
 } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
+import { ITEMS_PER_PAGE } from "@/lib/constants";
+import { getPageCount, getPageSkip, getValidPage } from "@/lib/pagination";
 
 function singularize(name: string): string {
   return name.endsWith("s") ? name.slice(0, -1) : name;
@@ -22,17 +25,19 @@ function singularize(name: string): string {
 
 interface ItemsByTypePageProps {
   params: Promise<{ type: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
-export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) {
+export default async function ItemsByTypePage({ params, searchParams }: ItemsByTypePageProps) {
   const { type: slug } = await params;
+  const { page: pageParam } = await searchParams;
 
   const user = await getCurrentUser();
   const [itemTypes, favoriteCollections, recentCollections, collectionOptions, searchItems, searchCollections] =
     await Promise.all([
       getItemTypes(user.id),
       getFavoriteCollections(user.id),
-      getRecentCollections(user.id, 6),
+      getRecentCollections(user.id),
       getCollectionOptions(user.id),
       getAllItemsForSearch(user.id),
       getCollectionsForSearch(user.id),
@@ -42,7 +47,14 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
 
   if (!typeSummary) notFound();
 
-  const items = await getItemsByType(typeSummary.id, user.id);
+  const currentPage = getValidPage(Number(pageParam));
+  const { items, totalCount } = await getItemsByType(
+    typeSummary.id,
+    user.id,
+    getPageSkip(currentPage, ITEMS_PER_PAGE),
+    ITEMS_PER_PAGE
+  );
+  const totalPages = getPageCount(totalCount, ITEMS_PER_PAGE);
   const isImageGallery = typeSummary.slug === "images";
   const isFileList = typeSummary.slug === "files";
 
@@ -101,6 +113,11 @@ export default async function ItemsByTypePage({ params }: ItemsByTypePageProps) 
                 ))}
               </div>
             )}
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              basePath={`/items/${typeSummary.slug}`}
+            />
           </div>
         </main>
       </div>

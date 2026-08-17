@@ -6,7 +6,7 @@ interface RecentItemsSectionProps {
 }
 
 export async function RecentItemsSection({ userId }: RecentItemsSectionProps) {
-  const recentItems = await getRecentItems(userId, 9);
+  const recentItems = await getRecentItems(userId);
 
   return (
     <section className="flex flex-col gap-3">

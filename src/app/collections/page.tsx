@@ -1,6 +1,7 @@
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { CollectionCard } from "@/components/dashboard/CollectionCard";
+import { PaginationControls } from "@/components/dashboard/PaginationControls";
 import { getAllItemsForSearch, getItemTypes } from "@/lib/db/items";
 import {
   getAllCollections,
@@ -10,26 +11,37 @@ import {
   getRecentCollections,
 } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
+import { COLLECTIONS_PER_PAGE } from "@/lib/constants";
+import { getPageCount, getPageSkip, getValidPage } from "@/lib/pagination";
 
-export default async function CollectionsPage() {
+interface CollectionsPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function CollectionsPage({ searchParams }: CollectionsPageProps) {
+  const { page: pageParam } = await searchParams;
+  const currentPage = getValidPage(Number(pageParam));
+
   const user = await getCurrentUser();
   const [
     itemTypes,
     favoriteCollections,
     recentCollections,
     collectionOptions,
-    allCollections,
+    { collections: allCollections, totalCount },
     searchItems,
     searchCollections,
   ] = await Promise.all([
     getItemTypes(user.id),
     getFavoriteCollections(user.id),
-    getRecentCollections(user.id, 6),
+    getRecentCollections(user.id),
     getCollectionOptions(user.id),
-    getAllCollections(user.id),
+    getAllCollections(user.id, getPageSkip(currentPage, COLLECTIONS_PER_PAGE), COLLECTIONS_PER_PAGE),
     getAllItemsForSearch(user.id),
     getCollectionsForSearch(user.id),
   ]);
+
+  const totalPages = getPageCount(totalCount, COLLECTIONS_PER_PAGE);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -61,6 +73,7 @@ export default async function CollectionsPage() {
                 ))}
               </div>
             )}
+            <PaginationControls currentPage={currentPage} totalPages={totalPages} basePath="/collections" />
           </div>
         </main>
       </div>

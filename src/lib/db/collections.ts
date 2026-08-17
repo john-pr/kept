@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { DASHBOARD_COLLECTIONS_LIMIT } from "@/lib/constants";
 
 export interface CollectionTypeIcon {
   id: string;
@@ -64,7 +65,10 @@ const collectionWithItemsInclude = {
   },
 } as const;
 
-export async function getRecentCollections(userId: string, limit = 6): Promise<CollectionSummary[]> {
+export async function getRecentCollections(
+  userId: string,
+  limit = DASHBOARD_COLLECTIONS_LIMIT
+): Promise<CollectionSummary[]> {
   const collections = await prisma.collection.findMany({
     where: { userId },
     take: limit,
@@ -85,14 +89,29 @@ export async function getFavoriteCollections(userId: string): Promise<Collection
   return collections.map(toCollectionSummary);
 }
 
-export async function getAllCollections(userId: string): Promise<CollectionSummary[]> {
-  const collections = await prisma.collection.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    include: collectionWithItemsInclude,
-  });
+export interface PaginatedCollections {
+  collections: CollectionSummary[];
+  totalCount: number;
+}
 
-  return collections.map(toCollectionSummary);
+export async function getAllCollections(
+  userId: string,
+  skip: number,
+  take: number
+): Promise<PaginatedCollections> {
+  const where = { userId };
+  const [collections, totalCount] = await Promise.all([
+    prisma.collection.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: collectionWithItemsInclude,
+      skip,
+      take,
+    }),
+    prisma.collection.count({ where }),
+  ]);
+
+  return { collections: collections.map(toCollectionSummary), totalCount };
 }
 
 export interface CollectionSearchEntry {
