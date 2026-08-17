@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { createItem, deleteItem, updateItem } from "./items";
+import { createItem, deleteItem, toggleItemFavorite, updateItem } from "./items";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -11,6 +11,7 @@ vi.mock("@/lib/db/items", () => ({
   updateItem: vi.fn(),
   createItem: vi.fn(),
   deleteItem: vi.fn(),
+  setItemFavorite: vi.fn(),
   getItemTypeById: vi.fn(),
 }));
 
@@ -30,6 +31,7 @@ import {
   getItemForDeletion,
   getItemOwnerId,
   getItemTypeById,
+  setItemFavorite,
   updateItem as updateItemQuery,
 } from "@/lib/db/items";
 import { getCollectionOptions } from "@/lib/db/collections";
@@ -286,5 +288,50 @@ describe("deleteItem", () => {
     expect(deleteFromR2).toHaveBeenCalledWith("user-1/abc-file.pdf");
     expect(deleteItemQuery).toHaveBeenCalledWith("item-1");
     expect(result).toEqual({ success: true, data: null });
+  });
+});
+
+describe("toggleItemFavorite", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns an error when there is no session", async () => {
+    vi.mocked(auth).mockResolvedValue(null);
+
+    const result = await toggleItemFavorite("item-1", true);
+
+    expect(result).toEqual({ success: false, error: "Not authenticated" });
+    expect(getItemOwnerId).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the item does not exist", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemOwnerId).mockResolvedValue(null);
+
+    const result = await toggleItemFavorite("item-1", true);
+
+    expect(result).toEqual({ success: false, error: "Item not found" });
+    expect(setItemFavorite).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the session user does not own the item", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemOwnerId).mockResolvedValue("someone-else");
+
+    const result = await toggleItemFavorite("item-1", true);
+
+    expect(result).toEqual({ success: false, error: "Not authorized to edit this item" });
+    expect(setItemFavorite).not.toHaveBeenCalled();
+  });
+
+  it("sets the favorite flag when auth and ownership both pass", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getItemOwnerId).mockResolvedValue("user-1");
+
+    const result = await toggleItemFavorite("item-1", true);
+
+    expect(setItemFavorite).toHaveBeenCalledWith("item-1", true);
+    expect(result).toEqual({ success: true, data: { isFavorite: true } });
   });
 });

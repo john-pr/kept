@@ -1,5 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { createCollection, deleteCollection, updateCollection } from "./collections";
+import {
+  createCollection,
+  deleteCollection,
+  toggleCollectionFavorite,
+  updateCollection,
+} from "./collections";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -9,6 +14,7 @@ vi.mock("@/lib/db/collections", () => ({
   createCollection: vi.fn(),
   deleteCollection: vi.fn(),
   getCollectionOwnerId: vi.fn(),
+  setCollectionFavorite: vi.fn(),
   updateCollection: vi.fn(),
 }));
 
@@ -17,6 +23,7 @@ import {
   createCollection as createCollectionQuery,
   deleteCollection as deleteCollectionQuery,
   getCollectionOwnerId,
+  setCollectionFavorite,
   updateCollection as updateCollectionQuery,
 } from "@/lib/db/collections";
 
@@ -155,5 +162,50 @@ describe("deleteCollection", () => {
 
     expect(deleteCollectionQuery).toHaveBeenCalledWith("collection-1");
     expect(result).toEqual({ success: true, data: null });
+  });
+});
+
+describe("toggleCollectionFavorite", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns an error when there is no session", async () => {
+    vi.mocked(auth).mockResolvedValue(null);
+
+    const result = await toggleCollectionFavorite("collection-1", true);
+
+    expect(result).toEqual({ success: false, error: "Not authenticated" });
+    expect(getCollectionOwnerId).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the collection doesn't exist", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getCollectionOwnerId).mockResolvedValue(null);
+
+    const result = await toggleCollectionFavorite("collection-1", true);
+
+    expect(result).toEqual({ success: false, error: "Collection not found" });
+    expect(setCollectionFavorite).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the session user doesn't own the collection", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getCollectionOwnerId).mockResolvedValue("user-2");
+
+    const result = await toggleCollectionFavorite("collection-1", true);
+
+    expect(result).toEqual({ success: false, error: "Not authorized to edit this collection" });
+    expect(setCollectionFavorite).not.toHaveBeenCalled();
+  });
+
+  it("sets the favorite flag when auth and ownership both pass", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+    vi.mocked(getCollectionOwnerId).mockResolvedValue("user-1");
+
+    const result = await toggleCollectionFavorite("collection-1", true);
+
+    expect(setCollectionFavorite).toHaveBeenCalledWith("collection-1", true);
+    expect(result).toEqual({ success: true, data: { isFavorite: true } });
   });
 });

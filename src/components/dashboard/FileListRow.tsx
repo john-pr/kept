@@ -1,6 +1,8 @@
 "use client";
 
-import { Download, Heart, Pin } from "lucide-react";
+import { useState } from "react";
+import { Download, Pin, Star } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { iconMap } from "@/lib/icon-map";
 import { getFileIconName } from "@/lib/file-icon";
@@ -8,15 +10,28 @@ import { formatFileSize } from "@/lib/file-constraints";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
+import { toggleItemFavorite } from "@/actions/items";
 
 export function FileListRow({ item }: { item: ItemSummary }) {
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
   const Icon = iconMap[getFileIconName(item.fileName ?? item.title)];
+  const [isFavorite, setIsFavorite] = useState(item.isFavorite);
 
   function handleDownload(event: React.MouseEvent) {
     event.stopPropagation();
     window.open(`/api/download/${item.id}`, "_blank");
+  }
+
+  async function handleToggleFavorite(event: React.MouseEvent) {
+    event.stopPropagation();
+    const next = !isFavorite;
+    setIsFavorite(next);
+    const result = await toggleItemFavorite(item.id, next);
+    if (!result.success) {
+      setIsFavorite(!next);
+      toast.error(result.error ?? "Failed to update favorite");
+    }
   }
 
   return (
@@ -49,7 +64,15 @@ export function FileListRow({ item }: { item: ItemSummary }) {
         </span>
         <div className="flex shrink-0 items-center gap-1.5">
           {item.isPinned && <Pin className="size-3.5" />}
-          {item.isFavorite && <Heart className="size-3.5 fill-red-500 text-red-500" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-6 text-muted-foreground hover:text-foreground"
+            onClick={handleToggleFavorite}
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Star className={isFavorite ? "size-3.5 fill-yellow-400 text-yellow-400" : "size-3.5"} />
+          </Button>
         </div>
         <Button variant="outline" size="sm" onClick={handleDownload}>
           <Download className="size-4" />

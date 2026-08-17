@@ -6,6 +6,7 @@ import {
   createCollection as createCollectionQuery,
   deleteCollection as deleteCollectionQuery,
   getCollectionOwnerId,
+  setCollectionFavorite,
   updateCollection as updateCollectionQuery,
   type CollectionSummary,
 } from "@/lib/db/collections";
@@ -89,4 +90,25 @@ export async function deleteCollection(id: string): Promise<ActionResult<null>> 
 
   await deleteCollectionQuery(id);
   return { success: true, data: null };
+}
+
+export async function toggleCollectionFavorite(
+  id: string,
+  isFavorite: boolean
+): Promise<ActionResult<{ isFavorite: boolean }>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  const ownerId = await getCollectionOwnerId(id);
+  if (!ownerId) {
+    return { success: false, error: "Collection not found" };
+  }
+  if (ownerId !== session.user.id) {
+    return { success: false, error: "Not authorized to edit this collection" };
+  }
+
+  await setCollectionFavorite(id, isFavorite);
+  return { success: true, data: { isFavorite } };
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import type { CSSProperties, MouseEvent } from "react";
-import { Copy, Heart, Pin } from "lucide-react";
+import { useState, type CSSProperties, type MouseEvent } from "react";
+import { Copy, Pin, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,16 +10,29 @@ import { iconMap } from "@/lib/icon-map";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
+import { toggleItemFavorite } from "@/actions/items";
 
 export function ItemCard({ item }: { item: ItemSummary }) {
   const Icon = iconMap[item.typeIcon];
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
+  const [isFavorite, setIsFavorite] = useState(item.isFavorite);
 
   function handleCopy(event: MouseEvent) {
     event.stopPropagation();
     navigator.clipboard.writeText(item.content);
     toast.success("Copied to clipboard");
+  }
+
+  async function handleToggleFavorite(event: MouseEvent) {
+    event.stopPropagation();
+    const next = !isFavorite;
+    setIsFavorite(next);
+    const result = await toggleItemFavorite(item.id, next);
+    if (!result.success) {
+      setIsFavorite(!next);
+      toast.error(result.error ?? "Failed to update favorite");
+    }
   }
 
   return (
@@ -39,9 +52,15 @@ export function ItemCard({ item }: { item: ItemSummary }) {
           </span>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             {item.isPinned && <Pin className="size-3.5" />}
-            {item.isFavorite && (
-              <Heart className="size-3.5 fill-red-500 text-red-500" />
-            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-6 text-muted-foreground hover:text-foreground"
+              onClick={handleToggleFavorite}
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Star className={isFavorite ? "size-3.5 fill-yellow-400 text-yellow-400" : "size-3.5"} />
+            </Button>
             <Button
               variant="ghost"
               size="icon"

@@ -1,13 +1,29 @@
 "use client";
 
-import { Expand, Heart, Pin } from "lucide-react";
+import { useState, type MouseEvent } from "react";
+import { Expand, Pin, Star } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
+import { toggleItemFavorite } from "@/actions/items";
 
 export function ImageThumbnailCard({ item }: { item: ItemSummary }) {
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
+  const [isFavorite, setIsFavorite] = useState(item.isFavorite);
+
+  async function handleToggleFavorite(event: MouseEvent) {
+    event.stopPropagation();
+    const next = !isFavorite;
+    setIsFavorite(next);
+    const result = await toggleItemFavorite(item.id, next);
+    if (!result.success) {
+      setIsFavorite(!next);
+      toast.error(result.error ?? "Failed to update favorite");
+    }
+  }
 
   return (
     <div
@@ -49,7 +65,15 @@ export function ImageThumbnailCard({ item }: { item: ItemSummary }) {
         </div>
         <div className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
           {item.isPinned && <Pin className="size-3.5" />}
-          {item.isFavorite && <Heart className="size-3.5 fill-red-500 text-red-500" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-6 text-muted-foreground hover:text-foreground"
+            onClick={handleToggleFavorite}
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Star className={isFavorite ? "size-3.5 fill-yellow-400 text-yellow-400" : "size-3.5"} />
+          </Button>
         </div>
       </div>
     </div>
