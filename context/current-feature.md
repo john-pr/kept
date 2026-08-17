@@ -1,13 +1,23 @@
-# Current Feature
+# Current Feature: Favorites Page
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- Add a star icon button to `TopBar` linking to `/favorites`
+- Create a protected `/favorites` route (add to `proxy.ts` matcher, same pattern as `/collections`, `/settings`, etc.)
+- Fetch all of the current user's favorite items and favorite collections
+- Render a compact, dev-focused list view (VS Code/terminal style — not cards)
+- Each row shows: type icon, title, type badge, date added
+- Separate "Items" and "Collections" sections, each with a count
+- Clicking an item opens `ItemDrawer` (via `useItemDrawer().openItem(id)`); clicking a collection navigates to `/collections/[id]`
+- Empty state when there are no favorites
+- Sort each section by most recently favorited (`updatedAt`)
 
 ## Notes
-[//]: # (empty)
+- UI style: monospace or semi-monospace font, minimal padding, high density, subtle hover states, no cards/heavy borders — clean lines only
+- Reuse existing patterns: `getFavoriteCollections` (`src/lib/db/collections.ts`) already exists for the sidebar — likely needs a variant/reuse for the full list; will need a new favorite-items query in `src/lib/db/items.ts` (userId-scoped, `isFavorite: true`, ordered by `updatedAt` desc)
+- Reuse `getItemTypes`/icon-map conventions for per-item type icons and badges already used elsewhere (`ItemCard`, `GlobalSearch`)
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -96,3 +106,4 @@ Not Started
 - 2026-08-17: Completed Settings Page — added `src/app/settings/page.tsx`, a new protected page rendered in the same TopBar/Sidebar shell as the other authenticated pages, fetching the same item-types/collections/search props as `/profile`; `proxy.ts` matcher now also protects `/settings/:path*`; `UserFooter.tsx`'s avatar dropdown gained a "Settings" item (linking to `/settings`) between "Profile" and "Sign out". Moved the Security (`ChangePasswordSection`/`ChangePasswordForm`) and Danger Zone (`DeleteAccountDialog`) cards from `/profile` to `/settings` — relocated the three components from `src/components/profile/` to `src/components/settings/` for naming consistency (import path updated, no logic changes) and removed the two cards from `profile/page.tsx`, which now shows identity/usage content only. Confirmed "forgot password" in the request meant the existing change-password action, not the separate `/forgot-password` flow. No schema changes, no new server actions/utilities — reused the existing session-authenticated `change-password`/`delete-account` API routes as-is, so no new tests were needed (nothing added under `src/actions/` or `src/lib/`). Build (22 routes), lint, and test (90/90) pass. Merged `feature/settings-page` into `master` and deleted the branch locally.
 - 2026-08-17: Documented Editor Preferences Settings spec.
 - 2026-08-17: Completed Editor Preferences Settings — added `editorPreferences Json?` to `User` (migration `20260817083230_add_editor_preferences_to_user`, applied via `prisma migrate dev`); `src/lib/editor-preferences.ts` defines the type, defaults (fontSize 13, tabSize 2, wordWrap on, minimap off, theme `vs-dark`), and a pure `parseEditorPreferences` that merges/validates untrusted JSON field-by-field; `getEditorPreferences`/`updateEditorPreferences` (`src/lib/db/users.ts`) are thin Prisma passthroughs; new server action `updateEditorPreferences` (`src/actions/editor-preferences.ts`, Zod-validated, session-checked, `{success, data/error}` shape matching `items.ts`/`collections.ts`); new `GET /api/editor-preferences` route (returns defaults for unauthenticated requests rather than 401, since it's a background prefetch) feeds a new globally-mounted `EditorPreferencesProvider`/`useEditorPreferences()` context (`src/components/editor/`, alongside `ItemDrawerProvider` in root layout) that optimistically applies changes and reverts + toasts on save failure. `CodeEditor.tsx` now reads the context for theme/fontSize/tabSize/wordWrap/minimap, and registers `monokai`/`github-dark` as custom Monaco themes via `beforeMount` (Monaco only ships `vs-dark`/`light`/`hc-black`/`hc-light` natively). New "Editor Preferences" card on `/settings` (`EditorPreferencesSection.tsx`, new shadcn `switch` component) with font size/tab size/theme dropdowns and word wrap/minimap toggles, auto-saving on every change via the context (no save button), toasting success/error. Added `src/lib/editor-preferences.test.ts` (6 tests: defaults fallback for null/non-object/empty/malformed input, full valid passthrough, unknown-theme rejection) and `src/actions/editor-preferences.test.ts` (4 tests: Zod-rejection, no-session, happy path) — the `lib/db/users.ts` query functions stay untested as thin Prisma passthroughs, matching the project's existing pattern. Build (23 routes), lint, and test (100/100) pass. Merged `feature/editor-preferences-settings` into `master` and deleted the branch locally.
+- 2026-08-17: Documented Favorites Page spec.

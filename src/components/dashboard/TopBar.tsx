@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FolderPlus, Plus, Code } from "lucide-react";
+import { FolderPlus, Plus, Code, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
@@ -49,6 +49,15 @@ export function TopBar({
           </Link>
         </div>
         <div className="flex items-center gap-2 md:hidden">
+          <Button
+            variant="outline"
+            size="icon-sm"
+            aria-label="Favorites"
+            nativeButton={false}
+            render={<Link href="/favorites" />}
+          >
+            <Star />
+          </Button>
           <NewCollectionDialog
             trigger={<Button variant="outline" size="icon-sm" aria-label="New Collection" />}
           >
@@ -69,6 +78,15 @@ export function TopBar({
       </div>
 
       <div className="hidden items-center justify-end gap-2 md:flex">
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Favorites"
+          nativeButton={false}
+          render={<Link href="/favorites" />}
+        >
+          <Star />
+        </Button>
         <NewCollectionDialog trigger={<Button variant="outline" />}>
           <FolderPlus />
           New Collection

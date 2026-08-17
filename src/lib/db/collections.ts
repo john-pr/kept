@@ -89,6 +89,28 @@ export async function getFavoriteCollections(userId: string): Promise<Collection
   return collections.map(toCollectionSummary);
 }
 
+export interface FavoriteCollection {
+  id: string;
+  name: string;
+  itemCount: number;
+  updatedAt: Date;
+}
+
+export async function getFavoriteCollectionsList(userId: string): Promise<FavoriteCollection[]> {
+  const collections = await prisma.collection.findMany({
+    where: { userId, isFavorite: true },
+    orderBy: { updatedAt: "desc" },
+    select: { id: true, name: true, updatedAt: true, _count: { select: { items: true } } },
+  });
+
+  return collections.map((collection) => ({
+    id: collection.id,
+    name: collection.name,
+    itemCount: collection._count.items,
+    updatedAt: collection.updatedAt,
+  }));
+}
+
 export interface PaginatedCollections {
   collections: CollectionSummary[];
   totalCount: number;
