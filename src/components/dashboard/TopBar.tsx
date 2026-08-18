@@ -44,6 +44,16 @@ export function TopBar({
           <Logo />
         </div>
         <div className="flex items-center gap-2 md:hidden">
+          {!user.isPro && (
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/upgrade" />}
+            >
+              Upgrade
+            </Button>
+          )}
           <Button
             variant="outline"
             size="icon-sm"
@@ -73,6 +83,11 @@ export function TopBar({
       </div>
 
       <div className="hidden items-center justify-end gap-2 md:flex">
+        {!user.isPro && (
+          <Button variant="ghost" nativeButton={false} render={<Link href="/upgrade" />}>
+            Upgrade
+          </Button>
+        )}
         <Button
           variant="outline"
           size="icon"

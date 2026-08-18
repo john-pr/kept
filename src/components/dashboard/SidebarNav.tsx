@@ -11,6 +11,7 @@ interface SidebarNavProps {
   favoriteCollections: CollectionSummary[];
   recentCollections: CollectionSummary[];
   collapsed?: boolean;
+  userIsPro?: boolean;
 }
 
 export function SidebarNav({
@@ -18,6 +19,7 @@ export function SidebarNav({
   favoriteCollections,
   recentCollections,
   collapsed = false,
+  userIsPro = false,
 }: SidebarNavProps) {
   return (
     <div className="flex flex-col gap-6">
@@ -30,6 +32,7 @@ export function SidebarNav({
         <nav className="flex flex-col gap-0.5">
           {itemTypes.map((type) => {
             const Icon = iconMap[type.icon];
+            const showProBadge = type.isPro && !userIsPro;
             return (
               <Link
                 key={type.id}
@@ -42,14 +45,14 @@ export function SidebarNav({
               >
                 <span className="relative shrink-0">
                   <Icon className="size-4" style={{ color: type.color }} />
-                  {collapsed && type.isPro && (
+                  {collapsed && showProBadge && (
                     <span className="absolute -top-1 -right-1 size-1.5 rounded-full bg-muted-foreground" />
                   )}
                 </span>
                 {!collapsed && (
                   <>
                     <span className="truncate">{type.name}</span>
-                    {type.isPro && (
+                    {showProBadge && (
                       <Badge
                         variant="outline"
                         className="text-[10px] tracking-wide text-muted-foreground"

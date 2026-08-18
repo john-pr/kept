@@ -1,15 +1,6 @@
 import { ScrollFadeIn } from "./ScrollFadeIn";
 import { PricingToggle } from "./PricingToggle";
-
-const FREE_FEATURES = ["50 items total", "3 collections", "All text-based types", "Basic search"];
-
-const PRO_FEATURES = [
-  "Unlimited items",
-  "Unlimited collections",
-  "File & image uploads",
-  "AI auto-tagging & summaries",
-  "Data export (JSON/ZIP)",
-];
+import { FREE_FEATURES, PRO_FEATURES } from "@/lib/pricing-features";
 
 export function PricingSection() {
   return (

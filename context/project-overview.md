@@ -304,7 +304,13 @@ Notes:
 
 | Route | Purpose |
 |---|---|
-| `/` | Dashboard (collections grid) |
+| `/` | Marketing homepage (signed out); redirects to `/dashboard` (signed in) |
+| `/sign-in` | Sign in (email/password + GitHub OAuth) |
+| `/register` | Register a new account |
+| `/forgot-password` | Request a password reset email |
+| `/reset-password` | Reset password via emailed token |
+| `/check-email` | "Verify your email" interstitial after registering |
+| `/dashboard` | Dashboard (stats, collections grid, pinned/recent items) |
 | `/items/snippets` | List of snippet items |
 | `/items/prompts` | List of prompt items |
 | `/items/commands` | List of command items |
@@ -312,8 +318,12 @@ Notes:
 | `/items/links` | List of link items |
 | `/items/files` | List of file items (Pro) |
 | `/items/images` | List of image items (Pro) |
+| `/collections` | List of all collections |
 | `/collections/[id]` | Single collection view |
+| `/favorites` | Favorited items and collections |
+| `/profile` | User profile (identity, usage stats) |
 | `/settings` | User settings, billing |
+| `/upgrade` | Free → Pro plan comparison and Stripe Checkout |
 
 ---
 
