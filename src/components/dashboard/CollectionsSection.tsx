@@ -1,11 +1,14 @@
-import type { CollectionSummary } from "@/lib/db/collections";
+import { getRecentCollections } from "@/lib/db/collections";
+import { DASHBOARD_COLLECTIONS_LIMIT } from "@/lib/constants";
 import { CollectionCard } from "@/components/dashboard/CollectionCard";
 
 interface CollectionsSectionProps {
-  recentCollections: CollectionSummary[];
+  userId: string;
 }
 
-export function CollectionsSection({ recentCollections }: CollectionsSectionProps) {
+export async function CollectionsSection({ userId }: CollectionsSectionProps) {
+  const recentCollections = await getRecentCollections(userId, DASHBOARD_COLLECTIONS_LIMIT);
+
   return (
     <section className="flex flex-col gap-3">
       <h3 className="text-sm font-medium text-foreground">Recent Collections</h3>
