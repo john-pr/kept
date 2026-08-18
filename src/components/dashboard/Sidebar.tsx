@@ -54,6 +54,7 @@ export function Sidebar({ itemTypes, favoriteCollections, recentCollections, use
           favoriteCollections={favoriteCollections}
           recentCollections={recentCollections}
           collapsed={collapsed}
+          userIsPro={user.isPro}
         />
       </div>
 

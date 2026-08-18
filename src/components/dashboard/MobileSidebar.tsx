@@ -48,6 +48,7 @@ export function MobileSidebar({
             itemTypes={itemTypes}
             favoriteCollections={favoriteCollections}
             recentCollections={recentCollections}
+            userIsPro={user.isPro}
           />
         </div>
         <UserFooter user={user} />
