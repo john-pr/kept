@@ -11,6 +11,9 @@ export interface CurrentUser {
   isPro: boolean;
   createdAt: Date;
   hasPassword: boolean;
+  stripeCustomerId: string | null;
+  stripeSubscriptionStatus: string | null;
+  stripeCurrentPeriodEnd: Date | null;
 }
 
 export async function getCurrentUser(): Promise<CurrentUser> {
@@ -31,6 +34,9 @@ export async function getCurrentUser(): Promise<CurrentUser> {
     isPro: user.isPro,
     createdAt: user.createdAt,
     hasPassword: user.password !== null,
+    stripeCustomerId: user.stripeCustomerId,
+    stripeSubscriptionStatus: user.stripeSubscriptionStatus,
+    stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd,
   };
 }
 

@@ -1,13 +1,26 @@
-# Current Feature
+# Current Feature: Stripe Integration — Phase 1: Core Infrastructure
 
 ## Status
-Not Started
+Complete
 
 ## Goals
-[//]: # (empty)
+- Add `stripeSubscriptionStatus`/`stripeCurrentPeriodEnd` fields to `User` via `prisma migrate dev` (no `db push`)
+- Add `src/lib/stripe.ts` — lazy-throwing-getter Stripe client (mirrors `src/lib/r2.ts`), plus `STRIPE_PRICE_ID_MONTHLY`/`STRIPE_PRICE_ID_YEARLY` env exports; confirm `apiVersion` via Context7 before hardcoding
+- Add `src/lib/plan-limits.ts` — pure logic: `FREE_ITEM_LIMIT`, `FREE_COLLECTION_LIMIT`, `FREE_GATED_TYPE_NAMES`, `isOverItemLimit`, `isOverCollectionLimit`, `isProOnlyType`, `isPlanGatingEnabled` (`PLAN_GATING_ENABLED` env flag, default off, unused until Phase 2)
+- Expose `isPro` on the session: extend `src/types/next-auth.d.ts`, update `src/auth.ts`'s `jwt`/`session` callbacks to always sync `isPro` from the DB
+- Extend `getCurrentUser()` (`src/lib/db/users.ts`) with `stripeCustomerId`, `stripeSubscriptionStatus`, `stripeCurrentPeriodEnd`
+- Add `stripe` npm dependency (no `@stripe/stripe-js`)
+- Unit tests for `src/lib/plan-limits.ts`
+- No user-visible behavior change other than `session.user.isPro` existing; no checkout/webhook/UI/enforcement (that's Phase 2)
 
 ## Notes
-[//]: # (empty)
+Spec: `context/features/stripe-phase-1-spec.md`. Reference: `docs/stripe-integration-plan.md`.
+
+Decisions confirmed by user:
+- `jwt` callback always re-fetches `isPro` from DB (accepted the extra per-request query trade-off, proceed as spec'd).
+- Add `.env.example` with empty values for the keys already present in `.env` (not just the new Stripe ones — document the existing env surface too); add `!.env.example` to `.gitignore` so it isn't excluded by any existing `.env*` ignore pattern.
+
+Out of scope (Phase 2): webhook route, checkout/portal session routes, `BillingSection.tsx`, actual enforcement in `createItem`/`createCollection`/`items/[type]/page.tsx`, Stripe Dashboard/CLI setup.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

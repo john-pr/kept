@@ -51,18 +51,20 @@ model VerificationToken {
 // App models
 
 model User {
-  id                   String   @id @default(cuid())
-  email                String   @unique
-  emailVerified        DateTime?
-  name                 String?
-  password             String?
-  image                String?
-  isPro                Boolean  @default(false)
-  stripeCustomerId     String?  @unique
-  stripeSubscriptionId String?  @unique
-  editorPreferences    Json?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id                       String    @id @default(cuid())
+  email                    String    @unique
+  emailVerified            DateTime?
+  name                     String?
+  password                 String?
+  image                    String?
+  isPro                    Boolean   @default(false)
+  stripeCustomerId         String?   @unique
+  stripeSubscriptionId     String?   @unique
+  stripeSubscriptionStatus String?
+  stripeCurrentPeriodEnd   DateTime?
+  editorPreferences        Json?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
 
   accounts    Account[]
   sessions    Session[]
