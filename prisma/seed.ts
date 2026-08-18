@@ -39,18 +39,6 @@ const collections = [
     description: "Infrastructure and deployment resources",
     isFavorite: true,
   },
-  {
-    id: "col-terminal-commands",
-    name: "Terminal Commands",
-    description: "Useful shell commands for everyday development",
-    isFavorite: false,
-  },
-  {
-    id: "col-design-resources",
-    name: "Design Resources",
-    description: "UI/UX resources and references",
-    isFavorite: false,
-  },
 ];
 
 interface SeedItem {
@@ -194,13 +182,13 @@ const items: SeedItem[] = [
     createdAt: "2026-06-06T10:00:00Z",
   },
 
-  // Terminal Commands — 4 commands
+  // DevOps — 4 more terminal commands
   {
     id: "item-git-reset-hard",
     title: "Git Reset Hard",
     itemTypeId: "type-command",
     content: "git reset --hard HEAD~1",
-    collectionIds: ["col-terminal-commands"],
+    collectionIds: ["col-devops"],
     tags: ["git", "dangerous"],
     isFavorite: false,
     isPinned: true,
@@ -211,7 +199,7 @@ const items: SeedItem[] = [
     title: "Docker System Prune",
     itemTypeId: "type-command",
     content: "docker system prune -af --volumes",
-    collectionIds: ["col-terminal-commands"],
+    collectionIds: ["col-devops"],
     tags: ["docker"],
     isFavorite: false,
     isPinned: false,
@@ -222,7 +210,7 @@ const items: SeedItem[] = [
     title: "Kill Process on Port",
     itemTypeId: "type-command",
     content: "lsof -ti:3000 | xargs kill -9",
-    collectionIds: ["col-terminal-commands"],
+    collectionIds: ["col-devops"],
     tags: ["process-management"],
     isFavorite: true,
     isPinned: false,
@@ -233,21 +221,21 @@ const items: SeedItem[] = [
     title: "npm Clean Install",
     itemTypeId: "type-command",
     content: "rm -rf node_modules package-lock.json && npm install",
-    collectionIds: ["col-terminal-commands"],
+    collectionIds: ["col-devops"],
     tags: ["npm", "package-manager"],
     isFavorite: false,
     isPinned: false,
     createdAt: "2026-05-28T10:00:00Z",
   },
 
-  // Design Resources — 4 links
+  // React Patterns — 4 more design resource links
   {
     id: "item-tailwind-docs",
     title: "Tailwind CSS Documentation",
     itemTypeId: "type-link",
     url: "https://tailwindcss.com/docs",
     description: "Official Tailwind CSS documentation",
-    collectionIds: ["col-design-resources"],
+    collectionIds: ["col-react-patterns"],
     tags: ["css", "tailwind"],
     isFavorite: true,
     isPinned: false,
@@ -259,7 +247,7 @@ const items: SeedItem[] = [
     itemTypeId: "type-link",
     url: "https://ui.shadcn.com/",
     description: "Component library built on Radix UI and Tailwind CSS",
-    collectionIds: ["col-design-resources"],
+    collectionIds: ["col-react-patterns"],
     tags: ["components", "ui"],
     isFavorite: false,
     isPinned: false,
@@ -271,7 +259,7 @@ const items: SeedItem[] = [
     itemTypeId: "type-link",
     url: "https://www.radix-ui.com/primitives",
     description: "Unstyled, accessible components for building design systems",
-    collectionIds: ["col-design-resources"],
+    collectionIds: ["col-react-patterns"],
     tags: ["design-system", "components"],
     isFavorite: false,
     isPinned: false,
@@ -283,7 +271,7 @@ const items: SeedItem[] = [
     itemTypeId: "type-link",
     url: "https://lucide.dev/icons/",
     description: "Beautiful and consistent open-source icon set",
-    collectionIds: ["col-design-resources"],
+    collectionIds: ["col-react-patterns"],
     tags: ["icons"],
     isFavorite: false,
     isPinned: false,
