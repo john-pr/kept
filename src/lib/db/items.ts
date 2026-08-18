@@ -331,6 +331,10 @@ export async function deleteItem(id: string): Promise<void> {
   await prisma.item.delete({ where: { id } });
 }
 
+export async function getItemCountForUser(userId: string): Promise<number> {
+  return prisma.item.count({ where: { userId } });
+}
+
 export async function setItemFavorite(id: string, isFavorite: boolean): Promise<void> {
   await prisma.item.update({ where: { id }, data: { isFavorite } });
 }

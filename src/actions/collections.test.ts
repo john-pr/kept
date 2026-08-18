@@ -14,6 +14,7 @@ vi.mock("@/lib/db/collections", () => ({
   createCollection: vi.fn(),
   deleteCollection: vi.fn(),
   getCollectionOwnerId: vi.fn(),
+  getCollectionCountForUser: vi.fn(),
   setCollectionFavorite: vi.fn(),
   updateCollection: vi.fn(),
 }));
@@ -22,6 +23,7 @@ import { auth } from "@/auth";
 import {
   createCollection as createCollectionQuery,
   deleteCollection as deleteCollectionQuery,
+  getCollectionCountForUser,
   getCollectionOwnerId,
   setCollectionFavorite,
   updateCollection as updateCollectionQuery,
@@ -33,8 +35,11 @@ const validPayload = {
 };
 
 describe("createCollection", () => {
+  const originalPlanGating = process.env.PLAN_GATING_ENABLED;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.PLAN_GATING_ENABLED = originalPlanGating;
   });
 
   it("rejects an empty name before touching the database", async () => {
@@ -61,6 +66,44 @@ describe("createCollection", () => {
     const result = await createCollection(validPayload);
 
     expect(createCollectionQuery).toHaveBeenCalledWith({ ...validPayload, userId: "user-1" });
+    expect(result).toEqual({ success: true, data: created });
+  });
+
+  it("ignores gating limits when the flag is disabled, even over the free collection limit", async () => {
+    process.env.PLAN_GATING_ENABLED = "false";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: false } } as never);
+    const created = { id: "collection-1", name: "React Patterns" };
+    vi.mocked(createCollectionQuery).mockResolvedValue(created as never);
+
+    const result = await createCollection(validPayload);
+
+    expect(getCollectionCountForUser).not.toHaveBeenCalled();
+    expect(result).toEqual({ success: true, data: created });
+  });
+
+  it("rejects a non-Pro user at the free collection limit when gating is enabled", async () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: false } } as never);
+    vi.mocked(getCollectionCountForUser).mockResolvedValue(3);
+
+    const result = await createCollection(validPayload);
+
+    expect(result).toEqual({
+      success: false,
+      error: "You've reached the free plan's collection limit. Upgrade to Pro for unlimited collections.",
+    });
+    expect(createCollectionQuery).not.toHaveBeenCalled();
+  });
+
+  it("allows a Pro user over the free collection limit when gating is enabled", async () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: true } } as never);
+    vi.mocked(getCollectionCountForUser).mockResolvedValue(10);
+    const created = { id: "collection-1", name: "React Patterns" };
+    vi.mocked(createCollectionQuery).mockResolvedValue(created as never);
+
+    const result = await createCollection(validPayload);
+
     expect(result).toEqual({ success: true, data: created });
   });
 });

@@ -1,16 +1,18 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { ItemCard } from "@/components/dashboard/ItemCard";
 import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
 import { FileListRow } from "@/components/dashboard/FileListRow";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { PaginationControls } from "@/components/dashboard/PaginationControls";
 import { Button } from "@/components/ui/button";
+import { auth } from "@/auth";
 import { getItemTypes, getItemsByType } from "@/lib/db/items";
 import { getCollectionOptions } from "@/lib/db/collections";
-import { getSessionUserId } from "@/lib/db/session";
 import { ITEMS_PER_PAGE } from "@/lib/constants";
 import { getPageCount, getPageSkip, getValidPage } from "@/lib/pagination";
+import { isPlanGatingEnabled } from "@/lib/plan-limits";
 
 function singularize(name: string): string {
   return name.endsWith("s") ? name.slice(0, -1) : name;
@@ -25,7 +27,10 @@ export default async function ItemsByTypePage({ params, searchParams }: ItemsByT
   const { type: slug } = await params;
   const { page: pageParam } = await searchParams;
 
-  const userId = await getSessionUserId();
+  const session = await auth();
+  if (!session?.user?.id) notFound();
+  const userId = session.user.id;
+
   const [itemTypes, collectionOptions] = await Promise.all([
     getItemTypes(userId),
     getCollectionOptions(userId),
@@ -35,13 +40,17 @@ export default async function ItemsByTypePage({ params, searchParams }: ItemsByT
 
   if (!typeSummary) notFound();
 
+  const isGatedFromType = isPlanGatingEnabled() && typeSummary.isPro && !session.user.isPro;
+
   const currentPage = getValidPage(Number(pageParam));
-  const { items, totalCount } = await getItemsByType(
-    typeSummary.id,
-    userId,
-    getPageSkip(currentPage, ITEMS_PER_PAGE),
-    ITEMS_PER_PAGE
-  );
+  const { items, totalCount } = isGatedFromType
+    ? { items: [], totalCount: 0 }
+    : await getItemsByType(
+        typeSummary.id,
+        userId,
+        getPageSkip(currentPage, ITEMS_PER_PAGE),
+        ITEMS_PER_PAGE
+      );
   const totalPages = getPageCount(totalCount, ITEMS_PER_PAGE);
   const isImageGallery = typeSummary.slug === "images";
   const isFileList = typeSummary.slug === "files";
@@ -52,17 +61,32 @@ export default async function ItemsByTypePage({ params, searchParams }: ItemsByT
         <h1 className="text-2xl font-semibold capitalize text-foreground">
           {typeSummary.slug}
         </h1>
-        <NewItemDialog
-          itemTypes={itemTypes}
-          collectionOptions={collectionOptions}
-          defaultItemTypeId={typeSummary.id}
-          trigger={<Button />}
-        >
-          <Plus />
-          Add {singularize(typeSummary.name)}
-        </NewItemDialog>
+        {!isGatedFromType && (
+          <NewItemDialog
+            itemTypes={itemTypes}
+            collectionOptions={collectionOptions}
+            defaultItemTypeId={typeSummary.id}
+            trigger={<Button />}
+          >
+            <Plus />
+            Add {singularize(typeSummary.name)}
+          </NewItemDialog>
+        )}
       </div>
-      {items.length === 0 ? (
+      {isGatedFromType ? (
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border py-16 text-center">
+          <Sparkles className="size-8 text-muted-foreground" />
+          <p className="text-sm font-medium text-foreground">
+            {typeSummary.name} is a Pro feature
+          </p>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            Upgrade to Pro to upload and store {typeSummary.slug}.
+          </p>
+          <Button render={<Link href="/settings" />} nativeButton={false}>
+            Upgrade to Pro
+          </Button>
+        </div>
+      ) : items.length === 0 ? (
         <p className="text-sm text-muted-foreground">No items yet.</p>
       ) : isImageGallery ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

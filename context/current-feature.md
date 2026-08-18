@@ -1,13 +1,23 @@
-# Current Feature
+# Current Feature: Stripe Integration — Phase 2: Integration & UI
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- Webhook handler `src/app/api/webhooks/stripe/route.ts`: raw-body signature verification (`stripe.webhooks.constructEvent`), 400 on missing/invalid signature, no auth/rate-limiting. Handles `checkout.session.completed` (link `stripeCustomerId`/`stripeSubscriptionId` via `client_reference_id`), `customer.subscription.created`/`.updated` (sync `isPro`/`stripeSubscriptionStatus`/`stripeCurrentPeriodEnd` via `updateMany({ where: { stripeCustomerId } })`), `customer.subscription.deleted` (`isPro: false`, status `canceled`). Ignore unhandled event types.
+- `POST /api/stripe/create-checkout-session` — session-authenticated, Zod `{ interval: "monthly" | "yearly" }`, `mode: "subscription"` Checkout Session with `client_reference_id: session.user.id`, `customer_email`, success/cancel URLs at `/settings?checkout=success|canceled`.
+- `POST /api/stripe/create-portal-session` — session-authenticated, 400 if no `stripeCustomerId`, Billing Portal session returning to `/settings`.
+- New `BillingSection.tsx` on `/settings` (4th Card, follows `ChangePasswordSection.tsx`'s toggle/CTA shape): free user sees usage vs. limits + monthly/yearly toggle (reuse `PricingToggle.tsx` styling) + "Upgrade to Pro"; Pro user sees plan status + "Manage subscription"; `?checkout=success|canceled` surfaced as a toast.
+- Enforcement behind `PLAN_GATING_ENABLED` (ships dark): `createItem` rejects Pro-only types/over item limit; `createCollection` rejects over collection limit; new `getItemCountForUser`/`getCollectionCountForUser` passthroughs; `/items/[type]` shows an upgrade prompt instead of list/Add button for Pro-only types when user isn't Pro.
+- Stripe Dashboard/CLI setup (test mode): Product + monthly/yearly Prices, `STRIPE_SECRET_KEY`, local `stripe listen` webhook secret, Customer Portal enabled.
 
 ## Notes
-[//]: # (empty)
+- Builds on Phase 1 (`src/lib/stripe.ts`, `src/lib/plan-limits.ts`, `session.user.isPro`, extended `getCurrentUser()`), already merged.
+- Reference: `docs/stripe-integration-plan.md` §2.4–2.7, §3.4–3.7, §4, §5. Full spec: `context/features/stripe-phase-2-spec.md`.
+- RESOLVED (via Context7, `/vercel/next.js`): App Router route handlers need no raw-body opt-out — `bodyParser: false` is a Pages Router-only concept. `request.text()` already returns the unparsed raw body, which is exactly what `stripe.webhooks.constructEvent` needs. Use `request.text()` as originally planned, no `export const config` needed.
+- RESOLVED (user decision): cancellation runs until the current period ends — Pro access is NOT revoked immediately on cancel. `customer.subscription.updated` (status `canceled`, still within `current_period_end`) should NOT flip `isPro` to false; only `customer.subscription.deleted` (fired when the period actually ends) sets `isPro: false` / `stripeSubscriptionStatus: "canceled"`. `BillingSection.tsx`'s Pro status line should read "Pro — cancels on {stripeCurrentPeriodEnd}" when `stripeSubscriptionStatus` is `canceled` but still within the period, distinct from the normal "Pro — renews on {date}" state.
+- Out of scope: flipping `PLAN_GATING_ENABLED=true` in any real environment (separate deliberate step at launch); live-mode Stripe setup.
+- Testing: webhook/checkout/portal routes aren't unit-testable under current Vitest scope — verify manually via Stripe CLI (`stripe trigger ...`, idempotency on replay, signature rejection, test checkout with `4242 4242 4242 4242`, portal cancellation, gating on/off regression). Browser verification (Playwright) needed for the Checkout redirect — confirm with user before launching it. `npm run build`/`test`/lint must pass throughout.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

@@ -238,6 +238,10 @@ export async function deleteCollection(id: string): Promise<void> {
   await prisma.collection.delete({ where: { id } });
 }
 
+export async function getCollectionCountForUser(userId: string): Promise<number> {
+  return prisma.collection.count({ where: { userId } });
+}
+
 export async function setCollectionFavorite(id: string, isFavorite: boolean): Promise<void> {
   await prisma.collection.update({ where: { id }, data: { isFavorite } });
 }

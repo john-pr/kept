@@ -5,11 +5,13 @@ import { auth } from "@/auth";
 import {
   createCollection as createCollectionQuery,
   deleteCollection as deleteCollectionQuery,
+  getCollectionCountForUser,
   getCollectionOwnerId,
   setCollectionFavorite,
   updateCollection as updateCollectionQuery,
   type CollectionSummary,
 } from "@/lib/db/collections";
+import { isOverCollectionLimit, isPlanGatingEnabled } from "@/lib/plan-limits";
 
 const createCollectionSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -42,6 +44,16 @@ export async function createCollection(
   const session = await auth();
   if (!session?.user?.id) {
     return { success: false, error: "Not authenticated" };
+  }
+
+  if (isPlanGatingEnabled()) {
+    const collectionCount = await getCollectionCountForUser(session.user.id);
+    if (isOverCollectionLimit(collectionCount, session.user.isPro)) {
+      return {
+        success: false,
+        error: "You've reached the free plan's collection limit. Upgrade to Pro for unlimited collections.",
+      };
+    }
   }
 
   const created = await createCollectionQuery({ ...parsed.data, userId: session.user.id });

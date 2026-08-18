@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import {
   createItem as createItemQuery,
   deleteItem as deleteItemQuery,
+  getItemCountForUser,
   getItemForDeletion,
   getItemOwnerId,
   getItemTypeById,
@@ -15,6 +16,7 @@ import {
 } from "@/lib/db/items";
 import { getCollectionOptions } from "@/lib/db/collections";
 import { deleteFromR2, getKeyFromPublicUrl } from "@/lib/r2";
+import { isOverItemLimit, isPlanGatingEnabled, isProOnlyType } from "@/lib/plan-limits";
 
 async function getOwnedCollectionIds(userId: string, collectionIds: string[]): Promise<string[]> {
   if (collectionIds.length === 0) return [];
@@ -101,6 +103,17 @@ export async function createItem(data: CreateItemPayload): Promise<ActionResult<
     return { success: false, error: "Invalid item type" };
   }
   const typeName = itemType.name.toLowerCase();
+
+  if (isPlanGatingEnabled()) {
+    if (!session.user.isPro && isProOnlyType(typeName)) {
+      return { success: false, error: "Upgrade to Pro to create this item type" };
+    }
+    const itemCount = await getItemCountForUser(session.user.id);
+    if (isOverItemLimit(itemCount, session.user.isPro)) {
+      return { success: false, error: "You've reached the free plan's item limit. Upgrade to Pro for unlimited items." };
+    }
+  }
+
   if (typeName === "link" && !parsed.data.url) {
     return { success: false, error: "URL is required for link items" };
   }

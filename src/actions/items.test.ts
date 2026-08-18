@@ -14,6 +14,7 @@ vi.mock("@/lib/db/items", () => ({
   setItemFavorite: vi.fn(),
   setItemPin: vi.fn(),
   getItemTypeById: vi.fn(),
+  getItemCountForUser: vi.fn(),
 }));
 
 vi.mock("@/lib/r2", () => ({
@@ -29,6 +30,7 @@ import { auth } from "@/auth";
 import {
   createItem as createItemQuery,
   deleteItem as deleteItemQuery,
+  getItemCountForUser,
   getItemForDeletion,
   getItemOwnerId,
   getItemTypeById,
@@ -146,8 +148,11 @@ const validCreatePayload = {
 };
 
 describe("createItem", () => {
+  const originalPlanGating = process.env.PLAN_GATING_ENABLED;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.PLAN_GATING_ENABLED = originalPlanGating;
   });
 
   it("rejects an empty title before touching the database", async () => {
@@ -227,6 +232,71 @@ describe("createItem", () => {
       collectionIds: ["col-1"],
       userId: "user-1",
     });
+    expect(result).toEqual({ success: true, data: created });
+  });
+
+  it("ignores gating limits when the flag is disabled, even over the free item limit", async () => {
+    process.env.PLAN_GATING_ENABLED = "false";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: false } } as never);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "Snippet" });
+    const created = { id: "item-1", title: "New title" };
+    vi.mocked(createItemQuery).mockResolvedValue(created as never);
+
+    const result = await createItem(validCreatePayload);
+
+    expect(getItemCountForUser).not.toHaveBeenCalled();
+    expect(result).toEqual({ success: true, data: created });
+  });
+
+  it("rejects a Pro-only type for a non-Pro user when gating is enabled", async () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: false } } as never);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "File" });
+
+    const result = await createItem({ ...validCreatePayload, fileUrl: "https://example.com/f.pdf" });
+
+    expect(result).toEqual({ success: false, error: "Upgrade to Pro to create this item type" });
+    expect(createItemQuery).not.toHaveBeenCalled();
+  });
+
+  it("allows a Pro-only type for a Pro user when gating is enabled", async () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: true } } as never);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "File" });
+    vi.mocked(getItemCountForUser).mockResolvedValue(0);
+    const created = { id: "item-1", title: "New title" };
+    vi.mocked(createItemQuery).mockResolvedValue(created as never);
+
+    const result = await createItem({ ...validCreatePayload, fileUrl: "https://example.com/f.pdf" });
+
+    expect(result).toEqual({ success: true, data: created });
+  });
+
+  it("rejects a non-Pro user at the free item limit when gating is enabled", async () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: false } } as never);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "Snippet" });
+    vi.mocked(getItemCountForUser).mockResolvedValue(50);
+
+    const result = await createItem(validCreatePayload);
+
+    expect(result).toEqual({
+      success: false,
+      error: "You've reached the free plan's item limit. Upgrade to Pro for unlimited items.",
+    });
+    expect(createItemQuery).not.toHaveBeenCalled();
+  });
+
+  it("allows a Pro user over the free item limit when gating is enabled", async () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: true } } as never);
+    vi.mocked(getItemTypeById).mockResolvedValue({ id: "type-1", name: "Snippet" });
+    vi.mocked(getItemCountForUser).mockResolvedValue(500);
+    const created = { id: "item-1", title: "New title" };
+    vi.mocked(createItemQuery).mockResolvedValue(created as never);
+
+    const result = await createItem(validCreatePayload);
+
     expect(result).toEqual({ success: true, data: created });
   });
 });
