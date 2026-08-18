@@ -1,13 +1,41 @@
-# Current Feature
+# Current Feature: Page Transition Loading + Reduce Navigation Latency
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+
+### A. Loading spinner (UX fix)
+- When navigating between authenticated pages (`/dashboard`, `/items/[type]`, `/collections`, `/collections/[id]`, `/favorites`, `/profile`, `/settings`), show a loading indicator immediately instead of a blank/frozen screen while the next page's data loads.
+- Use Next.js App Router `loading.tsx` files (one per route segment) so navigation shows instant loading UI via React Suspense streaming, rather than blocking on the full server-render.
+- Spinner should match existing app patterns: `Loader2` from `lucide-react` with `animate-spin` (already used in `SignInForm`, `ChangePasswordForm`, etc.), centered in the content area. Keep it simple — no full skeleton layouts needed for this pass.
+- Per-page `loading.tsx`, but with a **shared `(app)` route-group `layout.tsx`** rendering `TopBar`/`Sidebar` once around `{children}` — revised from the original "no shared layout" plan after testing showed per-page `loading.tsx` without a shared layout unmounts the *entire* page tree (including the sidebar/topbar) during the Suspense fallback, since there was nothing outside the Suspense boundary to persist. Moving `dashboard`, `items/[type]`, `collections`, `collections/[id]`, `favorites`, `profile`, `settings` into `src/app/(app)/` (route groups don't affect the URL) lets `loading.tsx` replace only the `<main>` content while the shell stays mounted and visible throughout navigation.
+
+### B. Reduce sequential DB round-trips (root-cause fix)
+Applies to `dashboard/page.tsx`, `items/[type]/page.tsx`, `collections/page.tsx`, `collections/[id]/page.tsx`, `favorites/page.tsx`, `profile/page.tsx`, `settings/page.tsx` — all currently follow:
+```ts
+const user = await getCurrentUser();       // stage 1: sequential DB round-trip
+const [...] = await Promise.all([...]);    // stage 2: parallel batch, needs user.id
+```
+1. Collapse stage 1 + stage 2 into a single parallel batch on every one of those 7 pages: get `userId` from `auth()` first (JWT session decode — **no DB call**), then run `getCurrentUser()` itself *inside* the same `Promise.all` alongside the other `userId`-scoped queries, instead of awaiting it alone beforehand. Removes one full sequential Neon round-trip per page (verified 2-3 stages → 1-2 stages).
+2. `collections/[id]/page.tsx`: also move `getItemsByCollection(...)` into that same parallel batch instead of awaiting it after `getCollectionById` resolves — both only depend on the route's `id` param and `user.id`, not on each other's result. If `getCollectionById` comes back null, discard the (now-wasted, rare-path) items result and `notFound()` as today.
+3. `items/[type]/page.tsx`: leave its two-stage shape (`itemTypes` → resolve slug → `getItemsByType(typeId, ...)`) as-is. `ItemType.slug` isn't a real DB column (it's derived at runtime from `name` via pluralization in `getItemTypes()`), so there's no cheap way to query items by slug directly without either duplicating that pluralization logic in a Prisma filter or adding a real `slug` column — both bigger changes, out of scope here. Note it as a possible future improvement, not doing it now.
+- No schema changes, no new dependencies. Pure refactor of existing `lib/db` query call sites in the 7 page components — `getCurrentUser()`, `getItemsByCollection()`, etc. keep their current signatures.
 
 ## Notes
-[//]: # (empty)
+### Investigation: why page navigation feels slow (findings this plan addresses)
+
+Verified in the browser via Playwright (signed in as the demo user, `/dashboard` → `/items/snippets` → `/collections` → `/favorites` → `/profile` → `/settings`, warm dev server, second-pass timings to exclude dev-mode compile time):
+
+- Full navigations take **~450-1000ms** (`TTFB` dominates — `450-950ms` of the total `~500-1000ms`, rest is negligible client render/paint).
+- Cause 1 (fixed by Goal A): **no `loading.tsx`/Suspense boundaries exist anywhere in `src/app/`** (confirmed via glob — zero matches), so Next.js won't stream anything until the entire page's server-side data-fetching finishes. The browser sits on the previous page with zero feedback for up to ~1s per navigation, which is what reads as "slow."
+- Cause 2 (fixed by Goal B): every page does **multiple sequential round-trips to Neon** before it can render anything — confirmed by reading all 7 page components:
+  - All 7 pages: `await getCurrentUser()` (1 round-trip, awaited alone) → `Promise.all([...])` (1 parallel round-trip batch). Two sequential stages minimum, even though `getCurrentUser()`'s only hard dependency for the batch is `user.id`, which is already available from the JWT session without a DB call.
+  - `items/[type]/page.tsx`: a *third* sequential stage — `await getItemsByType(...)` after the batch, since it depends on resolving the slug from the batch's `itemTypes` result first.
+  - `collections/[id]/page.tsx`: also a third sequential stage — `await getItemsByCollection(...)` after the batch, even though it doesn't actually need the batch's `getCollectionById` result (only the route's `id` param + `user.id`), so this one's parallelizable.
+  - `collections/page.tsx` and `favorites/page.tsx` were already fully batched into the single `Promise.all` (best existing pattern) — only the `getCurrentUser()` pre-stage still applies to them.
+  - Dashboard's `StatsCards`/`PinnedItemsSection`/`RecentItemsSection` are separate async server components that each independently query the DB concurrently with each other — fine as-is, not part of the sequential chain.
+  - Neon being a remote serverless Postgres means each round-trip has real network latency (not free like a local DB), so 2-3 sequential round-trips per page adds up to the observed ~500ms-1s.
 
 ## History
 [//]: # (keep this updated. earliest to latest)
