@@ -26,8 +26,10 @@ export function HomeNav() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 border-b border-transparent backdrop-blur-sm transition-colors duration-300",
-        scrolled ? "border-border bg-background/95" : "bg-background/40"
+        "fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300",
+        mobileOpen
+          ? "border-border bg-background"
+          : cn("backdrop-blur-sm", scrolled ? "border-border bg-background/95" : "bg-background/40")
       )}
     >
       <div className="mx-auto flex h-17 max-w-6xl items-center justify-between gap-6 px-6">
@@ -56,7 +58,7 @@ export function HomeNav() {
 
         <button
           type="button"
-          className="p-1.5 text-foreground md:hidden"
+          className="flex size-11 items-center justify-center text-foreground md:hidden"
           aria-label="Toggle menu"
           onClick={() => setMobileOpen((open) => !open)}
         >
@@ -65,7 +67,7 @@ export function HomeNav() {
       </div>
 
       {mobileOpen && (
-        <div className="flex flex-col gap-1 border-b border-border bg-background px-6 pb-5 pt-2 md:hidden">
+        <div className="flex min-h-[calc(100dvh_-_4.25rem)] flex-col gap-1 border-b border-border bg-background px-6 pb-5 pt-2 md:hidden">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}

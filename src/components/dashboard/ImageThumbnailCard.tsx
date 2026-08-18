@@ -67,8 +67,8 @@ export function ImageThumbnailCard({ item }: { item: ItemSummary }) {
           {item.isPinned && <Pin className="size-3.5" />}
           <Button
             variant="ghost"
-            size="icon"
-            className="size-6 text-muted-foreground hover:text-foreground"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-foreground"
             onClick={handleToggleFavorite}
             aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
