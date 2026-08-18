@@ -1,13 +1,19 @@
-# Current Feature
+# Current Feature: Add Homepage Nav to Sign In & Register Pages
 
 ## Status
-Not Started
+In Progress
 
 ## Goals
-[//]: # (empty)
+- Render the homepage's `HomeNav` component (`src/components/homepage/HomeNav.tsx`) at the top of `/sign-in` and `/register`, so both pages get the same fixed header (Logo, Features/Pricing anchor links, Sign In/Get Started buttons, mobile hamburger menu) as `/`.
+- Both pages currently center a lone `Card` in a plain `min-h-screen` flex container with no header at all — adjust their layout so the card sits below the fixed nav without being visually covered by it (matching how the homepage's own sections clear the fixed header).
+- Reuse the homepage's 4-square `Logo` component (`src/components/homepage/Logo.tsx`) as the app's brand mark too, replacing the app's separate `Code` icon + "DevStash" text in `TopBar.tsx` (the only brand spot in the authenticated app shell — renders on dashboard/items/collections/favorites/profile/settings via the shared `(app)/layout.tsx`).
 
 ## Notes
-[//]: # (empty)
+- `HomeNav` is already a self-contained client component (`"use client"`) — no props needed, just import and render it above the existing centered-card `div` in both `src/app/sign-in/page.tsx` and `src/app/register/page.tsx`.
+- `HomeNav` is `fixed inset-x-0 top-0`, height `h-17` (68px) when collapsed — the page content below it will need top padding/margin (or similar) to avoid the card starting underneath it, consistent with how homepage sections handle the fixed header's height.
+- `HomeNav`'s Features/Pricing links (`#features`, `#pricing`) point to in-page anchors on the homepage. On `/sign-in`/`/register` these anchors don't exist, so clicking them will just no-op scroll — acceptable per this spec since the ask is only to add the nav visually/for navigation (Sign In / Get Started / logo-home), not to rework the anchor links.
+- Sign In / Get Started buttons in `HomeNav` will point back to the current page in one case (e.g. "Sign In" while already on `/sign-in`) — leave as-is, no active-state handling requested.
+- No changes to `HomeNav.tsx` itself expected; if reuse reveals it needs a prop (e.g. to hide/adjust something per-page), keep the change minimal.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

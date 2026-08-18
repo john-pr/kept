@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { FolderPlus, Plus, Code, Star } from "lucide-react";
+import { FolderPlus, Plus, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { NewCollectionDialog } from "@/components/dashboard/NewCollectionDialog";
 import { GlobalSearch } from "@/components/dashboard/GlobalSearch";
+import { Logo } from "@/components/homepage/Logo";
 import type { ItemSearchEntry, ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionOption, CollectionSearchEntry, CollectionSummary } from "@/lib/db/collections";
 import type { CurrentUser } from "@/lib/db/users";
@@ -40,13 +41,7 @@ export function TopBar({
               user={user}
             />
           </div>
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 text-sm font-semibold text-foreground"
-          >
-            <Code className="size-5 text-primary" />
-            <span>DevStash</span>
-          </Link>
+          <Logo />
         </div>
         <div className="flex items-center gap-2 md:hidden">
           <Button
