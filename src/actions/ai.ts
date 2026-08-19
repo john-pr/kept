@@ -4,11 +4,15 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { getOpenAIClient, AI_MODEL } from "@/lib/openai";
 import { buildAutoTagInput, parseAutoTagResponse } from "@/lib/auto-tag";
+import { buildDescriptionInput, parseDescriptionResponse } from "@/lib/description";
 import { isPlanGatingEnabled } from "@/lib/plan-limits";
 import { checkRateLimit, retryAfterMessage } from "@/lib/rate-limit";
 
 const AUTO_TAG_RATE_LIMIT = 20;
 const AUTO_TAG_RATE_WINDOW_SECONDS = 3600;
+
+const DESCRIPTION_RATE_LIMIT = 20;
+const DESCRIPTION_RATE_WINDOW_SECONDS = 3600;
 
 const generateAutoTagsSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -16,6 +20,16 @@ const generateAutoTagsSchema = z.object({
 });
 
 export type GenerateAutoTagsPayload = z.infer<typeof generateAutoTagsSchema>;
+
+const generateDescriptionSchema = z.object({
+  title: z.string().trim().min(1, "Title is required"),
+  content: z.string().nullable(),
+  url: z.string().nullable(),
+  language: z.string().nullable(),
+  fileName: z.string().nullable(),
+});
+
+export type GenerateDescriptionPayload = z.infer<typeof generateDescriptionSchema>;
 
 interface ActionResult<T> {
   success: boolean;
@@ -78,5 +92,60 @@ export async function generateAutoTags(
     return { success: true, data: tags };
   } catch {
     return { success: false, error: "Something went wrong generating suggestions." };
+  }
+}
+
+/**
+ * Generates a concise 1-2 sentence description for an item via OpenAI, from
+ * whatever title/content/url/language/fileName is currently on the form.
+ *
+ * Takes raw form fields rather than an item id, mirroring `generateAutoTags`,
+ * so it works pre-save for both the New Item dialog and the Item Drawer's
+ * edit form.
+ */
+export async function generateDescription(
+  data: GenerateDescriptionPayload
+): Promise<ActionResult<string>> {
+  const parsed = generateDescriptionSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  if (isPlanGatingEnabled() && !session.user.isPro) {
+    return { success: false, error: "AI features require a Pro plan" };
+  }
+
+  const rateLimit = await checkRateLimit(
+    "ai-description",
+    session.user.id,
+    DESCRIPTION_RATE_LIMIT,
+    DESCRIPTION_RATE_WINDOW_SECONDS
+  );
+  if (!rateLimit.success) {
+    return { success: false, error: retryAfterMessage(rateLimit.reset) };
+  }
+
+  try {
+    const client = getOpenAIClient();
+    const response = await client.responses.create({
+      model: AI_MODEL,
+      instructions:
+        "You write a concise, 1-2 sentence description summarizing a developer's saved snippet, prompt, command, note, link, file, or image, based on whatever title/content/url/language/file name is given. Respond with only the description text, no quotes or labels.",
+      input: buildDescriptionInput(parsed.data),
+    });
+
+    const description = parseDescriptionResponse(response.output_text);
+    if (!description) {
+      return { success: false, error: "Couldn't generate a description. Please try again." };
+    }
+
+    return { success: true, data: description };
+  } catch {
+    return { success: false, error: "Something went wrong generating a description." };
   }
 }

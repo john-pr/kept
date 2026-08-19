@@ -19,6 +19,7 @@ import type { ItemDetailResponse, EditFormState } from "@/components/items/ItemD
 import type { CollectionOption } from "@/lib/db/collections";
 import { LANGUAGE_OPTIONS } from "@/lib/languages";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
+import { SuggestDescriptionButton } from "@/components/items/SuggestDescriptionButton";
 
 interface ItemDrawerEditFormProps {
   item: ItemDetailResponse;
@@ -85,6 +86,16 @@ export function ItemDrawerEditForm({
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
+        {isPro && (
+          <SuggestDescriptionButton
+            title={form.title}
+            content={showContent ? form.content : null}
+            url={showUrl ? form.url : null}
+            language={showLanguage ? form.language : null}
+            fileName={item.fileName}
+            onGenerate={(description) => setForm({ ...form, description })}
+          />
+        )}
       </div>
 
       {showLanguage && (

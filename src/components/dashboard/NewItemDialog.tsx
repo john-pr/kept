@@ -33,6 +33,7 @@ import { createItem } from "@/actions/items";
 import { iconMap } from "@/lib/icon-map";
 import { LANGUAGE_OPTIONS } from "@/lib/languages";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
+import { SuggestDescriptionButton } from "@/components/items/SuggestDescriptionButton";
 
 const CONTENT_SLUGS = new Set(["snippets", "prompts", "commands", "notes"]);
 const LANGUAGE_SLUGS = new Set(["snippets", "commands"]);
@@ -209,6 +210,16 @@ export function NewItemDialog({
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
+            {isPro && (
+              <SuggestDescriptionButton
+                title={form.title}
+                content={showContent ? form.content : null}
+                url={showUrl ? form.url : null}
+                language={showLanguage ? form.language : null}
+                fileName={showFile ? form.file?.fileName ?? null : null}
+                onGenerate={(description) => setForm({ ...form, description })}
+              />
+            )}
           </div>
 
           {showLanguage && (

@@ -1,13 +1,23 @@
-# Current Feature
+# Current Feature: AI Description Generator
 
 ## Status
-
+In Progress
 
 ## Goals
-
+- Add an icon button (next to/near the Description field) that generates a concise 1-2 sentence description/summary via AI.
+- Works for all content types (snippet, prompt, command, note, link, file, image) using whatever fields are available (title, content, url, language, fileName, etc.) — no type-specific gating on which fields are required.
+- No need to save the item first — works from whatever is currently typed into the form (New Item dialog and Item Drawer edit mode), same as the existing "Suggest Tags" AI feature.
+- Clicking the button fills/replaces the Description input with the generated text (user can still edit it afterward).
+- Pro-gated the same way as auto-tagging (hidden for non-Pro users, following the `isPro` prop pattern already threaded into `NewItemDialog`/`ItemDrawerEditForm`).
 
 ## Notes
-
+- Model this closely on the existing AI Auto-Tagging feature (`src/lib/auto-tag.ts`, `src/actions/ai.ts`'s `generateAutoTags`, `src/components/items/SuggestTagsButton.tsx`) — same Responses API pattern (`gpt-5-nano` via `src/lib/openai.ts`), same auth → Pro-gate (`isPlanGatingEnabled()`) → rate-limit (`checkRateLimit`) → OpenAI call shape.
+- Output is a single string, not a list — consider requesting plain text back instead of `text: { format: { type: "json_object" } }` to sidestep the "json" keyword-in-input gotcha documented in `auto-tag.ts` entirely; decide during implementation.
+- New server action, e.g. `generateDescription({ title, content, url, language, fileName })` in `src/actions/ai.ts`, taking raw form fields (not an item id) so it works pre-save, matching `generateAutoTags`'s reasoning.
+- Own rate-limit key (e.g. `ai-description`), similar limit to `ai-auto-tag`'s 20/hr.
+- New button component (e.g. `SuggestDescriptionButton.tsx`) alongside `SuggestTagsButton.tsx`, wired into both `NewItemDialog.tsx` and `ItemDrawerEditForm.tsx` next to the Description field, gated by the same `isPro` prop already threaded through both.
+- For file/image types there's no text content — build the AI input from title/fileName/description-so-far/language only; still offer the button since a title alone is enough for a short summary attempt (require at least a title, same UX guard as `SuggestTagsButton`).
+- Add unit tests for the new action (auth/Pro-gate/rate-limit/happy-path branches) and any new pure parsing/input-building helpers, matching `auto-tag.ts`'s test coverage.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

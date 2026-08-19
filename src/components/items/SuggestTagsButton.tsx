@@ -57,14 +57,20 @@ export function SuggestTagsButton({
     <div className="flex flex-col gap-2">
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="sm"
-        className="w-fit"
+        className="w-fit self-start"
         onClick={handleSuggest}
         disabled={isLoading}
       >
-        {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-        Suggest Tags
+        <span className="flex items-center gap-1.5 leading-none">
+          {isLoading ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <Sparkles className="size-3.5" />
+          )}
+          Suggest Tags
+        </span>
       </Button>
 
       {suggestions.length > 0 && (
