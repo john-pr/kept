@@ -1,12 +1,26 @@
-# Current Feature
+# Current Feature: AI Prompt Optimizer
 
 ## Status
 
+In Progress
 
 ## Goals
 
+- Add an "Optimize" action for **Prompt** items only (not Notes, which also use `MarkdownEditor`) that sends the current prompt content to OpenAI, gets back a refined/improved version, and lets the user preview it before deciding whether to keep it.
+- "Optimize" button lives in `MarkdownEditor`'s header, in the same position/style as `CodeEditor`'s "Explain" button (Sparkles icon, ghost `icon-sm`, Pro-gated with a `Crown` fallback for non-Pro users).
+- Only shown in the Item Drawer's **read view** for prompt items (mirrors `showExplain`'s scope: `ItemDrawerView.tsx` via `ItemDrawer.tsx`, not `NewItemDialog.tsx` or `ItemDrawerEditForm.tsx`).
+- After generating, show the optimized version for review (reuse the Code/Explanation tab-switcher pattern from `CodeEditor.tsx`, e.g. "Original"/"Optimized" tabs) with an explicit accept/reject choice — "Use this version" persists it as the item's new content (via the existing `updateItem` server action, matching how Favorite/Pin toggle-and-persist from the drawer) and "Keep original" discards it. Do not auto-save without the user's confirmation.
 
 ## Notes
+
+- Follow the established AI-feature pattern (`generateAutoTags`/`generateDescription`/`explainCode` in `src/actions/ai.ts`, `src/lib/auto-tag.ts`/`description.ts`/`explain.ts`): new `optimizePrompt({title, content})` server action in `src/actions/ai.ts`, Zod-validated → `auth()` → `isPlanGatingEnabled()` Pro-gate → `checkRateLimit` (own `ai-optimize` bucket, 20/hr like the others) → OpenAI Responses API call via `getOpenAIClient()`/`AI_MODEL`, returning plain text (no "json" keyword gotcha to worry about, same as `explainCode`).
+- New `src/lib/optimize-prompt.ts` with `buildOptimizePromptInput`/`parseOptimizePromptResponse`, mirroring `explain.ts`'s shape (title + content, 2000-char content truncation, trim on output).
+- `MarkdownEditor.tsx` needs new optional props to carry this: `title`, `isPro`, `showOptimize`, and a way to surface the accepted result back up to `ItemDrawer.tsx` (e.g. `onAccept(newContent: string)` callback) so the parent can call `updateItem` and update local state/toast, matching `handleToggleFavorite`/`handleTogglePin`'s optimistic-update pattern. Notes' usage of `MarkdownEditor` (view and edit) stays untouched — no `showOptimize` passed there.
+- `ItemDrawer.tsx`/`ItemDrawerView.tsx`: thread `showOptimize` for prompt type only (`typeName === "prompt"`), alongside the existing `showLanguage`/`showMarkdown` booleans — check whether a `typeName === "prompt"` check needs to be computed and passed down since `ItemDrawerView` currently only receives the type-family booleans, not the raw type name.
+- Rate limiting, Pro-gating, and the "not persisted until accepted" DB/schema shape need no new fields — this is a transient generate-then-optionally-`updateItem` flow, same as description/explain features.
+- Add unit tests: `src/lib/optimize-prompt.test.ts` (input builder + parser, mirroring `explain.test.ts`) and extend `src/actions/ai.test.ts` with `optimizePrompt`'s branches (Zod-rejection, no-session, Pro-gate, rate-limit, happy path, error), matching the sibling AI actions' coverage.
+
+## History
 
 
 ## History
