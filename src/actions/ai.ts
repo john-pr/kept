@@ -6,6 +6,7 @@ import { getOpenAIClient, AI_MODEL } from "@/lib/openai";
 import { buildAutoTagInput, parseAutoTagResponse } from "@/lib/auto-tag";
 import { buildDescriptionInput, parseDescriptionResponse } from "@/lib/description";
 import { buildExplainInput, parseExplainResponse } from "@/lib/explain";
+import { buildOptimizePromptInput, parseOptimizePromptResponse } from "@/lib/optimize-prompt";
 import { isPlanGatingEnabled } from "@/lib/plan-limits";
 import { checkRateLimit, retryAfterMessage } from "@/lib/rate-limit";
 
@@ -17,6 +18,9 @@ const DESCRIPTION_RATE_WINDOW_SECONDS = 3600;
 
 const EXPLAIN_RATE_LIMIT = 20;
 const EXPLAIN_RATE_WINDOW_SECONDS = 3600;
+
+const OPTIMIZE_PROMPT_RATE_LIMIT = 20;
+const OPTIMIZE_PROMPT_RATE_WINDOW_SECONDS = 3600;
 
 const generateAutoTagsSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -42,6 +46,13 @@ const explainCodeSchema = z.object({
 });
 
 export type ExplainCodePayload = z.infer<typeof explainCodeSchema>;
+
+const optimizePromptSchema = z.object({
+  title: z.string().trim().min(1, "Title is required"),
+  content: z.string().trim().min(1, "Content is required"),
+});
+
+export type OptimizePromptPayload = z.infer<typeof optimizePromptSchema>;
 
 interface ActionResult<T> {
   success: boolean;
@@ -212,5 +223,59 @@ export async function explainCode(data: ExplainCodePayload): Promise<ActionResul
     return { success: true, data: explanation };
   } catch {
     return { success: false, error: "Something went wrong generating an explanation." };
+  }
+}
+
+/**
+ * Refines a prompt item's content via OpenAI. Takes the raw title/content
+ * rather than an item id, mirroring `explainCode` — the item drawer already
+ * has this data loaded, so there's no need for a separate fetch-by-id round
+ * trip.
+ *
+ * The refined prompt isn't persisted here; the caller decides whether to
+ * save it (via `updateItem`) after the user reviews and accepts it.
+ */
+export async function optimizePrompt(data: OptimizePromptPayload): Promise<ActionResult<string>> {
+  const parsed = optimizePromptSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  if (isPlanGatingEnabled() && !session.user.isPro) {
+    return { success: false, error: "AI features require a Pro plan" };
+  }
+
+  const rateLimit = await checkRateLimit(
+    "ai-optimize-prompt",
+    session.user.id,
+    OPTIMIZE_PROMPT_RATE_LIMIT,
+    OPTIMIZE_PROMPT_RATE_WINDOW_SECONDS
+  );
+  if (!rateLimit.success) {
+    return { success: false, error: retryAfterMessage(rateLimit.reset) };
+  }
+
+  try {
+    const client = getOpenAIClient();
+    const response = await client.responses.create({
+      model: AI_MODEL,
+      instructions:
+        "You refine a developer's saved AI prompt for clarity, specificity, and effectiveness, preserving its original intent and any placeholders/variables. If the prompt is already well-written, make only minor improvements. Respond with only the refined prompt text, no quotes, labels, or commentary.",
+      input: buildOptimizePromptInput(parsed.data),
+    });
+
+    const optimized = parseOptimizePromptResponse(response.output_text);
+    if (!optimized) {
+      return { success: false, error: "Couldn't optimize the prompt. Please try again." };
+    }
+
+    return { success: true, data: optimized };
+  } catch {
+    return { success: false, error: "Something went wrong optimizing the prompt." };
   }
 }

@@ -13,6 +13,7 @@ interface ItemDrawerViewProps {
   item: ItemDetailResponse;
   showLanguage: boolean;
   showMarkdown: boolean;
+  showOptimize: boolean;
   isImage: boolean;
   isDeleting: boolean;
   onCopy: () => void;
@@ -21,12 +22,14 @@ interface ItemDrawerViewProps {
   onTogglePin: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onAcceptOptimizedPrompt: (content: string) => void;
 }
 
 export function ItemDrawerView({
   item,
   showLanguage,
   showMarkdown,
+  showOptimize,
   isImage,
   isDeleting,
   onCopy,
@@ -35,6 +38,7 @@ export function ItemDrawerView({
   onTogglePin,
   onEdit,
   onDelete,
+  onAcceptOptimizedPrompt,
 }: ItemDrawerViewProps) {
   return (
     <>
@@ -95,7 +99,14 @@ export function ItemDrawerView({
               showExplain
             />
           ) : showMarkdown && item.content ? (
-            <MarkdownEditor value={item.content} readOnly />
+            <MarkdownEditor
+              value={item.content}
+              readOnly
+              title={item.title}
+              isPro={item.isPro}
+              showOptimize={showOptimize}
+              onAcceptOptimized={onAcceptOptimizedPrompt}
+            />
           ) : (
             <pre className="max-h-80 overflow-auto rounded-md bg-muted p-3 font-mono text-xs text-foreground whitespace-pre-wrap">
               {item.content ?? item.url}

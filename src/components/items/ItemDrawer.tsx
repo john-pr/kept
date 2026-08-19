@@ -103,6 +103,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   const showMarkdown = MARKDOWN_TYPES.has(typeName);
   const showUrl = URL_TYPES.has(typeName);
   const isImage = typeName === "image";
+  const showOptimize = typeName === "prompt";
 
   function handleDownload() {
     if (!item) return;
@@ -191,6 +192,35 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     router.refresh();
   }
 
+  async function handleAcceptOptimizedPrompt(newContent: string) {
+    if (!item) return;
+
+    const result = await updateItem(item.id, {
+      title: item.title,
+      description: item.description,
+      content: newContent,
+      language: item.language,
+      url: item.url,
+      tags: item.tags,
+      collectionIds: item.collections.map((collection) => collection.id),
+    });
+
+    if (result.success && result.data) {
+      setItem({
+        ...result.data,
+        createdAt: result.data.createdAt.toString(),
+        updatedAt: result.data.updatedAt.toString(),
+        canEdit: item.canEdit,
+        collectionOptions: item.collectionOptions,
+        isPro: item.isPro,
+      });
+      toast.success("Prompt updated");
+      router.refresh();
+    } else {
+      toast.error(result.error ?? "Failed to update prompt");
+    }
+  }
+
   async function handleDelete() {
     if (!item) return;
 
@@ -259,6 +289,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   item={item}
                   showLanguage={showLanguage}
                   showMarkdown={showMarkdown}
+                  showOptimize={showOptimize}
                   isImage={isImage}
                   isDeleting={isDeleting}
                   onCopy={handleCopy}
@@ -267,6 +298,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   onTogglePin={handleTogglePin}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onAcceptOptimizedPrompt={handleAcceptOptimizedPrompt}
                 />
               )}
             </div>
