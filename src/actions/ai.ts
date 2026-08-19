@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { getOpenAIClient, AI_MODEL } from "@/lib/openai";
 import { buildAutoTagInput, parseAutoTagResponse } from "@/lib/auto-tag";
 import { buildDescriptionInput, parseDescriptionResponse } from "@/lib/description";
+import { buildExplainInput, parseExplainResponse } from "@/lib/explain";
 import { isPlanGatingEnabled } from "@/lib/plan-limits";
 import { checkRateLimit, retryAfterMessage } from "@/lib/rate-limit";
 
@@ -13,6 +14,9 @@ const AUTO_TAG_RATE_WINDOW_SECONDS = 3600;
 
 const DESCRIPTION_RATE_LIMIT = 20;
 const DESCRIPTION_RATE_WINDOW_SECONDS = 3600;
+
+const EXPLAIN_RATE_LIMIT = 20;
+const EXPLAIN_RATE_WINDOW_SECONDS = 3600;
 
 const generateAutoTagsSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -30,6 +34,14 @@ const generateDescriptionSchema = z.object({
 });
 
 export type GenerateDescriptionPayload = z.infer<typeof generateDescriptionSchema>;
+
+const explainCodeSchema = z.object({
+  title: z.string().trim().min(1, "Title is required"),
+  content: z.string().trim().min(1, "Content is required"),
+  language: z.string().nullable(),
+});
+
+export type ExplainCodePayload = z.infer<typeof explainCodeSchema>;
 
 interface ActionResult<T> {
   success: boolean;
@@ -147,5 +159,58 @@ export async function generateDescription(
     return { success: true, data: description };
   } catch {
     return { success: false, error: "Something went wrong generating a description." };
+  }
+}
+
+/**
+ * Explains a snippet/command's code via OpenAI. Takes the raw title/content/
+ * language rather than an item id, mirroring `generateAutoTags`/
+ * `generateDescription` — the item drawer already has this data loaded, so
+ * there's no need for a separate fetch-by-id round trip.
+ *
+ * Explanations aren't persisted; the drawer regenerates on each click.
+ */
+export async function explainCode(data: ExplainCodePayload): Promise<ActionResult<string>> {
+  const parsed = explainCodeSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  if (isPlanGatingEnabled() && !session.user.isPro) {
+    return { success: false, error: "AI features require a Pro plan" };
+  }
+
+  const rateLimit = await checkRateLimit(
+    "ai-explain",
+    session.user.id,
+    EXPLAIN_RATE_LIMIT,
+    EXPLAIN_RATE_WINDOW_SECONDS
+  );
+  if (!rateLimit.success) {
+    return { success: false, error: retryAfterMessage(rateLimit.reset) };
+  }
+
+  try {
+    const client = getOpenAIClient();
+    const response = await client.responses.create({
+      model: AI_MODEL,
+      instructions:
+        "You explain a developer's saved code snippet or terminal command, concisely, in about 200-300 words, covering what it does and any key concepts. Respond in Markdown with no preamble or closing remarks.",
+      input: buildExplainInput(parsed.data),
+    });
+
+    const explanation = parseExplainResponse(response.output_text);
+    if (!explanation) {
+      return { success: false, error: "Couldn't generate an explanation. Please try again." };
+    }
+
+    return { success: true, data: explanation };
+  } catch {
+    return { success: false, error: "Something went wrong generating an explanation." };
   }
 }

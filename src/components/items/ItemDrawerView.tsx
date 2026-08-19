@@ -86,7 +86,14 @@ export function ItemDrawerView({
         <div className="flex flex-col gap-2">
           <h4 className="text-sm font-medium text-foreground">Content</h4>
           {showLanguage && item.content ? (
-            <CodeEditor value={item.content} language={item.language} readOnly />
+            <CodeEditor
+              value={item.content}
+              language={item.language}
+              readOnly
+              title={item.title}
+              isPro={item.isPro}
+              showExplain
+            />
           ) : showMarkdown && item.content ? (
             <MarkdownEditor value={item.content} readOnly />
           ) : (

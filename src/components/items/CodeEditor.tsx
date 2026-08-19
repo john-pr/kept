@@ -2,11 +2,15 @@
 
 import { useCallback, useRef, useState } from "react";
 import Editor, { type BeforeMount, type OnMount } from "@monaco-editor/react";
-import { Copy } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Copy, Crown, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useEditorPreferences } from "@/components/editor/EditorPreferencesProvider";
+import { explainCode } from "@/actions/ai";
 
 const MIN_HEIGHT = 120;
 const MAX_HEIGHT = 400;
@@ -65,6 +69,13 @@ interface CodeEditorProps {
   readOnly?: boolean;
   placeholder?: string;
   className?: string;
+  /** Title of the item, required to generate an AI explanation. */
+  title?: string;
+  /** Whether the signed-in user is Pro — gates the Explain button. */
+  isPro?: boolean;
+  /** Shows the "Explain" action. Only set from the item drawer's read view
+   * for snippet/command types — not in create/edit forms. */
+  showExplain?: boolean;
 }
 
 export function CodeEditor({
@@ -74,10 +85,16 @@ export function CodeEditor({
   readOnly = false,
   placeholder,
   className,
+  title,
+  isPro = false,
+  showExplain = false,
 }: CodeEditorProps) {
   const { preferences } = useEditorPreferences();
   const [height, setHeight] = useState(MIN_HEIGHT);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
+  const [tab, setTab] = useState<"code" | "explain">("code");
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [isExplaining, setIsExplaining] = useState(false);
 
   const updateHeight = useCallback(() => {
     const editor = editorRef.current;
@@ -97,6 +114,21 @@ export function CodeEditor({
     toast.success("Copied to clipboard");
   }
 
+  async function handleExplain() {
+    if (!title) return;
+
+    setIsExplaining(true);
+    const result = await explainCode({ title, content: value, language: language ?? null });
+    setIsExplaining(false);
+
+    if (result.success && result.data) {
+      setExplanation(result.data);
+      setTab("explain");
+    } else {
+      toast.error(result.error ?? "Failed to generate explanation");
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -111,9 +143,38 @@ export function CodeEditor({
           <span className="size-2.5 rounded-full bg-[#27c93f]" />
         </div>
         <div className="flex items-center gap-2">
-          {language && (
-            <span className="text-xs font-medium text-neutral-400">{language}</span>
+          {explanation ? (
+            <Tabs value={tab} onValueChange={(value) => value && setTab(value as "code" | "explain")}>
+              <TabsList variant="line">
+                <TabsTrigger value="code">Code</TabsTrigger>
+                <TabsTrigger value="explain">Explanation</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          ) : (
+            language && <span className="text-xs font-medium text-neutral-400">{language}</span>
           )}
+          {showExplain &&
+            (isPro ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="text-neutral-400 hover:text-neutral-100"
+                onClick={handleExplain}
+                disabled={isExplaining}
+                title="Explain this code"
+              >
+                {isExplaining ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="size-3.5" />
+                )}
+              </Button>
+            ) : (
+              <span title="AI features require Pro subscription">
+                <Crown className="size-3.5 text-neutral-500" />
+              </span>
+            ))}
           <Button
             type="button"
             variant="ghost"
@@ -127,35 +188,47 @@ export function CodeEditor({
       </div>
 
       <div style={{ height }} className="min-h-0 transition-[height] duration-100">
-        <Editor
-          value={value}
-          language={language ?? "plaintext"}
-          theme={preferences.theme}
-          beforeMount={handleBeforeMount}
-          onChange={(newValue) => onChange?.(newValue ?? "")}
-          onMount={handleMount}
-          options={{
-            readOnly,
-            domReadOnly: readOnly,
-            minimap: { enabled: preferences.minimap },
-            fontSize: preferences.fontSize,
-            tabSize: preferences.tabSize,
-            lineNumbers: "on",
-            scrollBeyondLastLine: false,
-            wordWrap: preferences.wordWrap ? "on" : "off",
-            automaticLayout: true,
-            padding: { top: 12, bottom: 12 },
-            renderLineHighlight: readOnly ? "none" : "line",
-            scrollbar: {
-              vertical: "auto",
-              horizontal: "auto",
-              verticalScrollbarSize: 8,
-              horizontalScrollbarSize: 8,
-              useShadows: false,
-            },
-            placeholder,
-          }}
-        />
+        <div className={cn("h-full", tab === "explain" && "hidden")}>
+          <Editor
+            value={value}
+            language={language ?? "plaintext"}
+            theme={preferences.theme}
+            beforeMount={handleBeforeMount}
+            onChange={(newValue) => onChange?.(newValue ?? "")}
+            onMount={handleMount}
+            options={{
+              readOnly,
+              domReadOnly: readOnly,
+              minimap: { enabled: preferences.minimap },
+              fontSize: preferences.fontSize,
+              tabSize: preferences.tabSize,
+              lineNumbers: "on",
+              scrollBeyondLastLine: false,
+              wordWrap: preferences.wordWrap ? "on" : "off",
+              automaticLayout: true,
+              padding: { top: 12, bottom: 12 },
+              renderLineHighlight: readOnly ? "none" : "line",
+              scrollbar: {
+                vertical: "auto",
+                horizontal: "auto",
+                verticalScrollbarSize: 8,
+                horizontalScrollbarSize: 8,
+                useShadows: false,
+              },
+              placeholder,
+            }}
+          />
+        </div>
+        {explanation && (
+          <div
+            className={cn(
+              "markdown-preview h-full overflow-auto p-3",
+              tab !== "explain" && "hidden",
+            )}
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{explanation}</ReactMarkdown>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { generateAutoTags, generateDescription } from "./ai";
+import { generateAutoTags, generateDescription, explainCode } from "./ai";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -212,6 +212,111 @@ describe("generateDescription", () => {
     expect(result).toEqual({
       success: false,
       error: "Something went wrong generating a description.",
+    });
+  });
+});
+
+const validExplainPayload = {
+  title: "Debounce hook",
+  content: "function debounce() {}",
+  language: "typescript",
+};
+
+describe("explainCode", () => {
+  const originalPlanGating = process.env.PLAN_GATING_ENABLED;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.PLAN_GATING_ENABLED = originalPlanGating;
+    vi.mocked(checkRateLimit).mockResolvedValue({ success: true, remaining: 19, reset: Date.now() });
+  });
+
+  it("rejects an empty title before touching auth", async () => {
+    const result = await explainCode({ ...validExplainPayload, title: "  " });
+
+    expect(result).toEqual({ success: false, error: "Title is required" });
+    expect(auth).not.toHaveBeenCalled();
+  });
+
+  it("rejects empty content before touching auth", async () => {
+    const result = await explainCode({ ...validExplainPayload, content: "  " });
+
+    expect(result).toEqual({ success: false, error: "Content is required" });
+    expect(auth).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when there is no session", async () => {
+    vi.mocked(auth).mockResolvedValue(null);
+
+    const result = await explainCode(validExplainPayload);
+
+    expect(result).toEqual({ success: false, error: "Not authenticated" });
+    expect(responsesCreate).not.toHaveBeenCalled();
+  });
+
+  it("blocks non-Pro users when plan gating is enabled", async () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: false } } as never);
+
+    const result = await explainCode(validExplainPayload);
+
+    expect(result).toEqual({ success: false, error: "AI features require a Pro plan" });
+    expect(responsesCreate).not.toHaveBeenCalled();
+  });
+
+  it("allows non-Pro users when plan gating is disabled", async () => {
+    process.env.PLAN_GATING_ENABLED = "false";
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: false } } as never);
+    responsesCreate.mockResolvedValue({ output_text: "This debounces input changes." });
+
+    const result = await explainCode(validExplainPayload);
+
+    expect(result).toEqual({ success: true, data: "This debounces input changes." });
+  });
+
+  it("returns an error when the rate limit is exceeded", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: true } } as never);
+    vi.mocked(checkRateLimit).mockResolvedValue({ success: false, remaining: 0, reset: Date.now() });
+
+    const result = await explainCode(validExplainPayload);
+
+    expect(result).toEqual({ success: false, error: "Too many AI requests. Try again later." });
+    expect(responsesCreate).not.toHaveBeenCalled();
+  });
+
+  it("returns the explanation on the happy path", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: true } } as never);
+    responsesCreate.mockResolvedValue({ output_text: "## What it does\n\nDebounces input." });
+
+    const result = await explainCode(validExplainPayload);
+
+    expect(result).toEqual({ success: true, data: "## What it does\n\nDebounces input." });
+    expect(responsesCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ model: "gpt-5-nano" })
+    );
+  });
+
+  it("returns an error when the model produces an empty explanation", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: true } } as never);
+    responsesCreate.mockResolvedValue({ output_text: "   " });
+
+    const result = await explainCode(validExplainPayload);
+
+    expect(result).toEqual({
+      success: false,
+      error: "Couldn't generate an explanation. Please try again.",
+    });
+  });
+
+  it("returns a generic error when the OpenAI call throws", async () => {
+    vi.mocked(auth).mockResolvedValue({ user: { id: "user-1", isPro: true } } as never);
+    responsesCreate.mockRejectedValue(new Error("network error"));
+
+    const result = await explainCode(validExplainPayload);
+
+    expect(result).toEqual({
+      success: false,
+      error: "Something went wrong generating an explanation.",
     });
   });
 });

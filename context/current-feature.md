@@ -1,12 +1,30 @@
-# Current Feature
+# Current Feature: AI Explain Code
 
 ## Status
 
+Implemented, pending review
 
 ## Goals
 
+- Add an `explainCode` server action (auth, Pro gating, Zod validation, rate limiting) mirroring `generateAutoTags`/`generateDescription`'s pattern
+- Add an "Explain" button (Sparkles icon) to the code editor window controls header, next to Copy
+- Only show the button for snippet and command types, and only in the item drawer's read view (not create/edit forms)
+- After generating, show Code/Explain tabs in the editor header to toggle between the raw code and the explanation
+- Render the explanation as markdown, in the same container space as the code editor
+- Explanation should be concise (~200-300 words): what the code does + key concepts
+- Loading state via `Loader2` spinner while generating
+- Pro gating in the UI: Crown icon + tooltip ("AI features require Pro subscription") for free users
+- Error handling via toast (Pro gating, rate limit, AI service errors)
+- Follow existing AI-feature patterns (`generateAutoTags`, `generateDescription`)
+- Unit tests for the server action
 
 ## Notes
+
+- Explanations are not persisted to the DB — regenerated on each click
+- Not available in create/edit forms, only in the item drawer's read view
+- `isPro` needs to be threaded as a prop down to the item drawer / code editor (already done for the auto-tag/description features — reuse that plumbing)
+- See `docs/ai-integration-plan.md` for full architectural context
+- Full spec: `context/features/ai-explain-spec.md`
 
 
 ## History
