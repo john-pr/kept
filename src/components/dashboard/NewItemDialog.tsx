@@ -31,6 +31,7 @@ import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionOption } from "@/lib/db/collections";
 import { createItem } from "@/actions/items";
 import { iconMap } from "@/lib/icon-map";
+import { LANGUAGE_OPTIONS } from "@/lib/languages";
 
 const CONTENT_SLUGS = new Set(["snippets", "prompts", "commands", "notes"]);
 const LANGUAGE_SLUGS = new Set(["snippets", "commands"]);
@@ -164,7 +165,7 @@ export function NewItemDialog({
                   ) : null}
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent alignItemWithTrigger={false}>
                 {selectableTypes.map((type) => {
                   const TypeIcon = iconMap[type.icon];
                   return (
@@ -198,6 +199,27 @@ export function NewItemDialog({
             />
           </div>
 
+          {showLanguage && (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="new-item-language">Language</Label>
+              <Select
+                value={form.language}
+                onValueChange={(value) => setForm({ ...form, language: value ?? "" })}
+              >
+                <SelectTrigger id="new-item-language" className="w-full">
+                  <SelectValue placeholder="Select a language" />
+                </SelectTrigger>
+                <SelectContent alignItemWithTrigger={false}>
+                  {LANGUAGE_OPTIONS.map((lang) => (
+                    <SelectItem key={lang.value} value={lang.value} label={lang.label}>
+                      {lang.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {showContent && (
             <div className="flex flex-col gap-2">
               <Label htmlFor="new-item-content">Content</Label>
@@ -223,18 +245,6 @@ export function NewItemDialog({
                   onChange={(e) => setForm({ ...form, content: e.target.value })}
                 />
               )}
-            </div>
-          )}
-
-          {showLanguage && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="new-item-language">Language</Label>
-              <Input
-                id="new-item-language"
-                placeholder="e.g. typescript"
-                value={form.language}
-                onChange={(e) => setForm({ ...form, language: e.target.value })}
-              />
             </div>
           )}
 

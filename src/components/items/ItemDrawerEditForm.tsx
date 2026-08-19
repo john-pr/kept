@@ -8,8 +8,16 @@ import { Label } from "@/components/ui/label";
 import { CodeEditor } from "@/components/items/CodeEditor";
 import { MarkdownEditor } from "@/components/items/MarkdownEditor";
 import { CollectionMultiSelect } from "@/components/items/CollectionMultiSelect";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { ItemDetailResponse, EditFormState } from "@/components/items/ItemDrawer";
 import type { CollectionOption } from "@/lib/db/collections";
+import { LANGUAGE_OPTIONS } from "@/lib/languages";
 
 interface ItemDrawerEditFormProps {
   item: ItemDetailResponse;
@@ -69,6 +77,27 @@ export function ItemDrawerEditForm({
         />
       </div>
 
+      {showLanguage && (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="item-language">Language</Label>
+          <Select
+            value={form.language}
+            onValueChange={(value) => setForm({ ...form, language: value ?? "" })}
+          >
+            <SelectTrigger id="item-language" className="w-full">
+              <SelectValue placeholder="Select a language" />
+            </SelectTrigger>
+            <SelectContent alignItemWithTrigger={false}>
+              {LANGUAGE_OPTIONS.map((lang) => (
+                <SelectItem key={lang.value} value={lang.value} label={lang.label}>
+                  {lang.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {showContent && (
         <div className="flex flex-col gap-2">
           <Label htmlFor="item-content">Content</Label>
@@ -91,17 +120,6 @@ export function ItemDrawerEditForm({
               onChange={(e) => setForm({ ...form, content: e.target.value })}
             />
           )}
-        </div>
-      )}
-
-      {showLanguage && (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="item-language">Language</Label>
-          <Input
-            id="item-language"
-            value={form.language}
-            onChange={(e) => setForm({ ...form, language: e.target.value })}
-          />
         </div>
       )}
 
