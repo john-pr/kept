@@ -1,17 +1,29 @@
-# Current Feature
+# Current Feature: AI Auto-Tagging
 
 ## Status
 Ready for review
 
 ## Goals
-- Replace the free-text "Language" input (New Item dialog + Item Drawer edit form) with a dropdown of common programming languages.
-- Move the Language field above the Content field (currently below) in both places, so the code editor highlights correctly as soon as a language is picked.
-- Fix the item Type `Select` in `NewItemDialog.tsx` so its dropdown opens below the trigger instead of aligning with the currently selected item (set `alignItemWithTrigger={false}`, matching `FavoritesList.tsx`'s existing fix for the same base-ui quirk).
+- Add AI-powered tag suggestions for items using OpenAI's `gpt-5-nano` model, established as the project's first AI feature.
+- Create the OpenAI client foundation (`src/lib/openai.ts`: lazy client + `AI_MODEL` constant) for this and future AI features.
+- Add a `generateAutoTags` server action: Zod-validated, session-authenticated, Pro-gated, rate-limited (20 requests/hour per user).
+- Add AI rate limit config to the existing `src/lib/rate-limit.ts` utility.
+- Add a "Suggest Tags" button (Sparkles icon, ghost variant) near the tags input in both the New Item dialog and the Item Drawer edit form.
+- On click, call the action with the item's title/content (truncated to 2000 chars) and return 3-5 freeform tag suggestions.
+- Display suggestions as badges with accept (check) / reject (X) controls per tag; accepted tags get added to the item's tag list (freeform — not limited to existing DB tags).
+- Hide the Suggest Tags button for free users (Pro-only UI gating), on top of server-side Pro gating.
+- Error handling via toast (Pro gating, rate limit, AI service errors).
+- Follow existing patterns (`updateItem`/`createItem` action shape, existing Pro-gating/rate-limit conventions).
+- Unit tests for the server action.
 
 ## Notes
-- `CodeEditor.tsx` already accepts a `language` prop used directly as the Monaco language id for live highlighting — no editor changes needed, just how the value is chosen/positioned.
-- New shared `src/lib/languages.ts` list of common language ids/labels (e.g. typescript, javascript, python, etc.) to back the dropdown, reused by both `NewItemDialog.tsx` and `ItemDrawerEditForm.tsx`.
-- Applies only to `showLanguage` types (snippet/command).
+- Full spec: `context/features/ai-auto-tag-spec.md`. Broader four-feature architectural context: `docs/ai-integration-plan.md` (kept in sync with the spec as of 2026-08-19).
+- **CRITICAL gotcha, verified 2026-08-19 against current OpenAI docs**: `gpt-5-nano` is a reasoning model. Use the **Responses API** (`client.responses.create`) for auto-tag generation, not Chat Completions — `instructions` (system) + `input` (user) + `text: { format: { type: "json_object" } }`, reading the result from `response.output_text`. Chat Completions is technically supported for this model too, but reasoning tokens can silently eat the `max_completion_tokens`/output budget and leave visible content empty unless `reasoning_effort` is tuned down — Responses API sidesteps this and is OpenAI's own recommended path for reasoning models, so don't second-guess it back to Chat Completions.
+- Use `json_object` format + manual parsing, not `zodResponseFormat`/strict `json_schema` — observed to consume excessive reasoning tokens and hit length limits with this model.
+- The model may return `{"tags": [...]}` OR a bare `[...]` array — handle both shapes defensively.
+- Always normalize tags to lowercase after receiving them.
+- `OPENAI_API_KEY` already in `.env`.
+- `isPro` is available server-side via session but not currently passed into the create/edit UI components — thread it as a prop (or fetch client-side) for the button's UI-level gating; server-side gating in the action is what actually enforces it.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

@@ -71,6 +71,7 @@ export function TopBar({
           <NewItemDialog
             itemTypes={itemTypes}
             collectionOptions={collectionOptions}
+            isPro={user.isPro}
             trigger={<Button size="icon-sm" aria-label="New Item" />}
           >
             <Plus />
@@ -101,7 +102,12 @@ export function TopBar({
           <FolderPlus />
           New Collection
         </NewCollectionDialog>
-        <NewItemDialog itemTypes={itemTypes} collectionOptions={collectionOptions} trigger={<Button />}>
+        <NewItemDialog
+          itemTypes={itemTypes}
+          collectionOptions={collectionOptions}
+          isPro={user.isPro}
+          trigger={<Button />}
+        >
           <Plus />
           New Item
         </NewItemDialog>

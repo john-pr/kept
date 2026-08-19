@@ -69,13 +69,21 @@ must never reach the browser (see §7).
 
 All four features are single-turn, non-conversational transformations of
 data the server already has (an `Item`'s `title`/`content`/`description`,
-or freeform prompt text). None need multi-turn chat history, so the
-Chat Completions API (`client.chat.completions.create`) is the right
-level — no need for the stateful Responses API or Assistants API.
+or freeform prompt text). None need multi-turn chat history, so on that
+axis alone Chat Completions would be enough — but `gpt-5-nano` is a
+**reasoning model**, and reasoning models are prone to returning empty
+visible content over Chat Completions when reasoning tokens eat the
+`max_completion_tokens` budget. OpenAI's own guidance is to prefer the
+Responses API for reasoning models. Auto-tag suggestions hit this in
+practice (see `context/features/ai-auto-tag-spec.md`'s gotchas section),
+so **auto-tag uses the Responses API** (`client.responses.create`), not
+Chat Completions. The other three features aren't confirmed to need the
+same treatment yet — revisit them if they show the same empty-content
+symptom once built.
 
 | Feature | Input | Output shape | Structured output? |
 |---|---|---|---|
-| Auto-tag suggestions | `item.title`, `item.content`/`description` | `string[]` (3–5 tags) | Yes — JSON schema |
+| Auto-tag suggestions | `item.title`, `item.content`/`description` | `string[]` (3–5 tags) | Yes — `json_object`, parsed manually |
 | AI summary | `item.content` | Plain text, 1–3 sentences | No — plain text sufficient |
 | Explain this code | `item.content`, `item.language` | Markdown explanation | No — streamed markdown |
 | Prompt optimizer | user's draft prompt text | Rewritten prompt text | No — streamed text |
@@ -83,39 +91,32 @@ level — no need for the stateful Responses API or Assistants API.
 ### Structured outputs for auto-tagging
 
 Auto-tagging is the one feature where the result is consumed as data
-(tags get written to the `Tag` table), not displayed as prose — use
-`response_format: json_schema` with `strict: true` so the model can't
-return malformed JSON that needs defensive parsing:
+(tags get written to the `Tag` table), not displayed as prose. Use the
+**Responses API** with `text: { format: { type: "json_object" } }` and
+parse the result manually — `strict: true` JSON-schema structured output
+(`zodResponseFormat` or raw `json_schema`) has been observed to consume
+excessive reasoning tokens with `gpt-5-nano` and hit length limits before
+completing, so `json_object` + defensive parsing is the safer choice for
+this model specifically:
 
 ```ts
-const completion = await client.chat.completions.create({
+const response = await client.responses.create({
   model: AI_MODEL,
-  messages: [
-    { role: "developer", content: "You suggest concise, lowercase tags for a developer's saved snippet/note. Return 3-5 tags." },
-    { role: "user", content: `Title: ${title}\n\nContent:\n${content.slice(0, 4000)}` },
-  ],
-  response_format: {
-    type: "json_schema",
-    json_schema: {
-      name: "tag_suggestions",
-      strict: true,
-      schema: {
-        type: "object",
-        properties: {
-          tags: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 5 },
-        },
-        required: ["tags"],
-        additionalProperties: false,
-      },
-    },
+  instructions: "You suggest concise, lowercase tags for a developer's saved snippet/note. Return 3-5 tags.",
+  input: `Title: ${title}\n\nContent:\n${content.slice(0, 4000)}`,
+  text: {
+    format: { type: "json_object" },
   },
 });
+
+const raw = JSON.parse(response.output_text);
+// The model may return {"tags": [...]} OR a bare [...] array — handle both.
+const tags = (Array.isArray(raw) ? raw : raw.tags) ?? [];
+const normalized = tags.map((tag: string) => tag.trim().toLowerCase()).filter(Boolean);
 ```
 
-Prefer this over `openai/helpers/zod`'s `zodResponseFormat` unless a Zod
-schema is already needed for something else — the raw JSON schema avoids
-an extra dependency surface for a shape this small. If more structured
-features are added later, revisit `zodResponseFormat` for DRYness.
+No `zodResponseFormat`/`json_schema` here, and no `max_tokens` — see
+`max_output_tokens` in §6 for capping this call's length instead.
 
 ### Truncate input content
 
@@ -331,10 +332,15 @@ against bugs in the app-level check, not just abuse.
   swap is a one-line change.
 - **Truncate inputs** (§2) — the single biggest cost lever. A 50KB
   snippet shouldn't be sent in full for a tag-suggestion call.
-- **Cap output tokens** via `max_completion_tokens` — tags need maybe
-  50 tokens, summaries 150, explanations/prompt-rewrites more (500–1000).
-  Set a per-feature cap rather than relying on the model to naturally
-  stop.
+- **Cap output tokens** — `max_output_tokens` for the Responses API
+  (auto-tag), `max_completion_tokens` for Chat Completions (the other
+  three features, if they stay on Chat Completions): tags need maybe 50
+  tokens, summaries 150, explanations/prompt-rewrites more (500–1000).
+  For reasoning models this budget also has to cover reasoning tokens,
+  not just visible output — leave headroom rather than setting it as
+  tight as the visible-text estimate alone would suggest, or the call
+  can come back with empty content (see §2). Set a per-feature cap
+  rather than relying on the model to naturally stop.
 - **No retries on user-facing latency-sensitive paths beyond the SDK
   default (2)** — retrying a 3rd/4th time just to eventually fail is
   wasted spend; surface the error and let the user retry manually.

@@ -18,6 +18,7 @@ import {
 import type { ItemDetailResponse, EditFormState } from "@/components/items/ItemDrawer";
 import type { CollectionOption } from "@/lib/db/collections";
 import { LANGUAGE_OPTIONS } from "@/lib/languages";
+import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 
 interface ItemDrawerEditFormProps {
   item: ItemDetailResponse;
@@ -29,6 +30,7 @@ interface ItemDrawerEditFormProps {
   showUrl: boolean;
   collectionOptions: CollectionOption[];
   isSaving: boolean;
+  isPro: boolean;
   onSave: () => void;
   onCancel: () => void;
 }
@@ -43,9 +45,17 @@ export function ItemDrawerEditForm({
   showUrl,
   collectionOptions,
   isSaving,
+  isPro,
   onSave,
   onCancel,
 }: ItemDrawerEditFormProps) {
+  function handleAcceptTag(tag: string) {
+    const currentTags = form.tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+    setForm({ ...form, tags: [...currentTags, tag].join(", ") });
+  }
   return (
     <>
       <div className="flex items-center gap-2">
@@ -142,6 +152,17 @@ export function ItemDrawerEditForm({
           value={form.tags}
           onChange={(e) => setForm({ ...form, tags: e.target.value })}
         />
+        {isPro && (
+          <SuggestTagsButton
+            title={form.title}
+            content={showContent ? form.content : (form.description || null)}
+            existingTags={form.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter((t) => t.length > 0)}
+            onAcceptTag={handleAcceptTag}
+          />
+        )}
       </div>
 
       <div className="flex flex-col gap-2">

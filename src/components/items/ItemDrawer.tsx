@@ -16,6 +16,7 @@ export type ItemDetailResponse = Omit<ItemDetail, "createdAt" | "updatedAt"> & {
   updatedAt: string;
   canEdit: boolean;
   collectionOptions: CollectionOption[];
+  isPro: boolean;
 };
 
 interface ItemDrawerProps {
@@ -151,6 +152,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
         updatedAt: result.data.updatedAt.toString(),
         canEdit: item.canEdit,
         collectionOptions: item.collectionOptions,
+        isPro: item.isPro,
       });
       setIsEditing(false);
       setForm(null);
@@ -248,6 +250,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   showUrl={showUrl}
                   collectionOptions={item.collectionOptions}
                   isSaving={isSaving}
+                  isPro={item.isPro}
                   onSave={handleSave}
                   onCancel={handleCancel}
                 />

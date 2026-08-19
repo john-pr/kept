@@ -32,6 +32,7 @@ import type { CollectionOption } from "@/lib/db/collections";
 import { createItem } from "@/actions/items";
 import { iconMap } from "@/lib/icon-map";
 import { LANGUAGE_OPTIONS } from "@/lib/languages";
+import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 
 const CONTENT_SLUGS = new Set(["snippets", "prompts", "commands", "notes"]);
 const LANGUAGE_SLUGS = new Set(["snippets", "commands"]);
@@ -50,6 +51,8 @@ interface NewItemDialogProps {
   children: ReactNode;
   /** Preselect and lock the type picker to this item type id (e.g. from a type-specific page). */
   defaultItemTypeId?: string;
+  /** Shows the AI "Suggest Tags" button. Pro-only feature — omit/false hides it. */
+  isPro?: boolean;
 }
 
 const EMPTY_FORM = {
@@ -69,6 +72,7 @@ export function NewItemDialog({
   trigger,
   children,
   defaultItemTypeId,
+  isPro = false,
 }: NewItemDialogProps) {
   const router = useRouter();
   const selectableTypes = itemTypes;
@@ -98,6 +102,14 @@ export function NewItemDialog({
       setForm(EMPTY_FORM);
       setItemTypeId(initialTypeId);
     }
+  }
+
+  function handleAcceptTag(tag: string) {
+    const currentTags = form.tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+    setForm({ ...form, tags: [...currentTags, tag].join(", ") });
   }
 
   async function handleCreate() {
@@ -279,6 +291,17 @@ export function NewItemDialog({
               value={form.tags}
               onChange={(e) => setForm({ ...form, tags: e.target.value })}
             />
+            {isPro && (
+              <SuggestTagsButton
+                title={form.title}
+                content={showContent ? form.content : (form.description || null)}
+                existingTags={form.tags
+                  .split(",")
+                  .map((t) => t.trim())
+                  .filter((t) => t.length > 0)}
+                onAcceptTag={handleAcceptTag}
+              />
+            )}
           </div>
 
           <CollectionMultiSelect

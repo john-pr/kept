@@ -66,6 +66,7 @@ export default async function ItemsByTypePage({ params, searchParams }: ItemsByT
             itemTypes={itemTypes}
             collectionOptions={collectionOptions}
             defaultItemTypeId={typeSummary.id}
+            isPro={session.user.isPro}
             trigger={<Button />}
           >
             <Plus />

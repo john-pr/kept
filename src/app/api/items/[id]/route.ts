@@ -24,6 +24,6 @@ export async function GET(
 
   return NextResponse.json({
     success: true,
-    data: { ...item, canEdit: true, collectionOptions },
+    data: { ...item, canEdit: true, collectionOptions, isPro: session.user.isPro },
   });
 }
