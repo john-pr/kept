@@ -12,9 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { CollectionFormFields } from "@/components/dashboard/CollectionFormFields";
 import { updateCollection } from "@/actions/collections";
 
 interface EditCollectionDialogProps {
@@ -69,27 +67,13 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
           <DialogDescription>Update the name and description of this collection.</DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="edit-collection-name">Name*</Label>
-            <Input
-              id="edit-collection-name"
-              placeholder="e.g. React Patterns"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="edit-collection-description">Description</Label>
-            <Textarea
-              id="edit-collection-description"
-              placeholder="A short summary of this collection"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
-          </div>
-        </div>
+        <CollectionFormFields
+          idPrefix="edit-collection"
+          name={form.name}
+          onNameChange={(name) => setForm({ ...form, name })}
+          description={form.description}
+          onDescriptionChange={(description) => setForm({ ...form, description })}
+        />
 
         <DialogFooter>
           <Button onClick={handleSave} disabled={form.name.trim() === "" || isSaving}>
