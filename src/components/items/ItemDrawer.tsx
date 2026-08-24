@@ -9,6 +9,7 @@ import type { ItemDetail } from "@/lib/db/items";
 import type { CollectionOption } from "@/lib/db/collections";
 import { deleteItem, toggleItemFavorite, toggleItemPin, updateItem } from "@/actions/items";
 import { parseTagsInput } from "@/lib/tags";
+import { toggleOptimisticField } from "@/hooks/useOptimisticToggle";
 import { ItemDrawerView } from "@/components/items/ItemDrawerView";
 import { ItemDrawerEditForm } from "@/components/items/ItemDrawerEditForm";
 
@@ -165,28 +166,25 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   async function handleToggleFavorite() {
     if (!item) return;
 
-    const next = !item.isFavorite;
-    setItem({ ...item, isFavorite: next });
-    const result = await toggleItemFavorite(item.id, next);
-    if (!result.success) {
-      setItem((current) => (current ? { ...current, isFavorite: !next } : current));
-      toast.error(result.error ?? "Failed to update favorite");
-    }
+    await toggleOptimisticField(
+      item.isFavorite,
+      (next) => setItem((current) => (current ? { ...current, isFavorite: next } : current)),
+      (next) => toggleItemFavorite(item.id, next),
+      "Failed to update favorite"
+    );
     router.refresh();
   }
 
   async function handleTogglePin() {
     if (!item) return;
 
-    const next = !item.isPinned;
-    setItem({ ...item, isPinned: next });
-    const result = await toggleItemPin(item.id, next);
-    if (!result.success) {
-      setItem((current) => (current ? { ...current, isPinned: !next } : current));
-      toast.error(result.error ?? "Failed to update pin");
-    } else {
-      toast.success(next ? "Item pinned" : "Item unpinned");
-    }
+    await toggleOptimisticField(
+      item.isPinned,
+      (next) => setItem((current) => (current ? { ...current, isPinned: next } : current)),
+      (next) => toggleItemPin(item.id, next),
+      "Failed to update pin",
+      (next) => toast.success(next ? "Item pinned" : "Item unpinned")
+    );
     router.refresh();
   }
 
