@@ -18,6 +18,7 @@ import { getCollectionOptions } from "@/lib/db/collections";
 import { deleteFromR2, getKeyFromPublicUrl } from "@/lib/r2";
 import { isOverItemLimit, isPlanGatingEnabled, isProOnlyType } from "@/lib/plan-limits";
 import { checkOwnership } from "@/lib/ownership";
+import type { ActionResult } from "@/types/action-result";
 
 async function getOwnedCollectionIds(userId: string, collectionIds: string[]): Promise<string[]> {
   if (collectionIds.length === 0) return [];
@@ -53,12 +54,6 @@ const createItemSchema = z.object({
 });
 
 export type CreateItemPayload = z.infer<typeof createItemSchema>;
-
-interface ActionResult<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
 
 export async function updateItem(
   itemId: string,
