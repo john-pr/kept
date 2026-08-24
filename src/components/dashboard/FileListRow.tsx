@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { Download, Pin, Star } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { iconMap } from "@/lib/icon-map";
 import { getFileIconName } from "@/lib/file-icon";
@@ -10,13 +8,18 @@ import { formatFileSize } from "@/lib/file-constraints";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
+import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { toggleItemFavorite } from "@/actions/items";
 
 export function FileListRow({ item }: { item: ItemSummary }) {
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
   const Icon = iconMap[getFileIconName(item.fileName ?? item.title)];
-  const [isFavorite, setIsFavorite] = useState(item.isFavorite);
+  const [isFavorite, toggleFavorite] = useOptimisticToggle(
+    item.isFavorite,
+    (next) => toggleItemFavorite(item.id, next),
+    "Failed to update favorite"
+  );
 
   function handleDownload(event: React.MouseEvent) {
     event.stopPropagation();
@@ -25,13 +28,7 @@ export function FileListRow({ item }: { item: ItemSummary }) {
 
   async function handleToggleFavorite(event: React.MouseEvent) {
     event.stopPropagation();
-    const next = !isFavorite;
-    setIsFavorite(next);
-    const result = await toggleItemFavorite(item.id, next);
-    if (!result.success) {
-      setIsFavorite(!next);
-      toast.error(result.error ?? "Failed to update favorite");
-    }
+    await toggleFavorite();
   }
 
   return (

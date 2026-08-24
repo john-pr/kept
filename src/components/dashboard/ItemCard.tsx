@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties, type MouseEvent } from "react";
+import { type CSSProperties, type MouseEvent } from "react";
 import { Copy, Pin, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -10,13 +10,18 @@ import { iconMap } from "@/lib/icon-map";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
+import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { toggleItemFavorite } from "@/actions/items";
 
 export function ItemCard({ item }: { item: ItemSummary }) {
   const Icon = iconMap[item.typeIcon];
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
-  const [isFavorite, setIsFavorite] = useState(item.isFavorite);
+  const [isFavorite, toggleFavorite] = useOptimisticToggle(
+    item.isFavorite,
+    (next) => toggleItemFavorite(item.id, next),
+    "Failed to update favorite"
+  );
 
   function handleCopy(event: MouseEvent) {
     event.stopPropagation();
@@ -26,13 +31,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
 
   async function handleToggleFavorite(event: MouseEvent) {
     event.stopPropagation();
-    const next = !isFavorite;
-    setIsFavorite(next);
-    const result = await toggleItemFavorite(item.id, next);
-    if (!result.success) {
-      setIsFavorite(!next);
-      toast.error(result.error ?? "Failed to update favorite");
-    }
+    await toggleFavorite();
   }
 
   return (

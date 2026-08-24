@@ -1,28 +1,26 @@
 "use client";
 
-import { useState, type MouseEvent } from "react";
+import { type MouseEvent } from "react";
 import { Expand, Pin, Star } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
+import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { toggleItemFavorite } from "@/actions/items";
 
 export function ImageThumbnailCard({ item }: { item: ItemSummary }) {
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
-  const [isFavorite, setIsFavorite] = useState(item.isFavorite);
+  const [isFavorite, toggleFavorite] = useOptimisticToggle(
+    item.isFavorite,
+    (next) => toggleItemFavorite(item.id, next),
+    "Failed to update favorite"
+  );
 
   async function handleToggleFavorite(event: MouseEvent) {
     event.stopPropagation();
-    const next = !isFavorite;
-    setIsFavorite(next);
-    const result = await toggleItemFavorite(item.id, next);
-    if (!result.success) {
-      setIsFavorite(!next);
-      toast.error(result.error ?? "Failed to update favorite");
-    }
+    await toggleFavorite();
   }
 
   return (
