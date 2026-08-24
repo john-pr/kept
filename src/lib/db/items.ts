@@ -179,6 +179,57 @@ export interface ItemDetail {
   collections: { id: string; name: string }[];
 }
 
+const itemDetailInclude = {
+  itemType: true,
+  tags: true,
+  collections: { include: { collection: true } },
+} as const;
+
+function toItemDetail(item: {
+  id: string;
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
+  isFavorite: boolean;
+  isPinned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: { name: string }[];
+  itemType: { name: string; icon: string; color: string };
+  collections: { collection: { id: string; name: string } }[];
+}): ItemDetail {
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    content: item.content,
+    url: item.url,
+    language: item.language,
+    fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    fileSize: item.fileSize,
+    isFavorite: item.isFavorite,
+    isPinned: item.isPinned,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    tags: item.tags.map((tag) => tag.name),
+    itemType: {
+      name: item.itemType.name,
+      icon: item.itemType.icon,
+      color: item.itemType.color,
+    },
+    collections: item.collections.map(({ collection }) => ({
+      id: collection.id,
+      name: collection.name,
+    })),
+  };
+}
+
 export async function getItemOwnerId(id: string): Promise<string | null> {
   const item = await prisma.item.findUnique({ where: { id }, select: { userId: true } });
   return item?.userId ?? null;
@@ -215,38 +266,10 @@ export async function updateItem(id: string, data: UpdateItemInput): Promise<Ite
         create: data.collectionIds.map((collectionId) => ({ collectionId })),
       },
     },
-    include: {
-      itemType: true,
-      tags: true,
-      collections: { include: { collection: true } },
-    },
+    include: itemDetailInclude,
   });
 
-  return {
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    content: item.content,
-    url: item.url,
-    language: item.language,
-    fileUrl: item.fileUrl,
-    fileName: item.fileName,
-    fileSize: item.fileSize,
-    isFavorite: item.isFavorite,
-    isPinned: item.isPinned,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-    tags: item.tags.map((tag) => tag.name),
-    itemType: {
-      name: item.itemType.name,
-      icon: item.itemType.icon,
-      color: item.itemType.color,
-    },
-    collections: item.collections.map(({ collection }) => ({
-      id: collection.id,
-      name: collection.name,
-    })),
-  };
+  return toItemDetail(item);
 }
 
 export async function getItemTypeById(id: string): Promise<{ id: string; name: string } | null> {
@@ -293,38 +316,10 @@ export async function createItem(data: CreateItemInput): Promise<ItemDetail> {
         create: data.collectionIds.map((collectionId) => ({ collectionId })),
       },
     },
-    include: {
-      itemType: true,
-      tags: true,
-      collections: { include: { collection: true } },
-    },
+    include: itemDetailInclude,
   });
 
-  return {
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    content: item.content,
-    url: item.url,
-    language: item.language,
-    fileUrl: item.fileUrl,
-    fileName: item.fileName,
-    fileSize: item.fileSize,
-    isFavorite: item.isFavorite,
-    isPinned: item.isPinned,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-    tags: item.tags.map((tag) => tag.name),
-    itemType: {
-      name: item.itemType.name,
-      icon: item.itemType.icon,
-      color: item.itemType.color,
-    },
-    collections: item.collections.map(({ collection }) => ({
-      id: collection.id,
-      name: collection.name,
-    })),
-  };
+  return toItemDetail(item);
 }
 
 export async function deleteItem(id: string): Promise<void> {
@@ -423,38 +418,10 @@ export async function getFavoriteItems(userId: string): Promise<FavoriteItem[]> 
 export async function getItemById(id: string, userId: string): Promise<ItemDetail | null> {
   const item = await prisma.item.findFirst({
     where: { id, userId },
-    include: {
-      itemType: true,
-      tags: true,
-      collections: { include: { collection: true } },
-    },
+    include: itemDetailInclude,
   });
 
   if (!item) return null;
 
-  return {
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    content: item.content,
-    url: item.url,
-    language: item.language,
-    fileUrl: item.fileUrl,
-    fileName: item.fileName,
-    fileSize: item.fileSize,
-    isFavorite: item.isFavorite,
-    isPinned: item.isPinned,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-    tags: item.tags.map((tag) => tag.name),
-    itemType: {
-      name: item.itemType.name,
-      icon: item.itemType.icon,
-      color: item.itemType.color,
-    },
-    collections: item.collections.map(({ collection }) => ({
-      id: collection.id,
-      name: collection.name,
-    })),
-  };
+  return toItemDetail(item);
 }
