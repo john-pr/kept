@@ -7,21 +7,12 @@ import { buildAutoTagInput, parseAutoTagResponse } from "@/lib/auto-tag";
 import { buildDescriptionInput, parseDescriptionResponse } from "@/lib/description";
 import { buildExplainInput, parseExplainResponse } from "@/lib/explain";
 import { buildOptimizePromptInput, parseOptimizePromptResponse } from "@/lib/optimize-prompt";
-import { isPlanGatingEnabled } from "@/lib/plan-limits";
+import { isAiProGated } from "@/lib/plan-limits";
 import { checkRateLimit, retryAfterMessage } from "@/lib/rate-limit";
 import type { ActionResult } from "@/types/action-result";
 
-const AUTO_TAG_RATE_LIMIT = 20;
-const AUTO_TAG_RATE_WINDOW_SECONDS = 3600;
-
-const DESCRIPTION_RATE_LIMIT = 20;
-const DESCRIPTION_RATE_WINDOW_SECONDS = 3600;
-
-const EXPLAIN_RATE_LIMIT = 20;
-const EXPLAIN_RATE_WINDOW_SECONDS = 3600;
-
-const OPTIMIZE_PROMPT_RATE_LIMIT = 20;
-const OPTIMIZE_PROMPT_RATE_WINDOW_SECONDS = 3600;
+const AI_RATE_LIMIT = 20;
+const AI_RATE_WINDOW_SECONDS = 3600;
 
 const generateAutoTagsSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -76,16 +67,11 @@ export async function generateAutoTags(
     return { success: false, error: "Not authenticated" };
   }
 
-  if (isPlanGatingEnabled() && !session.user.isPro) {
+  if (isAiProGated(session.user.isPro)) {
     return { success: false, error: "AI features require a Pro plan" };
   }
 
-  const rateLimit = await checkRateLimit(
-    "ai-auto-tag",
-    session.user.id,
-    AUTO_TAG_RATE_LIMIT,
-    AUTO_TAG_RATE_WINDOW_SECONDS
-  );
+  const rateLimit = await checkRateLimit("ai-auto-tag", session.user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
   if (!rateLimit.success) {
     return { success: false, error: retryAfterMessage(rateLimit.reset) };
   }
@@ -134,16 +120,11 @@ export async function generateDescription(
     return { success: false, error: "Not authenticated" };
   }
 
-  if (isPlanGatingEnabled() && !session.user.isPro) {
+  if (isAiProGated(session.user.isPro)) {
     return { success: false, error: "AI features require a Pro plan" };
   }
 
-  const rateLimit = await checkRateLimit(
-    "ai-description",
-    session.user.id,
-    DESCRIPTION_RATE_LIMIT,
-    DESCRIPTION_RATE_WINDOW_SECONDS
-  );
+  const rateLimit = await checkRateLimit("ai-description", session.user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
   if (!rateLimit.success) {
     return { success: false, error: retryAfterMessage(rateLimit.reset) };
   }
@@ -187,16 +168,11 @@ export async function explainCode(data: ExplainCodePayload): Promise<ActionResul
     return { success: false, error: "Not authenticated" };
   }
 
-  if (isPlanGatingEnabled() && !session.user.isPro) {
+  if (isAiProGated(session.user.isPro)) {
     return { success: false, error: "AI features require a Pro plan" };
   }
 
-  const rateLimit = await checkRateLimit(
-    "ai-explain",
-    session.user.id,
-    EXPLAIN_RATE_LIMIT,
-    EXPLAIN_RATE_WINDOW_SECONDS
-  );
+  const rateLimit = await checkRateLimit("ai-explain", session.user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
   if (!rateLimit.success) {
     return { success: false, error: retryAfterMessage(rateLimit.reset) };
   }
@@ -241,16 +217,11 @@ export async function optimizePrompt(data: OptimizePromptPayload): Promise<Actio
     return { success: false, error: "Not authenticated" };
   }
 
-  if (isPlanGatingEnabled() && !session.user.isPro) {
+  if (isAiProGated(session.user.isPro)) {
     return { success: false, error: "AI features require a Pro plan" };
   }
 
-  const rateLimit = await checkRateLimit(
-    "ai-optimize-prompt",
-    session.user.id,
-    OPTIMIZE_PROMPT_RATE_LIMIT,
-    OPTIMIZE_PROMPT_RATE_WINDOW_SECONDS
-  );
+  const rateLimit = await checkRateLimit("ai-optimize-prompt", session.user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
   if (!rateLimit.success) {
     return { success: false, error: retryAfterMessage(rateLimit.reset) };
   }

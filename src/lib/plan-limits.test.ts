@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   FREE_COLLECTION_LIMIT,
   FREE_ITEM_LIMIT,
+  isAiProGated,
   isOverCollectionLimit,
   isOverItemLimit,
   isPlanGatingEnabled,
@@ -73,5 +74,29 @@ describe("isPlanGatingEnabled", () => {
   it("stays disabled for any other value", () => {
     process.env.PLAN_GATING_ENABLED = "yes";
     expect(isPlanGatingEnabled()).toBe(false);
+  });
+});
+
+describe("isAiProGated", () => {
+  const originalValue = process.env.PLAN_GATING_ENABLED;
+
+  afterEach(() => {
+    process.env.PLAN_GATING_ENABLED = originalValue;
+  });
+
+  it("returns false when plan gating is disabled, regardless of Pro status", () => {
+    process.env.PLAN_GATING_ENABLED = "false";
+    expect(isAiProGated(false)).toBe(false);
+    expect(isAiProGated(true)).toBe(false);
+  });
+
+  it("returns true for a non-Pro user when plan gating is enabled", () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    expect(isAiProGated(false)).toBe(true);
+  });
+
+  it("returns false for a Pro user when plan gating is enabled", () => {
+    process.env.PLAN_GATING_ENABLED = "true";
+    expect(isAiProGated(true)).toBe(false);
   });
 });
