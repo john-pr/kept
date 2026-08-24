@@ -18,6 +18,7 @@ import {
 import type { ItemDetailResponse, EditFormState } from "@/components/items/ItemDrawer";
 import type { CollectionOption } from "@/lib/db/collections";
 import { LANGUAGE_OPTIONS } from "@/lib/languages";
+import { appendTagToInput, parseTagsInput } from "@/lib/tags";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import { SuggestDescriptionButton } from "@/components/items/SuggestDescriptionButton";
 
@@ -51,11 +52,7 @@ export function ItemDrawerEditForm({
   onCancel,
 }: ItemDrawerEditFormProps) {
   function handleAcceptTag(tag: string) {
-    const currentTags = form.tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-    setForm({ ...form, tags: [...currentTags, tag].join(", ") });
+    setForm({ ...form, tags: appendTagToInput(form.tags, tag) });
   }
   return (
     <>
@@ -167,10 +164,7 @@ export function ItemDrawerEditForm({
           <SuggestTagsButton
             title={form.title}
             content={showContent ? form.content : (form.description || null)}
-            existingTags={form.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter((t) => t.length > 0)}
+            existingTags={parseTagsInput(form.tags)}
             onAcceptTag={handleAcceptTag}
           />
         )}

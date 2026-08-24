@@ -32,6 +32,7 @@ import type { CollectionOption } from "@/lib/db/collections";
 import { createItem } from "@/actions/items";
 import { iconMap } from "@/lib/icon-map";
 import { LANGUAGE_OPTIONS } from "@/lib/languages";
+import { appendTagToInput, parseTagsInput } from "@/lib/tags";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import { SuggestDescriptionButton } from "@/components/items/SuggestDescriptionButton";
 
@@ -106,11 +107,7 @@ export function NewItemDialog({
   }
 
   function handleAcceptTag(tag: string) {
-    const currentTags = form.tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-    setForm({ ...form, tags: [...currentTags, tag].join(", ") });
+    setForm({ ...form, tags: appendTagToInput(form.tags, tag) });
   }
 
   async function handleCreate() {
@@ -127,10 +124,7 @@ export function NewItemDialog({
       fileUrl: showFile ? (form.file?.fileUrl ?? null) : null,
       fileName: showFile ? (form.file?.fileName ?? null) : null,
       fileSize: showFile ? (form.file?.fileSize ?? null) : null,
-      tags: form.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0),
+      tags: parseTagsInput(form.tags),
       collectionIds: form.collectionIds,
     });
     setIsSaving(false);
@@ -306,10 +300,7 @@ export function NewItemDialog({
               <SuggestTagsButton
                 title={form.title}
                 content={showContent ? form.content : (form.description || null)}
-                existingTags={form.tags
-                  .split(",")
-                  .map((t) => t.trim())
-                  .filter((t) => t.length > 0)}
+                existingTags={parseTagsInput(form.tags)}
                 onAcceptTag={handleAcceptTag}
               />
             )}
