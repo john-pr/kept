@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createAndSendVerificationEmail } from "@/lib/verification-token";
 import { isEmailVerificationEnabled } from "@/lib/email-verification";
-import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
+import { enforceRateLimit, getRequestIp } from "@/lib/rate-limit";
 import { zodErrorResponse } from "@/lib/api-response";
 
 const registerSchema = z
@@ -21,10 +21,8 @@ const registerSchema = z
 
 export async function POST(request: NextRequest) {
   const ip = getRequestIp(request);
-  const rateLimit = await checkRateLimit("register", ip, 3, 60 * 60);
-  if (!rateLimit.success) {
-    return rateLimitResponse(rateLimit.reset);
-  }
+  const limited = await enforceRateLimit("register", ip, 3, 60 * 60);
+  if (limited) return limited;
 
   const body = await request.json();
   const parsed = registerSchema.safeParse(body);

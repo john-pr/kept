@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createAndSendPasswordResetEmail } from "@/lib/password-reset-token";
-import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
+import { enforceRateLimit, getRequestIp } from "@/lib/rate-limit";
 import { zodErrorResponse } from "@/lib/api-response";
 
 const forgotPasswordSchema = z.object({
@@ -11,10 +11,8 @@ const forgotPasswordSchema = z.object({
 
 export async function POST(request: NextRequest) {
   const ip = getRequestIp(request);
-  const rateLimit = await checkRateLimit("forgot-password", ip, 3, 60 * 60);
-  if (!rateLimit.success) {
-    return rateLimitResponse(rateLimit.reset);
-  }
+  const limited = await enforceRateLimit("forgot-password", ip, 3, 60 * 60);
+  if (limited) return limited;
 
   const body = await request.json();
   const parsed = forgotPasswordSchema.safeParse(body);
