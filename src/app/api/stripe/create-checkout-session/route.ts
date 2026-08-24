@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/auth";
 import { getStripeClient, STRIPE_PRICE_ID_MONTHLY, STRIPE_PRICE_ID_YEARLY } from "@/lib/stripe";
+import { requireApiSessionUser } from "@/lib/auth-guard";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -10,10 +10,8 @@ const createCheckoutSessionSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  }
+  const user = await requireApiSessionUser();
+  if (user instanceof NextResponse) return user;
 
   const body = await request.json();
   const parsed = createCheckoutSessionSchema.safeParse(body);
@@ -32,8 +30,8 @@ export async function POST(request: NextRequest) {
 
   const checkoutSession = await getStripeClient().checkout.sessions.create({
     mode: "subscription",
-    client_reference_id: session.user.id,
-    customer_email: session.user.email ?? undefined,
+    client_reference_id: user.id,
+    customer_email: user.email ?? undefined,
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${APP_URL}/settings?checkout=success`,
     cancel_url: `${APP_URL}/settings?checkout=canceled`,

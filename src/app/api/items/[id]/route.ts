@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getItemById } from "@/lib/db/items";
 import { getCollectionOptions } from "@/lib/db/collections";
+import { requireApiSessionUser } from "@/lib/auth-guard";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  }
+  const user = await requireApiSessionUser();
+  if (user instanceof NextResponse) return user;
 
   const { id } = await params;
   const [item, collectionOptions] = await Promise.all([
-    getItemById(id, session.user.id),
-    getCollectionOptions(session.user.id),
+    getItemById(id, user.id),
+    getCollectionOptions(user.id),
   ]);
 
   if (!item) {
@@ -24,6 +22,6 @@ export async function GET(
 
   return NextResponse.json({
     success: true,
-    data: { ...item, canEdit: true, collectionOptions, isPro: session.user.isPro },
+    data: { ...item, canEdit: true, collectionOptions, isPro: user.isPro },
   });
 }

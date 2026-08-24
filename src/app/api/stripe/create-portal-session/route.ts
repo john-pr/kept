@@ -1,22 +1,20 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getStripeClient } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { requireApiSessionUser } from "@/lib/auth-guard";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export async function POST() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  }
+  const user = await requireApiSessionUser();
+  if (user instanceof NextResponse) return user;
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
     select: { stripeCustomerId: true },
   });
 
-  if (!user?.stripeCustomerId) {
+  if (!dbUser?.stripeCustomerId) {
     return NextResponse.json(
       { success: false, error: "No active subscription found" },
       { status: 400 }
@@ -24,7 +22,7 @@ export async function POST() {
   }
 
   const portalSession = await getStripeClient().billingPortal.sessions.create({
-    customer: user.stripeCustomerId,
+    customer: dbUser.stripeCustomerId,
     return_url: `${APP_URL}/settings`,
   });
 

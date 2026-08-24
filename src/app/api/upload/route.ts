@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { validateFileConstraints, type UploadKind } from "@/lib/file-constraints";
 import { uploadToR2 } from "@/lib/r2";
+import { requireApiSessionUser } from "@/lib/auth-guard";
 
 const VALID_KINDS = new Set<UploadKind>(["file", "image"]);
 
@@ -11,10 +11,8 @@ function sanitizeFileName(fileName: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  }
+  const user = await requireApiSessionUser();
+  if (user instanceof NextResponse) return user;
 
   const formData = await request.formData();
   const file = formData.get("file");
@@ -33,7 +31,7 @@ export async function POST(request: NextRequest) {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const key = `${session.user.id}/${randomUUID()}-${sanitizeFileName(file.name)}`;
+  const key = `${user.id}/${randomUUID()}-${sanitizeFileName(file.name)}`;
 
   try {
     const fileUrl = await uploadToR2(key, buffer, file.type);
