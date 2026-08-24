@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { createAndSendVerificationEmail } from "@/lib/verification-token";
 import { isEmailVerificationEnabled } from "@/lib/email-verification";
 import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
+import { zodErrorResponse } from "@/lib/api-response";
 
 const registerSchema = z
   .object({
@@ -29,10 +30,7 @@ export async function POST(request: NextRequest) {
   const parsed = registerSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json(
-      { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 }
-    );
+    return zodErrorResponse(parsed.error);
   }
 
   const { name, email, password } = parsed.data;

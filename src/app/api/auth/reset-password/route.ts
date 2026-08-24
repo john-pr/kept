@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { emailFromResetIdentifier } from "@/lib/password-reset-token";
 import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
+import { zodErrorResponse } from "@/lib/api-response";
 
 const resetPasswordSchema = z
   .object({
@@ -27,10 +28,7 @@ export async function POST(request: NextRequest) {
   const parsed = resetPasswordSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json(
-      { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 }
-    );
+    return zodErrorResponse(parsed.error);
   }
 
   const { token, password } = parsed.data;
