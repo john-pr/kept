@@ -4,11 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { BackToSignInLink } from "@/components/auth/BackToSignInLink";
 import { toast } from "sonner";
 
 const resetPasswordSchema = z
@@ -119,15 +120,7 @@ export function ResetPasswordForm() {
           Reset password
         </Button>
       </form>
-      <p className="text-center text-sm text-muted-foreground">
-        <Link
-          href="/sign-in"
-          className="inline-flex items-center gap-1 text-foreground underline underline-offset-4"
-        >
-          <ArrowLeft className="size-3.5" />
-          Back to sign in
-        </Link>
-      </p>
+      <BackToSignInLink />
     </div>
   );
 }
