@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus, Sparkles } from "lucide-react";
-import { ItemCard } from "@/components/dashboard/ItemCard";
-import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
-import { FileListRow } from "@/components/dashboard/FileListRow";
+import { ItemCardGrid } from "@/components/dashboard/ItemCardGrid";
+import { ImageThumbnailGrid } from "@/components/dashboard/ImageThumbnailGrid";
+import { FileListGroup } from "@/components/dashboard/FileListGroup";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
 import { PaginationControls } from "@/components/dashboard/PaginationControls";
 import { Button } from "@/components/ui/button";
@@ -90,23 +90,11 @@ export default async function ItemsByTypePage({ params, searchParams }: ItemsByT
       ) : items.length === 0 ? (
         <p className="text-sm text-muted-foreground">No items yet.</p>
       ) : isImageGallery ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
-            <ImageThumbnailCard key={item.id} item={item} />
-          ))}
-        </div>
+        <ImageThumbnailGrid items={items} />
       ) : isFileList ? (
-        <div className="rounded-xl border border-border [&>*:last-child]:border-b-0">
-          {items.map((item) => (
-            <FileListRow key={item.id} item={item} />
-          ))}
-        </div>
+        <FileListGroup items={items} />
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
-            <ItemCard key={item.id} item={item} />
-          ))}
-        </div>
+        <ItemCardGrid items={items} />
       )}
       <PaginationControls
         currentPage={currentPage}

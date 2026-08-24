@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { ItemCard } from "@/components/dashboard/ItemCard";
-import { ImageThumbnailCard } from "@/components/dashboard/ImageThumbnailCard";
-import { FileListRow } from "@/components/dashboard/FileListRow";
+import { ItemCardGrid } from "@/components/dashboard/ItemCardGrid";
+import { ImageThumbnailGrid } from "@/components/dashboard/ImageThumbnailGrid";
+import { FileListGroup } from "@/components/dashboard/FileListGroup";
 import { CollectionDetailHeader } from "@/components/dashboard/CollectionDetailHeader";
 import { PaginationControls } from "@/components/dashboard/PaginationControls";
 import { getItemsByCollection } from "@/lib/db/items";
@@ -42,31 +42,19 @@ export default async function CollectionDetailPage({ params, searchParams }: Col
           {otherItems.length > 0 && (
             <section className="flex flex-col gap-3">
               <h3 className="text-sm font-medium text-foreground">Items</h3>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {otherItems.map((item) => (
-                  <ItemCard key={item.id} item={item} />
-                ))}
-              </div>
+              <ItemCardGrid items={otherItems} />
             </section>
           )}
           {imageItems.length > 0 && (
             <section className="flex flex-col gap-3">
               <h3 className="text-sm font-medium text-foreground">Images</h3>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {imageItems.map((item) => (
-                  <ImageThumbnailCard key={item.id} item={item} />
-                ))}
-              </div>
+              <ImageThumbnailGrid items={imageItems} />
             </section>
           )}
           {fileItems.length > 0 && (
             <section className="flex flex-col gap-3">
               <h3 className="text-sm font-medium text-foreground">Files</h3>
-              <div className="rounded-xl border border-border [&>*:last-child]:border-b-0">
-                {fileItems.map((item) => (
-                  <FileListRow key={item.id} item={item} />
-                ))}
-              </div>
+              <FileListGroup items={fileItems} />
             </section>
           )}
         </div>
