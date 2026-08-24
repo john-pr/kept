@@ -13,6 +13,7 @@ import {
 } from "@/lib/db/collections";
 import { isOverCollectionLimit, isPlanGatingEnabled } from "@/lib/plan-limits";
 import { checkOwnership } from "@/lib/ownership";
+import type { ActionResult } from "@/types/action-result";
 
 const createCollectionSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -27,12 +28,6 @@ const updateCollectionSchema = z.object({
 });
 
 export type UpdateCollectionPayload = z.infer<typeof updateCollectionSchema>;
-
-interface ActionResult<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
 
 export async function createCollection(
   data: CreateCollectionPayload

@@ -9,6 +9,7 @@ import { buildExplainInput, parseExplainResponse } from "@/lib/explain";
 import { buildOptimizePromptInput, parseOptimizePromptResponse } from "@/lib/optimize-prompt";
 import { isPlanGatingEnabled } from "@/lib/plan-limits";
 import { checkRateLimit, retryAfterMessage } from "@/lib/rate-limit";
+import type { ActionResult } from "@/types/action-result";
 
 const AUTO_TAG_RATE_LIMIT = 20;
 const AUTO_TAG_RATE_WINDOW_SECONDS = 3600;
@@ -53,12 +54,6 @@ const optimizePromptSchema = z.object({
 });
 
 export type OptimizePromptPayload = z.infer<typeof optimizePromptSchema>;
-
-interface ActionResult<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
 
 /**
  * Suggests freeform tags for an item's title/content via OpenAI.

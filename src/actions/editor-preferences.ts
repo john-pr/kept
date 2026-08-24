@@ -4,6 +4,7 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { updateEditorPreferences as updateEditorPreferencesQuery } from "@/lib/db/users";
 import { EDITOR_THEMES, type EditorPreferences } from "@/lib/editor-preferences";
+import type { ActionResult } from "@/types/action-result";
 
 const editorPreferencesSchema = z.object({
   fontSize: z.number().int().positive(),
@@ -12,12 +13,6 @@ const editorPreferencesSchema = z.object({
   minimap: z.boolean(),
   theme: z.enum(EDITOR_THEMES),
 });
-
-interface ActionResult<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
 
 export async function updateEditorPreferences(
   data: EditorPreferences
