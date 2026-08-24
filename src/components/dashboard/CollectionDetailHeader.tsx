@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { EditCollectionDialog } from "@/components/dashboard/EditCollectionDialog";
-import { DeleteCollectionDialog } from "@/components/dashboard/DeleteCollectionDialog";
+import { CollectionDialogs } from "@/components/dashboard/CollectionDialogs";
 import type { CollectionDetail } from "@/lib/db/collections";
 import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
+import { useCollectionDialogs } from "@/hooks/useCollectionDialogs";
 import { toggleCollectionFavorite } from "@/actions/collections";
 
 interface CollectionDetailHeaderProps {
@@ -16,8 +15,7 @@ interface CollectionDetailHeaderProps {
 
 export function CollectionDetailHeader({ collection }: CollectionDetailHeaderProps) {
   const router = useRouter();
-  const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const { editOpen, setEditOpen, deleteOpen, setDeleteOpen } = useCollectionDialogs();
   const [isFavorite, toggleFavorite] = useOptimisticToggle(
     collection.isFavorite,
     (next) => toggleCollectionFavorite(collection.id, next),
@@ -61,12 +59,12 @@ export function CollectionDetailHeader({ collection }: CollectionDetailHeaderPro
         </Button>
       </div>
 
-      <EditCollectionDialog collection={collection} open={editOpen} onOpenChange={setEditOpen} />
-      <DeleteCollectionDialog
-        collectionId={collection.id}
-        collectionName={collection.name}
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
+      <CollectionDialogs
+        collection={collection}
+        editOpen={editOpen}
+        onEditOpenChange={setEditOpen}
+        deleteOpen={deleteOpen}
+        onDeleteOpenChange={setDeleteOpen}
         onDeleted={() => router.push("/collections")}
       />
     </div>
