@@ -8,6 +8,7 @@ import { iconMap } from "@/lib/icon-map";
 import type { ItemDetail } from "@/lib/db/items";
 import type { CollectionOption } from "@/lib/db/collections";
 import { deleteItem, toggleItemFavorite, toggleItemPin, updateItem } from "@/actions/items";
+import { parseTagsInput } from "@/lib/tags";
 import { ItemDrawerView } from "@/components/items/ItemDrawerView";
 import { ItemDrawerEditForm } from "@/components/items/ItemDrawerEditForm";
 
@@ -138,10 +139,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       content: showContent ? (form.content.trim() === "" ? null : form.content) : item.content,
       language: showLanguage ? (form.language.trim() === "" ? null : form.language) : item.language,
       url: showUrl ? (form.url.trim() === "" ? null : form.url) : item.url,
-      tags: form.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0),
+      tags: parseTagsInput(form.tags),
       collectionIds: form.collectionIds,
     });
     setIsSaving(false);
