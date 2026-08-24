@@ -1,7 +1,7 @@
 "use client";
 
 import { type CSSProperties, type MouseEvent } from "react";
-import { Copy, Pin, Star } from "lucide-react";
+import { Copy, Pin } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,28 +10,19 @@ import { iconMap } from "@/lib/icon-map";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
-import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
-import { toggleItemFavorite } from "@/actions/items";
+import { useItemFavoriteToggle } from "@/hooks/useItemFavoriteToggle";
+import { FavoriteToggleButton } from "@/components/items/FavoriteToggleButton";
 
 export function ItemCard({ item }: { item: ItemSummary }) {
   const Icon = iconMap[item.typeIcon];
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
-  const [isFavorite, toggleFavorite] = useOptimisticToggle(
-    item.isFavorite,
-    (next) => toggleItemFavorite(item.id, next),
-    "Failed to update favorite"
-  );
+  const [isFavorite, handleToggleFavorite] = useItemFavoriteToggle(item);
 
   function handleCopy(event: MouseEvent) {
     event.stopPropagation();
     navigator.clipboard.writeText(item.content);
     toast.success("Copied to clipboard");
-  }
-
-  async function handleToggleFavorite(event: MouseEvent) {
-    event.stopPropagation();
-    await toggleFavorite();
   }
 
   return (
@@ -51,15 +42,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
           </span>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             {item.isPinned && <Pin className="size-3.5" />}
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={handleToggleFavorite}
-              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-            >
-              <Star className={isFavorite ? "size-3.5 fill-yellow-400 text-yellow-400" : "size-3.5"} />
-            </Button>
+            <FavoriteToggleButton isFavorite={isFavorite} onToggle={handleToggleFavorite} />
             <Button
               variant="ghost"
               size="icon-sm"
