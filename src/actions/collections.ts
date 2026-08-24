@@ -12,6 +12,7 @@ import {
   type CollectionSummary,
 } from "@/lib/db/collections";
 import { isOverCollectionLimit, isPlanGatingEnabled } from "@/lib/plan-limits";
+import { checkOwnership } from "@/lib/ownership";
 
 const createCollectionSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -74,12 +75,9 @@ export async function updateCollection(
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownerId = await getCollectionOwnerId(id);
-  if (!ownerId) {
-    return { success: false, error: "Collection not found" };
-  }
-  if (ownerId !== session.user.id) {
-    return { success: false, error: "Not authorized to edit this collection" };
+  const ownership = await checkOwnership(getCollectionOwnerId, id, session.user.id, "Collection not found", "Not authorized to edit this collection");
+  if (!ownership.ok) {
+    return { success: false, error: ownership.error };
   }
 
   const updated = await updateCollectionQuery(id, parsed.data);
@@ -92,12 +90,9 @@ export async function deleteCollection(id: string): Promise<ActionResult<null>> 
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownerId = await getCollectionOwnerId(id);
-  if (!ownerId) {
-    return { success: false, error: "Collection not found" };
-  }
-  if (ownerId !== session.user.id) {
-    return { success: false, error: "Not authorized to delete this collection" };
+  const ownership = await checkOwnership(getCollectionOwnerId, id, session.user.id, "Collection not found", "Not authorized to delete this collection");
+  if (!ownership.ok) {
+    return { success: false, error: ownership.error };
   }
 
   await deleteCollectionQuery(id);
@@ -113,12 +108,9 @@ export async function toggleCollectionFavorite(
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownerId = await getCollectionOwnerId(id);
-  if (!ownerId) {
-    return { success: false, error: "Collection not found" };
-  }
-  if (ownerId !== session.user.id) {
-    return { success: false, error: "Not authorized to edit this collection" };
+  const ownership = await checkOwnership(getCollectionOwnerId, id, session.user.id, "Collection not found", "Not authorized to edit this collection");
+  if (!ownership.ok) {
+    return { success: false, error: ownership.error };
   }
 
   await setCollectionFavorite(id, isFavorite);
