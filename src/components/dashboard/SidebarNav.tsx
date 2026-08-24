@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Star } from "lucide-react";
 import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionSummary } from "@/lib/db/collections";
@@ -21,6 +24,8 @@ export function SidebarNav({
   collapsed = false,
   userIsPro = false,
 }: SidebarNavProps) {
+  const pathname = usePathname();
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -33,6 +38,7 @@ export function SidebarNav({
           {itemTypes.map((type) => {
             const Icon = iconMap[type.icon];
             const showProBadge = type.isPro && !userIsPro;
+            const isActive = pathname === `/items/${type.slug}`;
             return (
               <Link
                 key={type.id}
@@ -40,7 +46,8 @@ export function SidebarNav({
                 title={collapsed ? type.name : undefined}
                 className={cn(
                   "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-muted",
-                  collapsed && "justify-center"
+                  collapsed && "justify-center",
+                  isActive && "bg-muted font-medium"
                 )}
               >
                 <span className="relative shrink-0">
@@ -86,7 +93,8 @@ export function SidebarNav({
                 title={collapsed ? collection.name : undefined}
                 className={cn(
                   "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-muted",
-                  collapsed && "justify-center"
+                  collapsed && "justify-center",
+                  pathname === `/collections/${collection.id}` && "bg-muted font-medium"
                 )}
               >
                 <Star className="size-4 shrink-0 fill-yellow-400 text-yellow-400" />
@@ -111,7 +119,8 @@ export function SidebarNav({
               title={collapsed ? collection.name : undefined}
               className={cn(
                 "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-muted",
-                collapsed && "justify-center"
+                collapsed && "justify-center",
+                pathname === `/collections/${collection.id}` && "bg-muted font-medium"
               )}
             >
               <span
@@ -126,7 +135,8 @@ export function SidebarNav({
             title={collapsed ? "View all collections" : undefined}
             className={cn(
               "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
-              collapsed && "justify-center"
+              collapsed && "justify-center",
+              pathname === "/collections" && "bg-muted font-medium text-foreground"
             )}
           >
             {!collapsed && <span className="truncate">View all collections</span>}
