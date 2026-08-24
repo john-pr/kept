@@ -1,13 +1,49 @@
 # Current Feature
 
 ## Status
-
+Done — build, lint, and test pass. Awaiting commit approval.
 
 ## Goals
+Refactor: extract a shared ownership-check helper for server actions, per the `refactor-scanner` subagent's `src/actions` duplication report, finding #1 (top priority).
 
+Currently `items.ts` (`updateItem`, `toggleItemFavorite`, `toggleItemPin`) and `collections.ts` (`updateCollection`, `deleteCollection`, `toggleCollectionFavorite`) each repeat the same 6-line "resolve owner id → not found → not authorized" block:
+```ts
+const ownerId = await getItemOwnerId(itemId);
+if (!ownerId) {
+  return { success: false, error: "Item not found" };
+}
+if (ownerId !== session.user.id) {
+  return { success: false, error: "Not authorized to edit this item" };
+}
+```
+6 near-identical occurrences (3 in each file), differing only in the owner-lookup function and the "Item"/"Collection" noun in the messages.
+
+Add `src/lib/ownership.ts` exporting a small generic helper:
+```ts
+export type OwnershipCheck = { ok: true } | { ok: false; error: string };
+
+export async function checkOwnership(
+  getOwnerId: (id: string) => Promise<string | null>,
+  id: string,
+  userId: string,
+  notFoundError: string,
+  notAuthorizedError: string
+): Promise<OwnershipCheck>
+```
+Use it at all 6 call sites, e.g.:
+```ts
+const ownership = await checkOwnership(getItemOwnerId, itemId, session.user.id, "Item not found", "Not authorized to edit this item");
+if (!ownership.ok) {
+  return { success: false, error: ownership.error };
+}
+```
+
+`deleteItem` (`items.ts`) uses `getItemForDeletion`, which returns the full item (needed for `fileUrl` cleanup), not just an owner id — leave it as-is rather than forcing it into this helper's shape.
+
+Add `src/lib/ownership.test.ts` covering `checkOwnership`'s three branches (not found, not authorized, ok). No behavior change — error messages/response shapes stay identical, so existing action tests should pass unmodified.
 
 ## Notes
-
+Pure internal refactor, no schema/UI/behavior changes.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

@@ -17,6 +17,7 @@ import {
 import { getCollectionOptions } from "@/lib/db/collections";
 import { deleteFromR2, getKeyFromPublicUrl } from "@/lib/r2";
 import { isOverItemLimit, isPlanGatingEnabled, isProOnlyType } from "@/lib/plan-limits";
+import { checkOwnership } from "@/lib/ownership";
 
 async function getOwnedCollectionIds(userId: string, collectionIds: string[]): Promise<string[]> {
   if (collectionIds.length === 0) return [];
@@ -73,12 +74,9 @@ export async function updateItem(
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownerId = await getItemOwnerId(itemId);
-  if (!ownerId) {
-    return { success: false, error: "Item not found" };
-  }
-  if (ownerId !== session.user.id) {
-    return { success: false, error: "Not authorized to edit this item" };
+  const ownership = await checkOwnership(getItemOwnerId, itemId, session.user.id, "Item not found", "Not authorized to edit this item");
+  if (!ownership.ok) {
+    return { success: false, error: ownership.error };
   }
 
   const collectionIds = await getOwnedCollectionIds(session.user.id, parsed.data.collectionIds);
@@ -161,12 +159,9 @@ export async function toggleItemFavorite(
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownerId = await getItemOwnerId(itemId);
-  if (!ownerId) {
-    return { success: false, error: "Item not found" };
-  }
-  if (ownerId !== session.user.id) {
-    return { success: false, error: "Not authorized to edit this item" };
+  const ownership = await checkOwnership(getItemOwnerId, itemId, session.user.id, "Item not found", "Not authorized to edit this item");
+  if (!ownership.ok) {
+    return { success: false, error: ownership.error };
   }
 
   await setItemFavorite(itemId, isFavorite);
@@ -182,12 +177,9 @@ export async function toggleItemPin(
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownerId = await getItemOwnerId(itemId);
-  if (!ownerId) {
-    return { success: false, error: "Item not found" };
-  }
-  if (ownerId !== session.user.id) {
-    return { success: false, error: "Not authorized to edit this item" };
+  const ownership = await checkOwnership(getItemOwnerId, itemId, session.user.id, "Item not found", "Not authorized to edit this item");
+  if (!ownership.ok) {
+    return { success: false, error: ownership.error };
   }
 
   await setItemPin(itemId, isPinned);
