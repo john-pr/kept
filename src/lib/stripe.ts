@@ -16,3 +16,6 @@ export function getStripeClient(): Stripe {
 
 export const STRIPE_PRICE_ID_MONTHLY = process.env.STRIPE_PRICE_ID_MONTHLY ?? "";
 export const STRIPE_PRICE_ID_YEARLY = process.env.STRIPE_PRICE_ID_YEARLY ?? "";
+
+/** Base URL used for Stripe Checkout/Portal success/cancel/return redirects. */
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
