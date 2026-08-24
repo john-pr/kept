@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { startProCheckout } from "@/lib/stripe-client";
+import { PricingIntervalToggle } from "@/components/pricing/PricingIntervalToggle";
 
 interface BillingSectionProps {
   isPro: boolean;
@@ -44,20 +45,11 @@ export function BillingSection({
 
   async function handleUpgrade() {
     setIsRedirecting(true);
-    const response = await fetch("/api/stripe/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ interval: isYearly ? "yearly" : "monthly" }),
-    });
-    const result = await response.json();
-
+    const result = await startProCheckout(isYearly ? "yearly" : "monthly");
     if (!result.success) {
       setIsRedirecting(false);
-      toast.error(result.error ?? "Something went wrong");
-      return;
+      toast.error(result.error);
     }
-
-    window.location.href = result.data.url;
   }
 
   async function handleManageSubscription() {
@@ -124,32 +116,7 @@ export function BillingSection({
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <span className={cn("text-sm text-muted-foreground", !isYearly && "font-medium text-foreground")}>
-          Monthly
-        </span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={isYearly}
-          aria-label="Toggle yearly pricing"
-          onClick={() => setIsYearly((y) => !y)}
-          className={cn(
-            "relative h-6 w-11 rounded-full border border-border bg-muted transition-colors",
-            isYearly && "border-primary bg-primary"
-          )}
-        >
-          <span
-            className={cn(
-              "absolute top-0.5 left-0.5 size-4.5 rounded-full bg-background transition-transform",
-              isYearly && "translate-x-5"
-            )}
-          />
-        </button>
-        <span className={cn("text-sm text-muted-foreground", isYearly && "font-medium text-foreground")}>
-          Yearly <span className="text-xs text-emerald-500">(save 25%)</span>
-        </span>
-      </div>
+      <PricingIntervalToggle isYearly={isYearly} onChange={setIsYearly} size="compact" />
 
       <Button className="w-fit" disabled={isRedirecting} onClick={handleUpgrade}>
         {isRedirecting && <Loader2 className="size-4 animate-spin" />}
