@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { auth } from "@/auth";
 import {
   createItem as createItemQuery,
   deleteItem as deleteItemQuery,
@@ -18,6 +17,7 @@ import { getCollectionOptions } from "@/lib/db/collections";
 import { deleteFromR2, getKeyFromPublicUrl } from "@/lib/r2";
 import { isOverItemLimit, isPlanGatingEnabled, isProOnlyType } from "@/lib/plan-limits";
 import { checkOwnership } from "@/lib/ownership";
+import { requireSessionUser } from "@/lib/auth-guard";
 import type { ActionResult } from "@/types/action-result";
 
 async function getOwnedCollectionIds(userId: string, collectionIds: string[]): Promise<string[]> {
@@ -64,17 +64,17 @@ export async function updateItem(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownership = await checkOwnership(getItemOwnerId, itemId, session.user.id, "Item not found", "Not authorized to edit this item");
+  const ownership = await checkOwnership(getItemOwnerId, itemId, user.id, "Item not found", "Not authorized to edit this item");
   if (!ownership.ok) {
     return { success: false, error: ownership.error };
   }
 
-  const collectionIds = await getOwnedCollectionIds(session.user.id, parsed.data.collectionIds);
+  const collectionIds = await getOwnedCollectionIds(user.id, parsed.data.collectionIds);
 
   const updated = await updateItemQuery(itemId, { ...parsed.data, collectionIds });
   return { success: true, data: updated };
@@ -86,8 +86,8 @@ export async function createItem(data: CreateItemPayload): Promise<ActionResult<
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
@@ -98,11 +98,11 @@ export async function createItem(data: CreateItemPayload): Promise<ActionResult<
   const typeName = itemType.name.toLowerCase();
 
   if (isPlanGatingEnabled()) {
-    if (!session.user.isPro && isProOnlyType(typeName)) {
+    if (!user.isPro && isProOnlyType(typeName)) {
       return { success: false, error: "Upgrade to Pro to create this item type" };
     }
-    const itemCount = await getItemCountForUser(session.user.id);
-    if (isOverItemLimit(itemCount, session.user.isPro)) {
+    const itemCount = await getItemCountForUser(user.id);
+    if (isOverItemLimit(itemCount, user.isPro)) {
       return { success: false, error: "You've reached the free plan's item limit. Upgrade to Pro for unlimited items." };
     }
   }
@@ -114,15 +114,15 @@ export async function createItem(data: CreateItemPayload): Promise<ActionResult<
     return { success: false, error: "A file upload is required" };
   }
 
-  const collectionIds = await getOwnedCollectionIds(session.user.id, parsed.data.collectionIds);
+  const collectionIds = await getOwnedCollectionIds(user.id, parsed.data.collectionIds);
 
-  const created = await createItemQuery({ ...parsed.data, collectionIds, userId: session.user.id });
+  const created = await createItemQuery({ ...parsed.data, collectionIds, userId: user.id });
   return { success: true, data: created };
 }
 
 export async function deleteItem(itemId: string): Promise<ActionResult<null>> {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
@@ -130,7 +130,7 @@ export async function deleteItem(itemId: string): Promise<ActionResult<null>> {
   if (!item) {
     return { success: false, error: "Item not found" };
   }
-  if (item.userId !== session.user.id) {
+  if (item.userId !== user.id) {
     return { success: false, error: "Not authorized to delete this item" };
   }
 
@@ -149,12 +149,12 @@ export async function toggleItemFavorite(
   itemId: string,
   isFavorite: boolean
 ): Promise<ActionResult<{ isFavorite: boolean }>> {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownership = await checkOwnership(getItemOwnerId, itemId, session.user.id, "Item not found", "Not authorized to edit this item");
+  const ownership = await checkOwnership(getItemOwnerId, itemId, user.id, "Item not found", "Not authorized to edit this item");
   if (!ownership.ok) {
     return { success: false, error: ownership.error };
   }
@@ -167,12 +167,12 @@ export async function toggleItemPin(
   itemId: string,
   isPinned: boolean
 ): Promise<ActionResult<{ isPinned: boolean }>> {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownership = await checkOwnership(getItemOwnerId, itemId, session.user.id, "Item not found", "Not authorized to edit this item");
+  const ownership = await checkOwnership(getItemOwnerId, itemId, user.id, "Item not found", "Not authorized to edit this item");
   if (!ownership.ok) {
     return { success: false, error: ownership.error };
   }

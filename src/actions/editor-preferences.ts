@@ -1,9 +1,9 @@
 "use server";
 
 import { z } from "zod";
-import { auth } from "@/auth";
 import { updateEditorPreferences as updateEditorPreferencesQuery } from "@/lib/db/users";
 import { EDITOR_THEMES, type EditorPreferences } from "@/lib/editor-preferences";
+import { requireSessionUser } from "@/lib/auth-guard";
 import type { ActionResult } from "@/types/action-result";
 
 const editorPreferencesSchema = z.object({
@@ -22,11 +22,11 @@ export async function updateEditorPreferences(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  const updated = await updateEditorPreferencesQuery(session.user.id, parsed.data);
+  const updated = await updateEditorPreferencesQuery(user.id, parsed.data);
   return { success: true, data: updated };
 }
