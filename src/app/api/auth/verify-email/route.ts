@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isEmailVerificationEnabled } from "@/lib/email-verification";
+import { deleteVerificationToken } from "@/lib/verification-token-store";
 
 export async function GET(request: NextRequest) {
   const appUrl = request.nextUrl.origin;
@@ -21,14 +22,7 @@ export async function GET(request: NextRequest) {
 
   if (!verificationToken || verificationToken.expires < new Date()) {
     if (verificationToken) {
-      await prisma.verificationToken.delete({
-        where: {
-          identifier_token: {
-            identifier: verificationToken.identifier,
-            token: verificationToken.token,
-          },
-        },
-      });
+      await deleteVerificationToken(verificationToken);
     }
     return NextResponse.redirect(`${appUrl}/sign-in?verifyError=expired-token`);
   }
@@ -38,14 +32,7 @@ export async function GET(request: NextRequest) {
     data: { emailVerified: new Date() },
   });
 
-  await prisma.verificationToken.delete({
-    where: {
-      identifier_token: {
-        identifier: verificationToken.identifier,
-        token: verificationToken.token,
-      },
-    },
-  });
+  await deleteVerificationToken(verificationToken);
 
   return NextResponse.redirect(`${appUrl}/sign-in?verified=1`);
 }

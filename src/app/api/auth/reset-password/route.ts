@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { emailFromResetIdentifier } from "@/lib/password-reset-token";
+import { deleteVerificationToken } from "@/lib/verification-token-store";
 import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
 import { zodErrorResponse } from "@/lib/api-response";
 
@@ -41,9 +42,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (resetToken.expires < new Date()) {
-    await prisma.verificationToken.delete({
-      where: { identifier_token: { identifier: resetToken.identifier, token: resetToken.token } },
-    });
+    await deleteVerificationToken(resetToken);
     return NextResponse.json({ success: false, error: "Invalid or expired reset link" }, { status: 400 });
   }
 
@@ -54,9 +53,7 @@ export async function POST(request: NextRequest) {
     data: { password: hashedPassword },
   });
 
-  await prisma.verificationToken.delete({
-    where: { identifier_token: { identifier: resetToken.identifier, token: resetToken.token } },
-  });
+  await deleteVerificationToken(resetToken);
 
   return NextResponse.json({ success: true });
 }
