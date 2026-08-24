@@ -18,3 +18,8 @@ export function isProOnlyType(typeName: string): boolean {
 export function isPlanGatingEnabled(): boolean {
   return process.env.PLAN_GATING_ENABLED === "true";
 }
+
+/** Whether a non-Pro user should be blocked from an AI action, per the plan-gating flag. */
+export function isAiProGated(isPro: boolean): boolean {
+  return isPlanGatingEnabled() && !isPro;
+}
