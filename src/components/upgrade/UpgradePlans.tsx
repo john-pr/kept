@@ -1,24 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { FREE_FEATURES, PRO_FEATURES } from "@/lib/pricing-features";
-
-function FeatureList({ features }: { features: string[] }) {
-  return (
-    <ul className="mb-7 flex flex-col gap-3">
-      {features.map((feature) => (
-        <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground">
-          <Check className="mt-0.5 size-4 shrink-0 text-emerald-500" strokeWidth={2.5} />
-          {feature}
-        </li>
-      ))}
-    </ul>
-  );
-}
+import { startProCheckout } from "@/lib/stripe-client";
+import { FeatureList } from "@/components/pricing/FeatureList";
+import { PricingIntervalToggle } from "@/components/pricing/PricingIntervalToggle";
 
 /** Monthly/yearly toggle plus Free/Pro comparison cards; the Pro card starts Stripe Checkout. */
 export function UpgradePlans() {
@@ -27,63 +16,16 @@ export function UpgradePlans() {
 
   async function handleUpgrade() {
     setIsRedirecting(true);
-    const response = await fetch("/api/stripe/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ interval: isYearly ? "yearly" : "monthly" }),
-    });
-    const result = await response.json();
-
+    const result = await startProCheckout(isYearly ? "yearly" : "monthly");
     if (!result.success) {
       setIsRedirecting(false);
-      toast.error(result.error ?? "Something went wrong");
-      return;
+      toast.error(result.error);
     }
-
-    window.location.href = result.data.url;
   }
 
   return (
     <>
-      <div className="flex items-center justify-center gap-3.5">
-        <span
-          className={cn(
-            "text-sm font-semibold text-muted-foreground transition-colors",
-            !isYearly && "text-foreground"
-          )}
-        >
-          Monthly
-        </span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={isYearly}
-          aria-label="Toggle yearly pricing"
-          onClick={() => setIsYearly((y) => !y)}
-          className={cn(
-            "relative h-6.5 w-11.5 rounded-full border border-border bg-muted transition-colors",
-            isYearly && "border-primary bg-primary"
-          )}
-        >
-          <span
-            className={cn(
-              "absolute top-0.5 left-0.5 size-5 rounded-full bg-background transition-transform",
-              isYearly && "translate-x-5"
-            )}
-          />
-        </button>
-        <span
-          className={cn(
-            "flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors",
-            isYearly && "text-foreground"
-          )}
-        >
-          Yearly
-          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[0.68rem] font-bold text-emerald-500">
-            Save 25%
-          </span>
-        </span>
-      </div>
+      <PricingIntervalToggle isYearly={isYearly} onChange={setIsYearly} />
 
       <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-6 text-left sm:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-8">
