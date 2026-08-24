@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
+import { requireApiSessionUser } from "@/lib/auth-guard";
 
 const changePasswordSchema = z
   .object({
@@ -17,16 +17,14 @@ const changePasswordSchema = z
   });
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  }
+  const user = await requireApiSessionUser();
+  if (user instanceof NextResponse) return user;
 
   // Rate limit by session user (not just IP) since this guards a current-password
   // brute-force check against a specific, already-authenticated account.
   const rateLimit = await checkRateLimit(
     "change-password",
-    `${getRequestIp(request)}:${session.user.id}`,
+    `${getRequestIp(request)}:${user.id}`,
     5,
     15 * 60
   );
@@ -46,15 +44,15 @@ export async function POST(request: NextRequest) {
 
   const { currentPassword, newPassword } = parsed.data;
 
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: session.user.id } });
-  if (!user.password) {
+  const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+  if (!dbUser.password) {
     return NextResponse.json(
       { success: false, error: "This account does not use a password" },
       { status: 400 }
     );
   }
 
-  const isValid = await bcrypt.compare(currentPassword, user.password);
+  const isValid = await bcrypt.compare(currentPassword, dbUser.password);
   if (!isValid) {
     return NextResponse.json({ success: false, error: "Current password is incorrect" }, { status: 400 });
   }
@@ -62,7 +60,7 @@ export async function POST(request: NextRequest) {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
   await prisma.user.update({
-    where: { id: user.id },
+    where: { id: dbUser.id },
     data: { password: hashedPassword },
   });
 

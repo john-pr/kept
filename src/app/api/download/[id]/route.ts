@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { getItemById } from "@/lib/db/items";
 import { getKeyFromPublicUrl, getObjectFromR2 } from "@/lib/r2";
+import { requireApiSessionUser } from "@/lib/auth-guard";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  }
+  const user = await requireApiSessionUser();
+  if (user instanceof NextResponse) return user;
 
   const { id } = await params;
-  const item = await getItemById(id, session.user.id);
+  const item = await getItemById(id, user.id);
   if (!item || !item.fileUrl) {
     return NextResponse.json({ success: false, error: "File not found" }, { status: 404 });
   }

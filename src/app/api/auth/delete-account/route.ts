@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
+import { requireApiSessionUser } from "@/lib/auth-guard";
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
-  }
+  const user = await requireApiSessionUser();
+  if (user instanceof NextResponse) return user;
 
   const rateLimit = await checkRateLimit(
     "delete-account",
-    `${getRequestIp(request)}:${session.user.id}`,
+    `${getRequestIp(request)}:${user.id}`,
     5,
     15 * 60
   );
@@ -19,7 +17,7 @@ export async function POST(request: NextRequest) {
     return rateLimitResponse(rateLimit.reset);
   }
 
-  await prisma.user.delete({ where: { id: session.user.id } });
+  await prisma.user.delete({ where: { id: user.id } });
 
   return NextResponse.json({ success: true });
 }
