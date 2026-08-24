@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
 import { requireApiSessionUser } from "@/lib/auth-guard";
+import { zodErrorResponse } from "@/lib/api-response";
 
 const changePasswordSchema = z
   .object({
@@ -36,10 +37,7 @@ export async function POST(request: NextRequest) {
   const parsed = changePasswordSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json(
-      { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 }
-    );
+    return zodErrorResponse(parsed.error);
   }
 
   const { currentPassword, newPassword } = parsed.data;

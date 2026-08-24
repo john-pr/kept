@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getStripeClient, STRIPE_PRICE_ID_MONTHLY, STRIPE_PRICE_ID_YEARLY } from "@/lib/stripe";
 import { requireApiSessionUser } from "@/lib/auth-guard";
+import { zodErrorResponse } from "@/lib/api-response";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -16,10 +17,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const parsed = createCheckoutSessionSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 }
-    );
+    return zodErrorResponse(parsed.error);
   }
 
   const priceId =
