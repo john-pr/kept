@@ -13,9 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { CollectionFormFields } from "@/components/dashboard/CollectionFormFields";
 import { createCollection } from "@/actions/collections";
 
 interface NewCollectionDialogProps {
@@ -68,27 +66,13 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
           <DialogDescription>Group items together under a new collection.</DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="new-collection-name">Name*</Label>
-            <Input
-              id="new-collection-name"
-              placeholder="e.g. React Patterns"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="new-collection-description">Description</Label>
-            <Textarea
-              id="new-collection-description"
-              placeholder="A short summary of this collection"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
-          </div>
-        </div>
+        <CollectionFormFields
+          idPrefix="new-collection"
+          name={form.name}
+          onNameChange={(name) => setForm({ ...form, name })}
+          description={form.description}
+          onDescriptionChange={(description) => setForm({ ...form, description })}
+        />
 
         <DialogFooter>
           <Button onClick={handleCreate} disabled={form.name.trim() === "" || isSaving}>
