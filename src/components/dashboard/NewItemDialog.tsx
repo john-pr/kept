@@ -33,6 +33,7 @@ import { createItem } from "@/actions/items";
 import { iconMap } from "@/lib/icon-map";
 import { LANGUAGE_OPTIONS } from "@/lib/languages";
 import { appendTagToInput, parseTagsInput } from "@/lib/tags";
+import { singularize } from "@/lib/text";
 import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
 import { SuggestDescriptionButton } from "@/components/items/SuggestDescriptionButton";
 
@@ -41,10 +42,6 @@ const LANGUAGE_SLUGS = new Set(["snippets", "commands"]);
 const MARKDOWN_SLUGS = new Set(["prompts", "notes"]);
 const URL_SLUGS = new Set(["links"]);
 const FILE_SLUGS = new Set(["files", "images"]);
-
-function singularize(name: string): string {
-  return name.endsWith("s") ? name.slice(0, -1) : name;
-}
 
 interface NewItemDialogProps {
   itemTypes: ItemTypeSummary[];

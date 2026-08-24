@@ -13,10 +13,7 @@ import { getCollectionOptions } from "@/lib/db/collections";
 import { ITEMS_PER_PAGE } from "@/lib/constants";
 import { getPageCount, getPageSkip, getValidPage } from "@/lib/pagination";
 import { isPlanGatingEnabled } from "@/lib/plan-limits";
-
-function singularize(name: string): string {
-  return name.endsWith("s") ? name.slice(0, -1) : name;
-}
+import { singularize } from "@/lib/text";
 
 interface ItemsByTypePageProps {
   params: Promise<{ type: string }>;
