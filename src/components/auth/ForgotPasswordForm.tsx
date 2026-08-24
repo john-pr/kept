@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { z } from "zod";
-import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BackToSignInLink } from "@/components/auth/BackToSignInLink";
 import { useResendCooldown } from "@/hooks/useResendCooldown";
 
 const forgotPasswordSchema = z.object({
@@ -89,15 +89,7 @@ export function ForgotPasswordForm() {
           {isResending && <Loader2 className="size-4 animate-spin" />}
           {secondsLeft > 0 ? `Resend reset link (${secondsLeft}s)` : "Resend reset link"}
         </Button>
-        <p className="text-center text-sm text-muted-foreground">
-          <Link
-            href="/sign-in"
-            className="inline-flex items-center gap-1 text-foreground underline underline-offset-4"
-          >
-            <ArrowLeft className="size-3.5" />
-            Back to sign in
-          </Link>
-        </p>
+        <BackToSignInLink />
       </div>
     );
   }
@@ -122,15 +114,7 @@ export function ForgotPasswordForm() {
           Send reset link
         </Button>
       </form>
-      <p className="text-center text-sm text-muted-foreground">
-        <Link
-          href="/sign-in"
-          className="inline-flex items-center gap-1 text-foreground underline underline-offset-4"
-        >
-          <ArrowLeft className="size-3.5" />
-          Back to sign in
-        </Link>
-      </p>
+      <BackToSignInLink />
     </div>
   );
 }
