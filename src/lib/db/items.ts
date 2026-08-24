@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import { toSearchPreview } from "@/lib/search-preview";
 import { DASHBOARD_RECENT_ITEMS_LIMIT } from "@/lib/constants";
 
@@ -118,13 +119,11 @@ export interface PaginatedItems {
   totalCount: number;
 }
 
-export async function getItemsByType(
-  itemTypeId: string,
-  userId: string,
+async function getPaginatedItemsByWhere(
+  where: Prisma.ItemWhereInput,
   skip: number,
   take: number
 ): Promise<PaginatedItems> {
-  const where = { itemTypeId, userId };
   const [items, totalCount] = await Promise.all([
     prisma.item.findMany({
       where,
@@ -139,25 +138,22 @@ export async function getItemsByType(
   return { items: items.map(toItemSummary), totalCount };
 }
 
+export async function getItemsByType(
+  itemTypeId: string,
+  userId: string,
+  skip: number,
+  take: number
+): Promise<PaginatedItems> {
+  return getPaginatedItemsByWhere({ itemTypeId, userId }, skip, take);
+}
+
 export async function getItemsByCollection(
   collectionId: string,
   userId: string,
   skip: number,
   take: number
 ): Promise<PaginatedItems> {
-  const where = { userId, collections: { some: { collectionId } } };
-  const [items, totalCount] = await Promise.all([
-    prisma.item.findMany({
-      where,
-      orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
-      include: { itemType: true, tags: true },
-      skip,
-      take,
-    }),
-    prisma.item.count({ where }),
-  ]);
-
-  return { items: items.map(toItemSummary), totalCount };
+  return getPaginatedItemsByWhere({ userId, collections: { some: { collectionId } } }, skip, take);
 }
 
 export interface ItemDetail {
