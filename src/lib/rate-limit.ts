@@ -85,3 +85,19 @@ export function rateLimitResponse(reset: number) {
     { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } }
   );
 }
+
+/**
+ * Checks a rate limit and returns the 429 response to `return` if it's
+ * exceeded, or `null` if the request is allowed. Collapses the
+ * `checkRateLimit` + `if (!success) return rateLimitResponse(...)` block
+ * repeated at the top of every rate-limited route handler into one call.
+ */
+export async function enforceRateLimit(
+  name: string,
+  identifier: string,
+  limit: number,
+  windowSeconds: number
+): Promise<NextResponse | null> {
+  const rateLimit = await checkRateLimit(name, identifier, limit, windowSeconds);
+  return rateLimit.success ? null : rateLimitResponse(rateLimit.reset);
+}

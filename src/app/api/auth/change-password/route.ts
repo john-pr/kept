@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { checkRateLimit, getRequestIp, rateLimitResponse } from "@/lib/rate-limit";
+import { enforceRateLimit, getRequestIp } from "@/lib/rate-limit";
 import { requireApiSessionUser } from "@/lib/auth-guard";
 import { zodErrorResponse } from "@/lib/api-response";
 
@@ -23,15 +23,8 @@ export async function POST(request: NextRequest) {
 
   // Rate limit by session user (not just IP) since this guards a current-password
   // brute-force check against a specific, already-authenticated account.
-  const rateLimit = await checkRateLimit(
-    "change-password",
-    `${getRequestIp(request)}:${user.id}`,
-    5,
-    15 * 60
-  );
-  if (!rateLimit.success) {
-    return rateLimitResponse(rateLimit.reset);
-  }
+  const limited = await enforceRateLimit("change-password", `${getRequestIp(request)}:${user.id}`, 5, 15 * 60);
+  if (limited) return limited;
 
   const body = await request.json();
   const parsed = changePasswordSchema.safeParse(body);
