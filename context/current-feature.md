@@ -1,49 +1,11 @@
 # Current Feature
 
 ## Status
-Done — build, lint, and test pass. Awaiting commit approval.
 
 ## Goals
-Refactor: extract a shared ownership-check helper for server actions, per the `refactor-scanner` subagent's `src/actions` duplication report, finding #1 (top priority).
 
-Currently `items.ts` (`updateItem`, `toggleItemFavorite`, `toggleItemPin`) and `collections.ts` (`updateCollection`, `deleteCollection`, `toggleCollectionFavorite`) each repeat the same 6-line "resolve owner id → not found → not authorized" block:
-```ts
-const ownerId = await getItemOwnerId(itemId);
-if (!ownerId) {
-  return { success: false, error: "Item not found" };
-}
-if (ownerId !== session.user.id) {
-  return { success: false, error: "Not authorized to edit this item" };
-}
-```
-6 near-identical occurrences (3 in each file), differing only in the owner-lookup function and the "Item"/"Collection" noun in the messages.
-
-Add `src/lib/ownership.ts` exporting a small generic helper:
-```ts
-export type OwnershipCheck = { ok: true } | { ok: false; error: string };
-
-export async function checkOwnership(
-  getOwnerId: (id: string) => Promise<string | null>,
-  id: string,
-  userId: string,
-  notFoundError: string,
-  notAuthorizedError: string
-): Promise<OwnershipCheck>
-```
-Use it at all 6 call sites, e.g.:
-```ts
-const ownership = await checkOwnership(getItemOwnerId, itemId, session.user.id, "Item not found", "Not authorized to edit this item");
-if (!ownership.ok) {
-  return { success: false, error: ownership.error };
-}
-```
-
-`deleteItem` (`items.ts`) uses `getItemForDeletion`, which returns the full item (needed for `fileUrl` cleanup), not just an owner id — leave it as-is rather than forcing it into this helper's shape.
-
-Add `src/lib/ownership.test.ts` covering `checkOwnership`'s three branches (not found, not authorized, ok). No behavior change — error messages/response shapes stay identical, so existing action tests should pass unmodified.
 
 ## Notes
-Pure internal refactor, no schema/UI/behavior changes.
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -161,3 +123,5 @@ Pure internal refactor, no schema/UI/behavior changes.
 - 2026-08-19: Documented and completed AI Description Generator — added `src/lib/description.ts` (`buildDescriptionInput` — assembles title/content/url/language/fileName into a prompt, truncating content to 2000 chars; `parseDescriptionResponse` — trims/unquotes/caps the model's plain-text output at 300 chars); `src/actions/ai.ts`'s `generateDescription({title, content, url, language, fileName})` server action, mirroring `generateAutoTags`'s auth → Pro-gate → rate-limit (own `ai-description` bucket, 20/hr) → OpenAI Responses API shape, but requesting plain text back instead of `text: { format: { type: "json_object" } }` — sidesteps the auto-tagging feature's "json"-keyword-in-input gotcha entirely since the output here is a single string, not a list. New `SuggestDescriptionButton.tsx` (Sparkles button, requires a title, fills the Description field via `onGenerate`) wired into both `NewItemDialog.tsx` and `ItemDrawerEditForm.tsx` under the Description textarea, gated by the existing `isPro` prop, passing whichever fields are relevant per type (content/url/language conditionally per the type's `show*` flags, fileName from the uploaded file in create mode or `item.fileName` in edit mode). Follow-up styling round: both this button and the existing `SuggestTagsButton` switched from `variant="ghost"` to `variant="outline"` (visible border, `self-start` to stay left-aligned in their flex-col parent) per request; then fixed a vertical-alignment nit where the label sat slightly above the icon by wrapping the icon+text in a `flex items-center gap-1.5 leading-none` span (neutralizing an inherited line-height from the Dialog/Sheet's ancestor `text-sm` utility) and sizing icons to `size-3.5` to match the `sm` button's default icon scale — verified via Playwright at 5x zoom that the New Item dialog and Item Drawer render pixel-identically (same shared components), confirming an earlier "still off on modal" report was a stale hot-reload render rather than an actual difference. Added `src/lib/description.test.ts` (10 tests) and 8 new tests in `src/actions/ai.test.ts` for the action's branches, matching `auto-tag.ts`'s coverage pattern. Build (27 routes), lint, and test (180/180, up from 162) pass. Merged `feature/ai-description-generator` into `master` and deleted the branch locally.
 - 2026-08-19: Documented and completed AI Explain Code — added `src/lib/explain.ts` (`buildExplainInput` — assembles title/language/code into a prompt, truncating content to 2000 chars; `parseExplainResponse` — trims the model's markdown output); `src/actions/ai.ts`'s `explainCode({title, content, language})` server action, mirroring `generateAutoTags`/`generateDescription`'s auth → Pro-gate → rate-limit (own `ai-explain` bucket, 20/hr) → OpenAI Responses API shape, returning plain markdown text (not persisted, regenerated on each click). `CodeEditor.tsx` gained an Explain action (Sparkles button, next to Copy in the window-controls header) behind new `title`/`isPro`/`showExplain` props — free users see a Crown icon with a native `title` tooltip instead of the button; once an explanation is generated, a Code/Explanation `Tabs` switcher replaces the language label in the header, and the explanation renders as markdown (`react-markdown`/`remark-gfm`, reusing the `.markdown-preview` styling from `MarkdownEditor.tsx`) in the same container the Monaco editor occupies — the editor itself stays mounted (visibility toggled via a `hidden` class) rather than unmounting on tab switch, avoiding a Monaco remount. `ItemDrawerView.tsx` passes `showExplain`/`title`/`isPro` into `CodeEditor` only for its own (read-view) usage — `ItemDrawerEditForm.tsx`'s and `NewItemDialog.tsx`'s `CodeEditor` usages are untouched, so the feature only appears in the drawer's read view for snippet/command types, per spec. Follow-up per feedback: renamed the tab label from "Explain" to "Explanation" (the underlying tab value/state key stays `explain`, display text only). Added `src/lib/explain.test.ts` (6 tests) and 9 new tests in `src/actions/ai.test.ts` for `explainCode`'s branches, matching the sibling AI actions' coverage pattern. Build (27 routes), lint, and test (195/195, up from 180) pass. Merged `feature/ai-explain-code` into `master` and deleted the branch locally.
 - 2026-08-19: Documented and completed AI Prompt Optimizer — added `src/lib/optimize-prompt.ts` (`buildOptimizePromptInput`/`parseOptimizePromptResponse`, mirroring `explain.ts`'s shape: title + content, 2000-char truncation, trim + quote-stripping on output); `src/actions/ai.ts`'s `optimizePrompt({title, content})` server action, mirroring `explainCode`'s auth → Pro-gate → rate-limit (own `ai-optimize-prompt` bucket, 20/hr) → OpenAI Responses API shape, returning the refined prompt as plain text (not persisted until accepted). `MarkdownEditor.tsx` gained an Optimize action (Sparkles button, matching `CodeEditor`'s Explain button placement/styling, Pro-gated with a `Crown` fallback) behind new `title`/`isPro`/`showOptimize`/`onAcceptOptimized` props, shown only in the item drawer's read view for prompt items (`showOptimize = typeName === "prompt"`, computed in `ItemDrawer.tsx` and threaded through `ItemDrawerView.tsx` — Notes, which also use `MarkdownEditor`, are untouched); once generated, an Original/Optimized toggle (plain buttons, not a nested `Tabs.Root`, to avoid stacking two base-ui Tabs contexts) switches the preview between the two, with a footer bar offering "Use this version" (persists via the existing `updateItem` action through a new `handleAcceptOptimizedPrompt` in `ItemDrawer.tsx`, matching the Favorite/Pin toggle-and-persist pattern) or "Keep original" (discards). Follow-up fix from `/feature review`: `handleAccept` now awaits `onAcceptOptimized` behind an `isAccepting` guard that disables both footer buttons and shows a spinner, preventing a double-click from firing `updateItem` twice. Added `src/lib/optimize-prompt.test.ts` (5 tests) and 9 new tests in `src/actions/ai.test.ts` for `optimizePrompt`'s branches, matching the sibling AI actions' coverage pattern. Build (27 routes), lint, and test (209/209, up from 195) pass. Merged `feature/ai-prompt-optimizer` into `master` and deleted the branch locally.
+- 2026-08-24: Added `.claude/agents/refactor-scanner.md`, a report-only subagent (Read/Grep/Glob/Bash) that scans a given folder for duplicate/near-duplicate code to extract, tailoring its lens per folder kind (actions, lib, lib/db, components, hooks, api). Ran it against `src/actions`; findings: (1) `ActionResult<T>` interface duplicated 4x, (2) auth-check/Zod-rejection boilerplate repeated 14x, (3) ownership-check pattern duplicated 6x, (4) `ai.ts`'s Pro-gate/rate-limit/try-catch-parse shape repeated 4x across its AI actions.
+- 2026-08-24: Documented and completed refactor: extract shared ownership-check helper — addressed finding #1 from the scan above. Added `src/lib/ownership.ts` (`checkOwnership(getOwnerId, id, userId, notFoundError, notAuthorizedError)`) and `src/lib/ownership.test.ts` (3 tests); replaced the 6 duplicated "resolve owner id → not found → not authorized" blocks with calls to it in `src/actions/items.ts` (`updateItem`, `toggleItemFavorite`, `toggleItemPin`) and `src/actions/collections.ts` (`updateCollection`, `deleteCollection`, `toggleCollectionFavorite`); `deleteItem` left as-is since it needs the full item object (for R2 cleanup), not just an owner id. Pure internal refactor, no behavior/error-message changes. Build (27 routes), lint, and test (212/212, up from 209) pass. Merged `refactor/ownership-check-helper` into `master` and deleted the branch locally.
