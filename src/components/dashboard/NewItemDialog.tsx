@@ -13,13 +13,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CodeEditor } from "@/components/items/CodeEditor";
-import { MarkdownEditor } from "@/components/items/MarkdownEditor";
 import { FileUpload, type UploadedFile } from "@/components/items/FileUpload";
 import { CollectionMultiSelect } from "@/components/items/CollectionMultiSelect";
+import { ItemFormFields } from "@/components/items/ItemFormFields";
 import {
   Select,
   SelectContent,
@@ -31,11 +28,8 @@ import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionOption } from "@/lib/db/collections";
 import { createItem } from "@/actions/items";
 import { iconMap } from "@/lib/icon-map";
-import { LANGUAGE_OPTIONS } from "@/lib/languages";
 import { appendTagToInput, parseTagsInput } from "@/lib/tags";
 import { singularize } from "@/lib/text";
-import { SuggestTagsButton } from "@/components/items/SuggestTagsButton";
-import { SuggestDescriptionButton } from "@/components/items/SuggestDescriptionButton";
 
 const CONTENT_SLUGS = new Set(["snippets", "prompts", "commands", "notes"]);
 const LANGUAGE_SLUGS = new Set(["snippets", "commands"]);
@@ -183,125 +177,40 @@ export function NewItemDialog({
             </Select>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="new-item-title">Title</Label>
-            <Input
-              id="new-item-title"
-              placeholder="e.g. Debounce hook"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="new-item-description">Description</Label>
-            <Textarea
-              id="new-item-description"
-              placeholder="A short summary of this item"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
-            {isPro && (
-              <SuggestDescriptionButton
-                title={form.title}
-                content={showContent ? form.content : null}
-                url={showUrl ? form.url : null}
-                language={showLanguage ? form.language : null}
-                fileName={showFile ? form.file?.fileName ?? null : null}
-                onGenerate={(description) => setForm({ ...form, description })}
-              />
+          <ItemFormFields
+            idPrefix="new-item"
+            placeholders
+            title={form.title}
+            onTitleChange={(title) => setForm({ ...form, title })}
+            description={form.description}
+            onDescriptionChange={(description) => setForm({ ...form, description })}
+            content={form.content}
+            onContentChange={(content) => setForm({ ...form, content })}
+            language={form.language}
+            onLanguageChange={(language) => setForm({ ...form, language })}
+            url={form.url}
+            onUrlChange={(url) => setForm({ ...form, url })}
+            tags={form.tags}
+            onTagsChange={(tags) => setForm({ ...form, tags })}
+            onAcceptTag={handleAcceptTag}
+            showContent={showContent}
+            showLanguage={showLanguage}
+            showMarkdown={showMarkdown}
+            showUrl={showUrl}
+            isPro={isPro}
+            fileName={showFile ? form.file?.fileName ?? null : null}
+          >
+            {showFile && (
+              <div className="flex flex-col gap-2">
+                <Label>{uploadKind === "image" ? "Image" : "File"}</Label>
+                <FileUpload
+                  kind={uploadKind}
+                  value={form.file}
+                  onChange={(file) => setForm({ ...form, file })}
+                />
+              </div>
             )}
-          </div>
-
-          {showLanguage && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="new-item-language">Language</Label>
-              <Select
-                value={form.language}
-                onValueChange={(value) => setForm({ ...form, language: value ?? "" })}
-              >
-                <SelectTrigger id="new-item-language" className="w-full">
-                  <SelectValue placeholder="Select a language" />
-                </SelectTrigger>
-                <SelectContent alignItemWithTrigger={false}>
-                  {LANGUAGE_OPTIONS.map((lang) => (
-                    <SelectItem key={lang.value} value={lang.value} label={lang.label}>
-                      {lang.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {showContent && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="new-item-content">Content</Label>
-              {showLanguage ? (
-                <CodeEditor
-                  value={form.content}
-                  onChange={(value) => setForm({ ...form, content: value })}
-                  language={form.language || undefined}
-                  placeholder="Paste your code here"
-                />
-              ) : showMarkdown ? (
-                <MarkdownEditor
-                  value={form.content}
-                  onChange={(value) => setForm({ ...form, content: value })}
-                  placeholder="Write the content here"
-                />
-              ) : (
-                <Textarea
-                  id="new-item-content"
-                  className="min-h-32 font-mono text-xs"
-                  placeholder="Write the content here"
-                  value={form.content}
-                  onChange={(e) => setForm({ ...form, content: e.target.value })}
-                />
-              )}
-            </div>
-          )}
-
-          {showUrl && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="new-item-url">URL</Label>
-              <Input
-                id="new-item-url"
-                placeholder="https://example.com"
-                value={form.url}
-                onChange={(e) => setForm({ ...form, url: e.target.value })}
-              />
-            </div>
-          )}
-
-          {showFile && (
-            <div className="flex flex-col gap-2">
-              <Label>{uploadKind === "image" ? "Image" : "File"}</Label>
-              <FileUpload
-                kind={uploadKind}
-                value={form.file}
-                onChange={(file) => setForm({ ...form, file })}
-              />
-            </div>
-          )}
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="new-item-tags">Tags</Label>
-            <Input
-              id="new-item-tags"
-              placeholder="comma, separated, tags"
-              value={form.tags}
-              onChange={(e) => setForm({ ...form, tags: e.target.value })}
-            />
-            {isPro && (
-              <SuggestTagsButton
-                title={form.title}
-                content={showContent ? form.content : (form.description || null)}
-                existingTags={parseTagsInput(form.tags)}
-                onAcceptTag={handleAcceptTag}
-              />
-            )}
-          </div>
+          </ItemFormFields>
 
           <CollectionMultiSelect
             options={collectionOptions}
