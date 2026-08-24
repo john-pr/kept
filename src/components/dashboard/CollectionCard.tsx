@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type CSSProperties, type MouseEvent } from "react";
+import { type CSSProperties, type MouseEvent } from "react";
 import { MoreVertical, Pencil, Star, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,18 +11,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EditCollectionDialog } from "@/components/dashboard/EditCollectionDialog";
-import { DeleteCollectionDialog } from "@/components/dashboard/DeleteCollectionDialog";
+import { CollectionDialogs } from "@/components/dashboard/CollectionDialogs";
 import { iconMap } from "@/lib/icon-map";
 import type { CollectionSummary } from "@/lib/db/collections";
 import { useClickableCard } from "@/hooks/useClickableCard";
 import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
+import { useCollectionDialogs } from "@/hooks/useCollectionDialogs";
 import { toggleCollectionFavorite } from "@/actions/collections";
 
 export function CollectionCard({ collection }: { collection: CollectionSummary }) {
   const router = useRouter();
-  const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const { editOpen, setEditOpen, deleteOpen, setDeleteOpen } = useCollectionDialogs();
   const [isFavorite, toggleFavorite] = useOptimisticToggle(
     collection.isFavorite,
     (next) => toggleCollectionFavorite(collection.id, next),
@@ -105,12 +104,12 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
         </CardContent>
       </Card>
 
-      <EditCollectionDialog collection={collection} open={editOpen} onOpenChange={setEditOpen} />
-      <DeleteCollectionDialog
-        collectionId={collection.id}
-        collectionName={collection.name}
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
+      <CollectionDialogs
+        collection={collection}
+        editOpen={editOpen}
+        onEditOpenChange={setEditOpen}
+        deleteOpen={deleteOpen}
+        onDeleteOpenChange={setDeleteOpen}
         onDeleted={() => router.refresh()}
       />
     </>
