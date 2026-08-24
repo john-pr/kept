@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { getStripeClient } from "@/lib/stripe";
+import { APP_URL, getStripeClient } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { requireApiSessionUser } from "@/lib/auth-guard";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export async function POST() {
   const user = await requireApiSessionUser();
