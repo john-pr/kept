@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { auth } from "@/auth";
 import {
   createCollection as createCollectionQuery,
   deleteCollection as deleteCollectionQuery,
@@ -13,6 +12,7 @@ import {
 } from "@/lib/db/collections";
 import { isOverCollectionLimit, isPlanGatingEnabled } from "@/lib/plan-limits";
 import { checkOwnership } from "@/lib/ownership";
+import { requireSessionUser } from "@/lib/auth-guard";
 import type { ActionResult } from "@/types/action-result";
 
 const createCollectionSchema = z.object({
@@ -37,14 +37,14 @@ export async function createCollection(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
   if (isPlanGatingEnabled()) {
-    const collectionCount = await getCollectionCountForUser(session.user.id);
-    if (isOverCollectionLimit(collectionCount, session.user.isPro)) {
+    const collectionCount = await getCollectionCountForUser(user.id);
+    if (isOverCollectionLimit(collectionCount, user.isPro)) {
       return {
         success: false,
         error: "You've reached the free plan's collection limit. Upgrade to Pro for unlimited collections.",
@@ -52,7 +52,7 @@ export async function createCollection(
     }
   }
 
-  const created = await createCollectionQuery({ ...parsed.data, userId: session.user.id });
+  const created = await createCollectionQuery({ ...parsed.data, userId: user.id });
   return { success: true, data: created };
 }
 
@@ -65,12 +65,12 @@ export async function updateCollection(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownership = await checkOwnership(getCollectionOwnerId, id, session.user.id, "Collection not found", "Not authorized to edit this collection");
+  const ownership = await checkOwnership(getCollectionOwnerId, id, user.id, "Collection not found", "Not authorized to edit this collection");
   if (!ownership.ok) {
     return { success: false, error: ownership.error };
   }
@@ -80,12 +80,12 @@ export async function updateCollection(
 }
 
 export async function deleteCollection(id: string): Promise<ActionResult<null>> {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownership = await checkOwnership(getCollectionOwnerId, id, session.user.id, "Collection not found", "Not authorized to delete this collection");
+  const ownership = await checkOwnership(getCollectionOwnerId, id, user.id, "Collection not found", "Not authorized to delete this collection");
   if (!ownership.ok) {
     return { success: false, error: ownership.error };
   }
@@ -98,12 +98,12 @@ export async function toggleCollectionFavorite(
   id: string,
   isFavorite: boolean
 ): Promise<ActionResult<{ isFavorite: boolean }>> {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  const ownership = await checkOwnership(getCollectionOwnerId, id, session.user.id, "Collection not found", "Not authorized to edit this collection");
+  const ownership = await checkOwnership(getCollectionOwnerId, id, user.id, "Collection not found", "Not authorized to edit this collection");
   if (!ownership.ok) {
     return { success: false, error: ownership.error };
   }

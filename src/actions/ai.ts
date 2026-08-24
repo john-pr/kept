@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { auth } from "@/auth";
 import { getOpenAIClient, AI_MODEL } from "@/lib/openai";
 import { buildAutoTagInput, parseAutoTagResponse } from "@/lib/auto-tag";
 import { buildDescriptionInput, parseDescriptionResponse } from "@/lib/description";
@@ -9,6 +8,7 @@ import { buildExplainInput, parseExplainResponse } from "@/lib/explain";
 import { buildOptimizePromptInput, parseOptimizePromptResponse } from "@/lib/optimize-prompt";
 import { isAiProGated } from "@/lib/plan-limits";
 import { checkRateLimit, retryAfterMessage } from "@/lib/rate-limit";
+import { requireSessionUser } from "@/lib/auth-guard";
 import type { ActionResult } from "@/types/action-result";
 
 const AI_RATE_LIMIT = 20;
@@ -62,16 +62,16 @@ export async function generateAutoTags(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  if (isAiProGated(session.user.isPro)) {
+  if (isAiProGated(user.isPro)) {
     return { success: false, error: "AI features require a Pro plan" };
   }
 
-  const rateLimit = await checkRateLimit("ai-auto-tag", session.user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
+  const rateLimit = await checkRateLimit("ai-auto-tag", user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
   if (!rateLimit.success) {
     return { success: false, error: retryAfterMessage(rateLimit.reset) };
   }
@@ -115,16 +115,16 @@ export async function generateDescription(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  if (isAiProGated(session.user.isPro)) {
+  if (isAiProGated(user.isPro)) {
     return { success: false, error: "AI features require a Pro plan" };
   }
 
-  const rateLimit = await checkRateLimit("ai-description", session.user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
+  const rateLimit = await checkRateLimit("ai-description", user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
   if (!rateLimit.success) {
     return { success: false, error: retryAfterMessage(rateLimit.reset) };
   }
@@ -163,16 +163,16 @@ export async function explainCode(data: ExplainCodePayload): Promise<ActionResul
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  if (isAiProGated(session.user.isPro)) {
+  if (isAiProGated(user.isPro)) {
     return { success: false, error: "AI features require a Pro plan" };
   }
 
-  const rateLimit = await checkRateLimit("ai-explain", session.user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
+  const rateLimit = await checkRateLimit("ai-explain", user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
   if (!rateLimit.success) {
     return { success: false, error: retryAfterMessage(rateLimit.reset) };
   }
@@ -212,16 +212,16 @@ export async function optimizePrompt(data: OptimizePromptPayload): Promise<Actio
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const user = await requireSessionUser();
+  if (!user) {
     return { success: false, error: "Not authenticated" };
   }
 
-  if (isAiProGated(session.user.isPro)) {
+  if (isAiProGated(user.isPro)) {
     return { success: false, error: "AI features require a Pro plan" };
   }
 
-  const rateLimit = await checkRateLimit("ai-optimize-prompt", session.user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
+  const rateLimit = await checkRateLimit("ai-optimize-prompt", user.id, AI_RATE_LIMIT, AI_RATE_WINDOW_SECONDS);
   if (!rateLimit.success) {
     return { success: false, error: retryAfterMessage(rateLimit.reset) };
   }
