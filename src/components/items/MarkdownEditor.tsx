@@ -160,7 +160,7 @@ export function MarkdownEditor({
         {!readOnly && (
           <TabsContent
             value="write"
-            className="m-0 max-h-[400px] min-h-[120px] overflow-auto"
+            className="m-0 max-h-[400px] min-h-[120px] overflow-auto [contain:layout]"
           >
             <Textarea
               value={value}
@@ -174,7 +174,7 @@ export function MarkdownEditor({
 
         <TabsContent
           value="preview"
-          className="m-0 max-h-[400px] min-h-[120px] overflow-auto p-3"
+          className="m-0 max-h-[400px] min-h-[120px] overflow-auto p-3 [contain:layout]"
         >
           {displayValue.trim() === "" ? (
             <p className="text-xs text-neutral-500">{placeholder || "Nothing to preview"}</p>
