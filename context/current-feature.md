@@ -1,7 +1,7 @@
 # Current Feature
 
 ## Status
-Implemented — pending commit approval
+Committed and pushed to `feature/dashboard-redesign` (origin) — not merged into `master` yet, per request
 
 ## Goals
 Implement the "ledger" design system redesign on the desktop `/dashboard` screen, adopting
