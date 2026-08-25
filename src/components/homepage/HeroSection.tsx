@@ -10,8 +10,9 @@ export function HeroSection() {
         <span className="mb-5 block text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
           Built for developers
         </span>
-        <h1 className="mb-5 text-4xl leading-[1.1] font-extrabold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-          <span className="text-primary">Keep Everything.</span> Find Anything.
+        <h1 className="mb-5 text-3xl leading-[1.1] font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+          <span className="block text-primary">Keep Everything.</span>
+          <span className="block text-balance">Find Anything.</span>
         </h1>
         <p className="mx-auto mb-8 max-w-lg text-lg text-muted-foreground">
           Snippets, prompts, commands, notes, links, and files — kept in one fast, searchable,
