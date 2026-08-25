@@ -2,14 +2,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ScrollFadeIn } from "./ScrollFadeIn";
 import { ChaosToOrder } from "./ChaosToOrder";
+import { SectionEyebrow } from "./SectionEyebrow";
 
 export function HeroSection() {
   return (
     <section className="px-6 pt-38 pb-24">
       <ScrollFadeIn className="mx-auto mb-16 max-w-2xl text-center">
-        <span className="mb-5 block text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-          Built for developers
-        </span>
+        <SectionEyebrow className="mb-5 block">Built for developers</SectionEyebrow>
         <h1 className="mb-5 text-3xl leading-[1.1] font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
           <span className="block text-primary">Keep Everything.</span>
           <span className="block text-balance">Find Anything.</span>
