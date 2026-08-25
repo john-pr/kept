@@ -1,7 +1,7 @@
 # Current Feature
 
 ## Status
-Implemented — pending commit approval
+Committed and pushed to `docs/design-system-reference` (origin, based on `feature/create-dialogs-redesign`) — not merged into `master` yet, per request
 
 ## Goals
 Write `context/design-system.md` — a reference doc distilling the "ledger" design system
