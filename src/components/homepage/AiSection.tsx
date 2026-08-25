@@ -26,7 +26,7 @@ export function AiSection() {
           <ul className="flex flex-col gap-3">
             {AI_CHECKLIST.map((item) => (
               <li key={item} className="flex items-center gap-2.5 text-sm">
-                <Check className="size-4.5 shrink-0 text-emerald-500" strokeWidth={2.5} />
+                <Check className="size-4.5 shrink-0 text-primary" strokeWidth={2.5} />
                 {item}
               </li>
             ))}

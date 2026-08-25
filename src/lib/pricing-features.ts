@@ -1,9 +1,10 @@
 import { FREE_COLLECTION_LIMIT, FREE_ITEM_LIMIT } from "@/lib/plan-limits";
+import { pluralize } from "@/lib/text";
 
 /** Shared Free/Pro feature copy, used by the homepage pricing section and the /upgrade page. */
 export const FREE_FEATURES = [
-  `${FREE_ITEM_LIMIT} items total`,
-  `${FREE_COLLECTION_LIMIT} collections`,
+  `${pluralize(FREE_ITEM_LIMIT, "item")} total`,
+  pluralize(FREE_COLLECTION_LIMIT, "collection"),
   "All text-based types",
   "Basic search",
 ];
