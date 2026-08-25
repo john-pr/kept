@@ -95,7 +95,7 @@ export function SignInForm() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[18px]">
       {error && (
         <Alert variant="destructive">
           <AlertDescription className="flex flex-col gap-2">
@@ -116,9 +116,11 @@ export function SignInForm() {
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="email" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
@@ -126,16 +128,19 @@ export function SignInForm() {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            className="h-[38px] border-border bg-muted text-[13px]"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-baseline justify-between gap-3">
+            <Label htmlFor="password" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+              Password
+            </Label>
             <Link
               href="/forgot-password"
-              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              className="text-[10px] tracking-[0.12em] text-muted-foreground uppercase underline underline-offset-4 hover:text-foreground"
             >
-              Forgot password?
+              Forgot?
             </Link>
           </div>
           <Input
@@ -145,24 +150,30 @@ export function SignInForm() {
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            className="h-[38px] border-border bg-muted text-[13px]"
           />
         </div>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-10 tracking-[0.16em] uppercase"
+        >
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
           Sign in
         </Button>
       </form>
 
-      <div className="relative flex items-center py-1">
-        <div className="flex-1 border-t border-border" />
-        <span className="px-3 text-xs text-muted-foreground">OR</span>
-        <div className="flex-1 border-t border-border" />
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <span className="h-px bg-border" />
+        <span className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase">or</span>
+        <span className="h-px bg-border" />
       </div>
 
       <Button
         type="button"
         variant="outline"
         disabled={isGithubLoading}
+        className="h-10 tracking-[0.14em] uppercase"
         onClick={() => {
           setIsGithubLoading(true);
           signIn("github", { callbackUrl });
@@ -173,7 +184,7 @@ export function SignInForm() {
         ) : (
           <GitHubIcon className="size-4" />
         )}
-        Sign in with GitHub
+        Continue with GitHub
       </Button>
     </div>
   );

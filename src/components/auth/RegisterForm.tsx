@@ -68,26 +68,31 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[18px]">
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="name">Name</Label>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="name" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+            Name
+          </Label>
           <Input
             id="name"
             autoComplete="name"
             required
             value={name}
             onChange={(event) => setName(event.target.value)}
+            className="h-[38px] border-border bg-muted text-[13px]"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="email" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
@@ -95,10 +100,13 @@ export function RegisterForm() {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            className="h-[38px] border-border bg-muted text-[13px]"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="password">Password</Label>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="password" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+            Password
+          </Label>
           <Input
             id="password"
             type="password"
@@ -106,10 +114,16 @@ export function RegisterForm() {
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            className="h-[38px] border-border bg-muted text-[13px]"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="confirmPassword">Confirm password</Label>
+        <div className="flex flex-col gap-1.5">
+          <Label
+            htmlFor="confirmPassword"
+            className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+          >
+            Confirm password
+          </Label>
           <Input
             id="confirmPassword"
             type="password"
@@ -117,9 +131,14 @@ export function RegisterForm() {
             required
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
+            className="h-[38px] border-border bg-muted text-[13px]"
           />
         </div>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-10 tracking-[0.16em] uppercase"
+        >
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
           Create account
         </Button>

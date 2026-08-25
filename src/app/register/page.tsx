@@ -7,20 +7,28 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <HomeNav />
-      <div className="flex flex-1 items-center justify-center p-4 pt-24">
+      <div className="flex flex-1 flex-col items-center gap-4 p-4 pt-24">
         <AuthCard
-          title="Create your account"
-          description="Get started with Kept"
-          contentClassName="flex flex-col gap-4"
+          title="Create account"
+          description="Get started with Kept — one place for links, snippets and commands."
+          contentClassName="flex flex-col gap-[22px]"
+          crumb="Access / Register"
+          stepLabel="4 fields"
         >
           <RegisterForm />
-          <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link href="/sign-in" className="text-foreground underline underline-offset-4">
+          <p className="flex items-center justify-center gap-2 border-t border-dotted border-border pt-4 text-[11px] tracking-[0.08em] text-muted-foreground uppercase">
+            Already registered?
+            <Link href="/sign-in" className="text-primary underline underline-offset-4">
               Sign in
             </Link>
           </p>
         </AuthCard>
+        <div className="flex w-full max-w-sm items-center justify-between text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
+          <span>Encrypted at rest</span>
+          <a href="#terms" className="hover:text-foreground hover:underline">
+            Terms
+          </a>
+        </div>
       </div>
     </div>
   );
