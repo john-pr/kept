@@ -1,7 +1,7 @@
 # Design System — "Ledger"
 
 Reference for implementing the redesign on remaining screens. Originally sourced from three
-Claude Design canvas mockups (`context/redesign/kept-dashboard.html`,
+Claude Design canvas mockups (`prototypes/redesign/kept-dashboard.html`,
 `kept-mobile-dashboard.html`, `kept-auth.html`), now extrapolated onto screens with no mockup
 (New Item/New Collection dialogs) and treated as the system going forward — **no more mockups
 will be produced; use this file instead.**
@@ -228,5 +228,5 @@ parallel icon set was explicitly decided against. Use the existing `iconMap`
    there — only per-type/per-collection color-coded cards and the auth card got it).
 6. Run `npm run build && npm run lint && npm run test` after every pass; verify visually via
    Playwright MCP before considering a screen done (compare against the relevant mockup
-   file while one still exists in `context/redesign/`, or against this doc + neighboring
+   file while one still exists in `prototypes/redesign/`, or against this doc + neighboring
    already-redesigned screens once mockups are gone).
