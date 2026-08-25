@@ -47,6 +47,9 @@ interface ItemFormFieldsProps {
   children?: ReactNode;
 }
 
+const LABEL_CLASS = "text-[10px] tracking-[0.14em] text-muted-foreground uppercase";
+const FIELD_CLASS = "rounded-none border-border bg-muted text-[13px]";
+
 /**
  * Shared Title -> Description -> Language -> Content -> URL -> Tags field
  * sequence used by both `NewItemDialog` (create) and `ItemDrawerEditForm`
@@ -80,23 +83,29 @@ export function ItemFormFields({
 }: ItemFormFieldsProps) {
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${idPrefix}-title`}>Title</Label>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor={`${idPrefix}-title`} className={LABEL_CLASS}>
+          Title
+        </Label>
         <Input
           id={`${idPrefix}-title`}
           placeholder={placeholders ? "e.g. Debounce hook" : undefined}
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
+          className={`h-[38px] ${FIELD_CLASS}`}
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${idPrefix}-description`}>Description</Label>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor={`${idPrefix}-description`} className={LABEL_CLASS}>
+          Description
+        </Label>
         <Textarea
           id={`${idPrefix}-description`}
           placeholder={placeholders ? "A short summary of this item" : undefined}
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
+          className={FIELD_CLASS}
         />
         {isPro && (
           <SuggestDescriptionButton
@@ -111,10 +120,12 @@ export function ItemFormFields({
       </div>
 
       {showLanguage && (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={`${idPrefix}-language`}>Language</Label>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor={`${idPrefix}-language`} className={LABEL_CLASS}>
+            Language
+          </Label>
           <Select value={language} onValueChange={(value) => onLanguageChange(value ?? "")}>
-            <SelectTrigger id={`${idPrefix}-language`} className="w-full">
+            <SelectTrigger id={`${idPrefix}-language`} className={`h-[38px] w-full ${FIELD_CLASS}`}>
               <SelectValue placeholder="Select a language" />
             </SelectTrigger>
             <SelectContent alignItemWithTrigger={false}>
@@ -129,8 +140,10 @@ export function ItemFormFields({
       )}
 
       {showContent && (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={`${idPrefix}-content`}>Content</Label>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor={`${idPrefix}-content`} className={LABEL_CLASS}>
+            Content
+          </Label>
           {showLanguage ? (
             <CodeEditor
               value={content}
@@ -147,7 +160,7 @@ export function ItemFormFields({
           ) : (
             <Textarea
               id={`${idPrefix}-content`}
-              className="min-h-32 font-mono text-xs"
+              className={`min-h-32 font-mono text-xs ${FIELD_CLASS}`}
               placeholder={placeholders ? "Write the content here" : undefined}
               value={content}
               onChange={(e) => onContentChange(e.target.value)}
@@ -157,26 +170,32 @@ export function ItemFormFields({
       )}
 
       {showUrl && (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={`${idPrefix}-url`}>URL</Label>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor={`${idPrefix}-url`} className={LABEL_CLASS}>
+            URL
+          </Label>
           <Input
             id={`${idPrefix}-url`}
             placeholder={placeholders ? "https://example.com" : undefined}
             value={url}
             onChange={(e) => onUrlChange(e.target.value)}
+            className={`h-[38px] ${FIELD_CLASS}`}
           />
         </div>
       )}
 
       {children}
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${idPrefix}-tags`}>Tags</Label>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor={`${idPrefix}-tags`} className={LABEL_CLASS}>
+          Tags
+        </Label>
         <Input
           id={`${idPrefix}-tags`}
           placeholder="comma, separated, tags"
           value={tags}
           onChange={(e) => onTagsChange(e.target.value)}
+          className={`h-[38px] ${FIELD_CLASS}`}
         />
         {isPro && (
           <SuggestTagsButton

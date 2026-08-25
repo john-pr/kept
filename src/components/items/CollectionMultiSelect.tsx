@@ -49,8 +49,8 @@ export function CollectionMultiSelect({ options, selectedIds, onChange }: Collec
         : `${selectedNames.length} collections selected`;
 
   return (
-    <div className="flex flex-col gap-2">
-      <Label>Collections</Label>
+    <div className="flex flex-col gap-1.5">
+      <Label className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">Collections</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           render={
@@ -58,7 +58,7 @@ export function CollectionMultiSelect({ options, selectedIds, onChange }: Collec
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full justify-between font-normal"
+              className="h-[38px] w-full justify-between rounded-none border-border bg-muted text-[13px] font-normal"
               disabled={options.length === 0}
             />
           }
