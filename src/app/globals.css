@@ -50,7 +50,7 @@
 }
 
 /*
- * "Ledger" design system tokens, ported from context/redesign/kept-dashboard.html
+ * "Ledger" design system tokens, ported from prototypes/redesign/kept-dashboard.html
  * (shared across kept-dashboard.html / kept-mobile-dashboard.html / kept-auth.html).
  * The app has no light/dark toggle yet (html is hardcoded to .dark in layout.tsx) — the
  * :root block below is the mockup's light-mode palette, stubbed in for a future toggle,

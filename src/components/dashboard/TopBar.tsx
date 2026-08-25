@@ -41,7 +41,7 @@ export function TopBar({
               user={user}
             />
           </div>
-          <Logo />
+          <Logo size="lg" />
         </div>
         <div className="flex items-center gap-2 md:hidden">
           {!user.isPro && (
