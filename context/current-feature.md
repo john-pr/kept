@@ -1,7 +1,7 @@
 # Current Feature
 
 ## Status
-Implemented — pending commit approval
+Committed and pushed to `feature/auth-redesign` (origin, based on `feature/dashboard-redesign`) — not merged into `master` yet, per request
 
 ## Goals
 Extend the "ledger" design system redesign to the `/sign-in` and `/register` screens.
