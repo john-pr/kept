@@ -6,7 +6,7 @@ import { SectionEyebrow } from "./SectionEyebrow";
 
 export function HeroSection() {
   return (
-    <section className="px-6 pt-38 pb-24">
+    <section className="px-6 pt-38 pb-8">
       <ScrollFadeIn className="mx-auto mb-16 max-w-2xl text-center">
         <SectionEyebrow className="mb-5 block">Built for developers</SectionEyebrow>
         <h1 className="mb-5 text-3xl leading-[1.1] font-extrabold tracking-tight sm:text-5xl lg:text-6xl">

@@ -36,8 +36,10 @@ export function ScrollFadeIn({ children, className, delay = 0 }: ScrollFadeInPro
       ref={ref}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
       className={cn(
-        "transition-all duration-700 ease-out",
-        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+        "transition-all duration-700 ease-out motion-reduce:transition-none",
+        visible
+          ? "translate-y-0 opacity-100"
+          : "translate-y-6 opacity-0 motion-reduce:translate-y-0 motion-reduce:opacity-100",
         className
       )}
     >
