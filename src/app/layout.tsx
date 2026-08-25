@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ItemDrawerProvider } from "@/components/items/ItemDrawerProvider";
 import { EditorPreferencesProvider } from "@/components/editor/EditorPreferencesProvider";
 import "./globals.css";
 
-const geistSans = Geist({
+// One monospace family drives both --font-sans (headings/body) and --font-mono (code),
+// matching the "ledger" design system's single-typeface look.
+const jetbrainsMonoSans = JetBrains_Mono({
   variable: "--font-sans",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMonoMono = JetBrains_Mono({
   variable: "--font-mono",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
 
@@ -28,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${jetbrainsMonoSans.variable} ${jetbrainsMonoMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <EditorPreferencesProvider>

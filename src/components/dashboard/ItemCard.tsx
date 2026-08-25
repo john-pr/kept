@@ -1,12 +1,12 @@
 "use client";
 
-import { type CSSProperties, type MouseEvent } from "react";
+import { type MouseEvent } from "react";
 import { Copy, Pin } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { iconMap } from "@/lib/icon-map";
+import { withAlpha } from "@/lib/color";
+import { formatRelativeTime } from "@/lib/relative-time";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
@@ -26,48 +26,49 @@ export function ItemCard({ item }: { item: ItemSummary }) {
   }
 
   return (
-    <Card
-      className="h-full cursor-pointer ring-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      style={{ "--tw-ring-color": item.typeColor } as CSSProperties}
+    <div
+      className="flex cursor-pointer flex-col gap-3 border-l-2 bg-card px-[18px] py-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      style={{ borderLeftColor: item.typeColor }}
       role="button"
       tabIndex={0}
       {...clickableCard}
     >
-      <CardHeader>
-        <CardTitle className="flex items-start justify-between gap-2">
-          <span
-            className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted"
-          >
-            {Icon && <Icon className="size-4" style={{ color: item.typeColor }} />}
+      <div className="flex items-center justify-between gap-2">
+        <span
+          className="flex items-center gap-1.5 px-1.5 py-0.5 text-[10px] tracking-[0.12em] uppercase"
+          style={{ backgroundColor: withAlpha(item.typeColor), color: item.typeColor }}
+        >
+          {Icon && <Icon className="size-3.5" />}
+          {item.typeName}
+        </span>
+        <div className="flex shrink-0 items-center gap-2 text-muted-foreground">
+          <span className="text-[10px] tracking-[0.08em] uppercase tabular-nums">
+            {formatRelativeTime(new Date(item.createdAt))}
           </span>
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            {item.isPinned && <Pin className="size-3.5" />}
-            <FavoriteToggleButton isFavorite={isFavorite} onToggle={handleToggleFavorite} />
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={handleCopy}
-              aria-label="Copy to clipboard"
-            >
-              <Copy className="size-3.5" />
-            </Button>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-3">
-        <h4 className="truncate text-sm font-medium text-foreground">{item.title}</h4>
-        <p className="line-clamp-2 font-mono text-xs text-muted-foreground">
-          {item.content}
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {item.tags.map((tag) => (
-            <Badge key={tag} variant="outline">
-              {tag}
-            </Badge>
-          ))}
+          {item.isPinned && <Pin className="size-3.5" />}
+          <FavoriteToggleButton isFavorite={isFavorite} onToggle={handleToggleFavorite} />
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={handleCopy}
+            aria-label="Copy to clipboard"
+          >
+            <Copy className="size-3.5" />
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <h4 className="truncate text-sm text-foreground">{item.title}</h4>
+      <div className="h-[58px] overflow-hidden border border-border bg-muted p-2.5 font-mono text-xs leading-[18px] text-ink-body">
+        {item.content}
+      </div>
+      <div className="flex flex-wrap gap-2.5">
+        {item.tags.map((tag) => (
+          <span key={tag} className="text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
+            [{tag}]
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }

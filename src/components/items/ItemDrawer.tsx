@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { iconMap } from "@/lib/icon-map";
+import { withAlpha } from "@/lib/color";
 import type { ItemDetail } from "@/lib/db/items";
 import type { CollectionOption } from "@/lib/db/collections";
 import { deleteItem, toggleItemFavorite, toggleItemPin, updateItem } from "@/actions/items";
@@ -235,7 +236,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent className="gap-0 overflow-y-auto data-[side=right]:w-full data-[side=right]:sm:max-w-xl">
+      <SheetContent className="gap-0 overflow-y-auto data-[side=right]:w-full data-[side=right]:sm:max-w-[28rem]">
         {isLoading || !item ? (
           <div className="flex flex-col gap-4 p-4">
             <div className="flex items-center gap-3">
@@ -252,13 +253,18 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
           <>
             <SheetHeader>
               <div className="flex items-center gap-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
-                  {Icon && <Icon className="size-4" style={{ color: item.itemType.color }} />}
+                <span
+                  className="flex size-9 shrink-0 items-center justify-center"
+                  style={{ backgroundColor: withAlpha(item.itemType.color), color: item.itemType.color }}
+                >
+                  {Icon && <Icon className="size-4" />}
                 </span>
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   <SheetTitle>{item.title}</SheetTitle>
-                  <span className="text-xs text-muted-foreground">
-                    Created {new Date(item.createdAt).toLocaleDateString()}
+                  <span className="flex items-center gap-2 text-[10px] tracking-[0.12em] text-muted-foreground uppercase tabular-nums">
+                    <span>{item.itemType.name}</span>
+                    <span className="size-[3px] bg-muted-foreground" />
+                    <span>Created {new Date(item.createdAt).toLocaleDateString()}</span>
                   </span>
                 </div>
               </div>
