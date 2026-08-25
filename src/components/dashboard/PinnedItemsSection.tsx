@@ -12,7 +12,7 @@ export async function PinnedItemsSection({ userId }: PinnedItemsSectionProps) {
   if (pinnedItems.length === 0) return null;
 
   return (
-    <DashboardGridSection title="Pinned Items">
+    <DashboardGridSection title="Pinned Items" count={pinnedItems.length}>
       {pinnedItems.map((item) => (
         <ItemCard key={item.id} item={item} />
       ))}

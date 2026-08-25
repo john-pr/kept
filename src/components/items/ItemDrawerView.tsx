@@ -54,13 +54,21 @@ export function ItemDrawerView({
             Copy
           </Button>
         )}
-        <Button variant="outline" size="sm" onClick={onToggleFavorite}>
+        <Button
+          variant="outline"
+          size="icon-sm"
+          onClick={onToggleFavorite}
+          aria-label={item.isFavorite ? "Unfavorite" : "Favorite"}
+        >
           <Star className={item.isFavorite ? "size-4 fill-yellow-400 text-yellow-400" : "size-4"} />
-          {item.isFavorite ? "Unfavorite" : "Favorite"}
         </Button>
-        <Button variant="outline" size="sm" onClick={onTogglePin}>
+        <Button
+          variant="outline"
+          size="icon-sm"
+          onClick={onTogglePin}
+          aria-label={item.isPinned ? "Unpin" : "Pin"}
+        >
           <Pin className={item.isPinned ? "size-4 fill-current" : "size-4"} />
-          {item.isPinned ? "Unpin" : "Pin"}
         </Button>
         <Button
           variant="outline"
@@ -80,15 +88,19 @@ export function ItemDrawerView({
       </div>
 
       {item.description && (
-        <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-foreground">Description</h4>
-          <p className="text-sm text-muted-foreground">{item.description}</p>
+        <div className="flex flex-col gap-2.5">
+          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            Description
+          </h4>
+          <p className="text-sm text-ink-body">{item.description}</p>
         </div>
       )}
 
       {(item.content || item.url) && (
-        <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-foreground">Content</h4>
+        <div className="flex flex-col gap-2.5">
+          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            Content
+          </h4>
           {showLanguage && item.content ? (
             <CodeEditor
               value={item.content}
@@ -108,7 +120,7 @@ export function ItemDrawerView({
               onAcceptOptimized={onAcceptOptimizedPrompt}
             />
           ) : (
-            <pre className="max-h-80 overflow-auto rounded-md bg-muted p-3 font-mono text-xs text-foreground whitespace-pre-wrap">
+            <pre className="max-h-80 overflow-auto border border-border bg-muted p-3.5 font-mono text-xs leading-[19px] text-ink-body whitespace-pre-wrap">
               {item.content ?? item.url}
             </pre>
           )}
@@ -116,21 +128,25 @@ export function ItemDrawerView({
       )}
 
       {item.fileUrl && isImage && (
-        <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-foreground">Preview</h4>
+        <div className="flex flex-col gap-2.5">
+          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            Preview
+          </h4>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={item.fileUrl}
             alt={item.fileName ?? item.title}
-            className="max-h-80 w-full rounded-md object-contain"
+            className="max-h-80 w-full object-contain"
           />
         </div>
       )}
 
       {item.fileName && (
-        <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-foreground">File</h4>
-          <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col gap-2.5">
+          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            File
+          </h4>
+          <p className="text-sm text-ink-body">
             {item.fileName}
             {item.fileSize != null && ` · ${formatFileSize(item.fileSize)}`}
           </p>
@@ -138,9 +154,11 @@ export function ItemDrawerView({
       )}
 
       {item.tags.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-foreground">Tags</h4>
-          <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-col gap-2.5">
+          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            Tags
+          </h4>
+          <div className="flex flex-wrap gap-2">
             {item.tags.map((tag) => (
               <Badge key={tag} variant="outline">
                 {tag}
@@ -151,13 +169,19 @@ export function ItemDrawerView({
       )}
 
       {item.collections.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-foreground">Collections</h4>
-          <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-col gap-2.5">
+          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+            Collections
+          </h4>
+          <div className="flex flex-wrap gap-2">
             {item.collections.map((collection) => (
-              <Badge key={collection.id} variant="secondary">
+              <span
+                key={collection.id}
+                className="flex items-center gap-1.5 border border-rule-strong px-2 py-1 text-[10px] tracking-[0.1em] text-foreground uppercase"
+              >
+                <span className="size-[7px] bg-primary" />
                 {collection.name}
-              </Badge>
+              </span>
             ))}
           </div>
         </div>

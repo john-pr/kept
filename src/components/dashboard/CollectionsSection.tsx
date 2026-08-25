@@ -11,7 +11,7 @@ export async function CollectionsSection({ userId }: CollectionsSectionProps) {
   const recentCollections = await getRecentCollections(userId, DASHBOARD_COLLECTIONS_LIMIT);
 
   return (
-    <DashboardGridSection title="Recent Collections">
+    <DashboardGridSection title="Recent Collections" count={recentCollections.length}>
       {recentCollections.map((collection) => (
         <CollectionCard key={collection.id} collection={collection} />
       ))}

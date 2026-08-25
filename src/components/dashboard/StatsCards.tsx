@@ -1,35 +1,32 @@
 import { Package, FolderOpen, Heart, Star } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { getDashboardStats } from "@/lib/db/stats";
+import type { DashboardStats } from "@/lib/db/stats";
 
 interface StatsCardsProps {
-  userId: string;
+  stats: DashboardStats;
 }
 
-export async function StatsCards({ userId }: StatsCardsProps) {
-  const dashboardStats = await getDashboardStats(userId);
-
-  const stats = [
-    { label: "Total Items", value: dashboardStats.totalItems, icon: Package },
-    { label: "Collections", value: dashboardStats.totalCollections, icon: FolderOpen },
-    { label: "Favorite Items", value: dashboardStats.favoriteItems, icon: Heart },
-    { label: "Favorite Collections", value: dashboardStats.favoriteCollections, icon: Star },
+export function StatsCards({ stats }: StatsCardsProps) {
+  const cells = [
+    { label: "Total Items", value: stats.totalItems, icon: Package },
+    { label: "Collections", value: stats.totalCollections, icon: FolderOpen },
+    { label: "Favorite Items", value: stats.favoriteItems, icon: Heart },
+    { label: "Favorite Collections", value: stats.favoriteCollections, icon: Star },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-      {stats.map(({ label, value, icon: Icon }) => (
-        <Card key={label}>
-          <CardContent className="flex items-center gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-              <Icon className="size-4 text-muted-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-semibold text-foreground">{value}</span>
-              <span className="text-xs text-muted-foreground">{label}</span>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="grid grid-cols-2 gap-px border border-border bg-border lg:grid-cols-4">
+      {cells.map(({ label, value, icon: Icon }) => (
+        <div key={label} className="flex items-start justify-between gap-2 bg-card px-4 py-[18px]">
+          <div className="flex flex-col gap-2">
+            <span className="text-[32px] leading-none text-foreground tabular-nums">
+              {String(value).padStart(2, "0")}
+            </span>
+            <span className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+              {label}
+            </span>
+          </div>
+          <Icon className="size-4 shrink-0 text-muted-foreground" />
+        </div>
       ))}
     </div>
   );
