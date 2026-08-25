@@ -83,6 +83,8 @@ export function ChaosToOrder() {
     const field = fieldRef.current;
     if (!field) return;
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     let fieldWidth = 0;
     let fieldHeight = 0;
     let mouseX = -9999;
@@ -96,20 +98,6 @@ export function ChaosToOrder() {
     };
     measure();
     window.addEventListener("resize", measure);
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = field.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
-      mouseActive = true;
-    };
-    const handleMouseLeave = () => {
-      mouseActive = false;
-      mouseX = -9999;
-      mouseY = -9999;
-    };
-    field.addEventListener("mousemove", handleMouseMove);
-    field.addEventListener("mouseleave", handleMouseLeave);
 
     const state: IconState[] = iconRefs.current.flatMap((el, i) => {
       if (!el) return [];
@@ -129,6 +117,31 @@ export function ChaosToOrder() {
         },
       ];
     });
+
+    // Reduced-motion: place each icon once at its initial spot and skip the drift/
+    // repel loop and mouse listeners entirely, instead of just freezing mid-animation.
+    if (prefersReducedMotion) {
+      for (const s of state) {
+        s.el.style.transform = `translate(${s.x}px, ${s.y}px)`;
+      }
+      return () => {
+        window.removeEventListener("resize", measure);
+      };
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = field.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+      mouseActive = true;
+    };
+    const handleMouseLeave = () => {
+      mouseActive = false;
+      mouseX = -9999;
+      mouseY = -9999;
+    };
+    field.addEventListener("mousemove", handleMouseMove);
+    field.addEventListener("mouseleave", handleMouseLeave);
 
     let lastTime = performance.now();
     let frame: number;
@@ -252,7 +265,7 @@ export function ChaosToOrder() {
       </div>
 
       {/* Arrow */}
-      <div className="flex animate-pulse items-center justify-center px-1 py-2">
+      <div className="flex animate-pulse items-center justify-center px-1 py-2 motion-reduce:animate-none">
         <ArrowRight className="size-10 rotate-90 text-primary md:rotate-0" strokeWidth={2.5} />
       </div>
 
