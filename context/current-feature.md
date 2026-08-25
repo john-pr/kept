@@ -1,7 +1,7 @@
 # Current Feature
 
 ## Status
-Implemented — pending commit approval
+Committed and pushed to `feature/create-dialogs-redesign` (origin, based on `feature/auth-redesign`) — not merged into `master` yet, per request
 
 ## Goals
 Extend the "ledger" design system to the New Collection and New Item dialogs
