@@ -132,23 +132,33 @@ export function NewItemDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={trigger}>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="gap-5 rounded-none border border-border ring-0 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>New item</DialogTitle>
+          <DialogTitle className="text-base font-medium tracking-[0.12em] uppercase">
+            New item
+          </DialogTitle>
           <DialogDescription>
             Create a new snippet, prompt, command, note, link, file, or image.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="new-item-type">Type</Label>
+          <div className="flex flex-col gap-1.5">
+            <Label
+              htmlFor="new-item-type"
+              className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+            >
+              Type
+            </Label>
             <Select
               value={itemTypeId}
               onValueChange={(value) => setItemTypeId(value ?? "")}
               disabled={isTypeLocked}
             >
-              <SelectTrigger id="new-item-type" className="w-full">
+              <SelectTrigger
+                id="new-item-type"
+                className="h-[38px] w-full rounded-none border-border bg-muted text-[13px]"
+              >
                 <SelectValue placeholder="Select a type">
                   {selectedType ? (
                     <span className="flex items-center gap-1.5">
@@ -202,7 +212,9 @@ export function NewItemDialog({
           >
             {showFile && (
               <div className="flex flex-col gap-2">
-                <Label>{uploadKind === "image" ? "Image" : "File"}</Label>
+                <Label className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+                  {uploadKind === "image" ? "Image" : "File"}
+                </Label>
                 <FileUpload
                   kind={uploadKind}
                   value={form.file}
@@ -219,7 +231,7 @@ export function NewItemDialog({
           />
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="-mx-4 -mb-4 rounded-none border-t border-border bg-muted/40 p-4">
           <Button
             onClick={handleCreate}
             disabled={
@@ -229,6 +241,7 @@ export function NewItemDialog({
               (showFile && !form.file) ||
               isSaving
             }
+            className="tracking-[0.14em] uppercase"
           >
             {isSaving ? "Creating..." : "Create"}
           </Button>

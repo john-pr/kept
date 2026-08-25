@@ -60,9 +60,11 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={trigger}>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="gap-5 rounded-none border border-border ring-0 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>New collection</DialogTitle>
+          <DialogTitle className="text-base font-medium tracking-[0.12em] uppercase">
+            New collection
+          </DialogTitle>
           <DialogDescription>Group items together under a new collection.</DialogDescription>
         </DialogHeader>
 
@@ -74,8 +76,12 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
           onDescriptionChange={(description) => setForm({ ...form, description })}
         />
 
-        <DialogFooter>
-          <Button onClick={handleCreate} disabled={form.name.trim() === "" || isSaving}>
+        <DialogFooter className="-mx-4 -mb-4 rounded-none border-t border-border bg-muted/40 p-4">
+          <Button
+            onClick={handleCreate}
+            disabled={form.name.trim() === "" || isSaving}
+            className="tracking-[0.14em] uppercase"
+          >
             {isSaving ? "Creating..." : "Create"}
           </Button>
         </DialogFooter>
