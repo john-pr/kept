@@ -8,6 +8,7 @@ import { FREE_FEATURES, PRO_FEATURES } from "@/lib/pricing-features";
 import { startProCheckout } from "@/lib/stripe-client";
 import { FeatureList } from "@/components/pricing/FeatureList";
 import { PricingIntervalToggle } from "@/components/pricing/PricingIntervalToggle";
+import { ActivateDemoProButton } from "@/components/pricing/DemoProButtons";
 
 /** Monthly/yearly toggle plus Free/Pro comparison cards; the Pro card starts Stripe Checkout. */
 export function UpgradePlans() {
@@ -56,6 +57,10 @@ export function UpgradePlans() {
           </Button>
         </div>
       </div>
+
+      <p className="mt-6 text-sm text-muted-foreground">
+        Just checking out the demo? <ActivateDemoProButton className="h-auto p-0 underline underline-offset-2" />
+      </p>
     </>
   );
 }

@@ -1,5 +1,5 @@
-export const FREE_ITEM_LIMIT = 50;
-export const FREE_COLLECTION_LIMIT = 3;
+export const FREE_ITEM_LIMIT = 5;
+export const FREE_COLLECTION_LIMIT = 1;
 export const FREE_GATED_TYPE_NAMES = new Set(["file", "image"]);
 
 export function isOverItemLimit(currentCount: number, isPro: boolean): boolean {
