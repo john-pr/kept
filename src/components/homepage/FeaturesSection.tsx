@@ -58,7 +58,7 @@ export function FeaturesSection() {
           Features
         </span>
         <h2 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Everything in one stash
+          Everything, kept in one place
         </h2>
         <p className="text-muted-foreground">
           Every type of developer knowledge, organized the way you actually think.

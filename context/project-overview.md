@@ -1,4 +1,4 @@
-# DevStash — Project Overview
+# Kept — Project Overview
 
 A unified, searchable, AI-enhanced hub for developer knowledge: snippets, prompts, commands, notes, links, and files.
 
@@ -20,7 +20,7 @@ Developer essentials are fragmented across tools:
 
 Result: context switching, lost knowledge, inconsistent workflows.
 
-**DevStash solves this with one fast, searchable, AI-enhanced hub.**
+**Kept solves this with one fast, searchable, AI-enhanced hub.**
 
 ---
 

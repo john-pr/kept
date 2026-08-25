@@ -150,7 +150,7 @@ const items: SeedItem[] = [
     id: "item-deploy-script",
     title: "Deploy to Production",
     itemTypeId: "type-command",
-    content: "npm run build && npm run db:migrate:deploy && pm2 restart devstash",
+    content: "npm run build && npm run db:migrate:deploy && pm2 restart kept",
     collectionIds: ["col-devops"],
     tags: ["deployment", "pm2"],
     isFavorite: false,
@@ -283,10 +283,10 @@ async function main() {
   const passwordHash = await bcrypt.hash("12345678", 12);
 
   const dbUser = await prisma.user.upsert({
-    where: { email: "demo@devstash.io" },
+    where: { email: "demo@kept.app" },
     update: {},
     create: {
-      email: "demo@devstash.io",
+      email: "demo@kept.app",
       name: "Demo User",
       password: passwordHash,
       isPro: false,

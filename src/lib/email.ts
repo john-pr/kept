@@ -3,7 +3,7 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const FROM_EMAIL = "DevStash <onboarding@resend.dev>";
+const FROM_EMAIL = "Kept <onboarding@resend.dev>";
 
 export async function sendVerificationEmail(email: string, token: string) {
   const verifyUrl = `${APP_URL}/api/auth/verify-email?token=${token}`;
@@ -11,9 +11,9 @@ export async function sendVerificationEmail(email: string, token: string) {
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Verify your DevStash email",
+    subject: "Verify your Kept email",
     html: verificationEmailHtml(verifyUrl),
-    text: `Welcome to DevStash!\n\nVerify your email address by visiting this link:\n${verifyUrl}\n\nThis link expires in 24 hours.`,
+    text: `Welcome to Kept!\n\nVerify your email address by visiting this link:\n${verifyUrl}\n\nThis link expires in 24 hours.`,
   });
 }
 
@@ -23,9 +23,9 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Reset your DevStash password",
+    subject: "Reset your Kept password",
     html: passwordResetEmailHtml(resetUrl),
-    text: `Reset your DevStash password by visiting this link:\n${resetUrl}\n\nThis link expires in 1 hour. If you didn't request this, you can ignore this email.`,
+    text: `Reset your Kept password by visiting this link:\n${resetUrl}\n\nThis link expires in 1 hour. If you didn't request this, you can ignore this email.`,
   });
 }
 
@@ -40,7 +40,7 @@ function passwordResetEmailHtml(resetUrl: string) {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:400px; background-color:#171717; border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden;">
             <tr>
               <td style="padding:32px 32px 8px 32px;">
-                <p style="margin:0 0 24px 0; font-size:14px; font-weight:600; letter-spacing:0.02em; color:#fafafa;">DevStash</p>
+                <p style="margin:0 0 24px 0; font-size:14px; font-weight:600; letter-spacing:0.02em; color:#fafafa;">Kept</p>
                 <h1 style="margin:0 0 8px 0; font-size:20px; line-height:28px; color:#fafafa;">Reset your password</h1>
                 <p style="margin:0; font-size:14px; line-height:20px; color:#a3a3a3;">
                   Click the button below to choose a new password for your account.
@@ -100,7 +100,7 @@ function verificationEmailHtml(verifyUrl: string) {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:400px; background-color:#171717; border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden;">
             <tr>
               <td style="padding:32px 32px 8px 32px;">
-                <p style="margin:0 0 24px 0; font-size:14px; font-weight:600; letter-spacing:0.02em; color:#fafafa;">DevStash</p>
+                <p style="margin:0 0 24px 0; font-size:14px; font-weight:600; letter-spacing:0.02em; color:#fafafa;">Kept</p>
                 <h1 style="margin:0 0 8px 0; font-size:20px; line-height:28px; color:#fafafa;">Verify your email</h1>
                 <p style="margin:0; font-size:14px; line-height:20px; color:#a3a3a3;">
                   Click the button below to verify your email address and activate your account.
@@ -136,7 +136,7 @@ function verificationEmailHtml(verifyUrl: string) {
             <tr>
               <td style="padding:16px 32px; border-top:1px solid rgba(255,255,255,0.1);">
                 <p style="margin:0; font-size:12px; line-height:18px; color:#a3a3a3;">
-                  This link expires in 24 hours. If you didn't create a DevStash account, you can ignore this email.
+                  This link expires in 24 hours. If you didn't create a Kept account, you can ignore this email.
                 </p>
               </td>
             </tr>

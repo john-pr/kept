@@ -232,7 +232,7 @@ export function ChaosToOrder() {
       {/* Dashboard */}
       <div className="rounded-2xl border border-border bg-card/60 p-5">
         <span className="mb-3.5 block text-center text-[0.82rem] font-semibold text-muted-foreground">
-          ...with DevStash
+          ...with Kept
         </span>
         <div className="grid h-65 grid-cols-[76px_1fr] gap-3 rounded-lg border border-border/70 bg-background p-3 sm:grid-cols-[100px_1fr]">
           <div className="flex flex-col gap-1.5">
