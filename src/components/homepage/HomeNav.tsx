@@ -17,7 +17,7 @@ export function HomeNav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background">
       <div className="mx-auto flex h-17 max-w-6xl items-center justify-between gap-6 px-6">
-        <Logo />
+        <Logo size="lg" />
 
         <nav className="ml-auto hidden gap-7 md:flex">
           {NAV_LINKS.map((link) => (
