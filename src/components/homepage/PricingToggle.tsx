@@ -28,13 +28,13 @@ export function PricingToggle({ freeFeatures, proFeatures }: PricingToggleProps)
           </div>
           <FeatureList features={freeFeatures} />
           <Button variant="ghost" className="w-full" nativeButton={false} render={<Link href="/register" />}>
-            Get Started
+            <span className="tracking-[0.14em] uppercase">Get Started</span>
           </Button>
         </div>
 
-        <div className="relative rounded-2xl border border-primary bg-gradient-to-b from-primary/[0.08] to-card to-60% p-8 shadow-[0_0_0_1px_rgba(59,130,246,0.15),0_20px_50px_rgba(59,130,246,0.12)]">
-          <span className="absolute -top-3 right-6 rounded-full bg-gradient-to-br from-[#3b82f6] to-[#6366f1] px-3 py-1 text-[0.7rem] font-bold text-white">
-            Most Popular
+        <div className="relative border border-border border-l-2 border-l-primary bg-card p-8">
+          <span className="absolute top-4 right-6 text-[10px] tracking-[0.14em] text-primary uppercase">
+            [Most Popular]
           </span>
           <h3 className="mb-3.5 font-bold">Pro</h3>
           <div className="mb-6 flex items-baseline gap-1">
@@ -43,7 +43,7 @@ export function PricingToggle({ freeFeatures, proFeatures }: PricingToggleProps)
           </div>
           <FeatureList features={proFeatures} />
           <Button className="w-full" nativeButton={false} render={<Link href="/register" />}>
-            Go Pro
+            <span className="tracking-[0.14em] uppercase">Go Pro</span>
           </Button>
         </div>
       </div>

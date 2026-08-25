@@ -4,7 +4,7 @@ import { FREE_FEATURES, PRO_FEATURES } from "@/lib/pricing-features";
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="px-6 py-24">
+    <section id="pricing" className="scroll-mt-17 px-6 py-24">
       <ScrollFadeIn className="mx-auto mb-2 max-w-xl text-center">
         <span className="mb-3 inline-block text-[0.78rem] font-semibold tracking-wide text-primary uppercase">
           Pricing

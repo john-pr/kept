@@ -21,7 +21,7 @@ const jetbrainsMonoMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Kept",
-  description: "A developer knowledge hub for snippets, commands, prompts, notes, files, images, links and custom types.",
+  description: "Snippets, prompts, commands, notes, links, files, and images — kept in one fast, searchable, AI-enhanced hub.",
 };
 
 export default function RootLayout({
@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${jetbrainsMonoSans.variable} ${jetbrainsMonoMono.variable} h-full antialiased`}
+      className={`dark ${jetbrainsMonoSans.variable} ${jetbrainsMonoMono.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <EditorPreferencesProvider>

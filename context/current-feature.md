@@ -1,10 +1,42 @@
-# Current Feature
+# Current Feature: Homepage Redesign — Positioning + Ledger System
 
 ## Status
 
+In Progress
+
 ## Goals
 
+- Drop the "developer knowledge" / "knowledge hub" framing left over from DevStash across all
+  homepage copy; replace with positioning built around **Kept** as a name. Primary tagline:
+  "Keep Everything. Find Anything." (alternates in the spec if this doesn't land in review).
+- Update copy in `HeroSection.tsx`, `FeaturesSection.tsx`, `ChaosToOrder.tsx`,
+  `FinalCtaSection.tsx`, and `Footer.tsx` per the spec's old→new copy table. `AiSection.tsx`
+  copy already doesn't need changes.
+- Move `/` (unauthenticated homepage) onto the ledger design system
+  (`context/design-system.md`) — it's the last screen still on the pre-redesign look.
+- Fix arbitrary/`rounded-full` radii, drop gradient text/backgrounds/glass-blur/glow-shadow
+  treatments across `Logo.tsx`, `HomeNav.tsx`, `HeroSection.tsx`, `ChaosToOrder.tsx`,
+  `FeaturesSection.tsx`, `AiSection.tsx`, `PricingSection.tsx`/`PricingToggle.tsx`,
+  `FinalCtaSection.tsx`, `Footer.tsx` per the spec's file-by-file list. Named Tailwind radius
+  classes (`rounded-lg`/`rounded-2xl`/etc.) and all color/font tokens already flatten/inherit
+  for free — no edit needed there.
+
 ## Notes
+
+Full spec: `context/features/homepage-redesign-spec.md`.
+
+- Two intentional ripples, both accepted per design-system.md's "redesign shared components in
+  place" principle: `Logo.tsx` also renders in `TopBar.tsx` (app shell brand mark); `HomeNav.tsx`
+  also renders on `/sign-in` and `/register`.
+- Do **not** touch `src/components/pricing/FeatureList.tsx` or `PricingIntervalToggle.tsx` —
+  shared with `/upgrade` and `/settings`, both still un-redesigned; only restyle
+  `PricingToggle.tsx`'s own (homepage-only) card wrapper markup.
+- `ChaosToOrder.tsx`'s "chaos" (left) box may deliberately keep its shadows/messiness — it's
+  the "before" half of the metaphor — but the "ordered" (right) dashboard mockup should switch
+  its mini cards from top-border to left-border accent stripes, matching real
+  `ItemCard`/`CollectionCard`.
+- No Stripe/checkout logic, routing, or server action changes. `prototypes/homepage/` stays
+  untouched. No new unit tests expected (pure copy + Tailwind class changes).
 
 ## History
 [//]: # (keep this updated. earliest to latest)

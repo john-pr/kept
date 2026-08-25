@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 
 const NAV_LINKS = [
@@ -13,25 +12,10 @@ const NAV_LINKS = [
 ];
 
 export function HomeNav() {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300",
-        mobileOpen
-          ? "border-border bg-background"
-          : cn("backdrop-blur-sm", scrolled ? "border-border bg-background/95" : "bg-background/40")
-      )}
-    >
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background">
       <div className="mx-auto flex h-17 max-w-6xl items-center justify-between gap-6 px-6">
         <Logo />
 
@@ -40,7 +24,7 @@ export function HomeNav() {
             <a
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground"
             >
               {link.label}
             </a>
@@ -49,10 +33,10 @@ export function HomeNav() {
 
         <div className="hidden items-center gap-2 md:flex">
           <Button variant="ghost" nativeButton={false} render={<Link href="/sign-in" />}>
-            Sign In
+            <span className="tracking-[0.14em] uppercase">Sign In</span>
           </Button>
           <Button nativeButton={false} render={<Link href="/register" />}>
-            Get Started
+            <span className="tracking-[0.14em] uppercase">Get Started</span>
           </Button>
         </div>
 
@@ -73,7 +57,7 @@ export function HomeNav() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="py-2.5 text-sm font-medium text-muted-foreground"
+              className="py-2.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase"
             >
               {link.label}
             </a>
@@ -84,14 +68,14 @@ export function HomeNav() {
             nativeButton={false}
             render={<Link href="/sign-in" onClick={() => setMobileOpen(false)} />}
           >
-            Sign In
+            <span className="tracking-[0.14em] uppercase">Sign In</span>
           </Button>
           <Button
             className="justify-start"
             nativeButton={false}
             render={<Link href="/register" onClick={() => setMobileOpen(false)} />}
           >
-            Get Started
+            <span className="tracking-[0.14em] uppercase">Get Started</span>
           </Button>
         </div>
       )}

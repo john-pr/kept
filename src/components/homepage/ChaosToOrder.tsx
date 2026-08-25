@@ -44,8 +44,18 @@ const DASH_CARD_ACCENTS = ["#3b82f6", "#8b5cf6", "#f97316", "#fde047", "#6b7280"
 
 const ICON_SIZE = 42;
 const REPEL_RADIUS = 90;
-const REPEL_STRENGTH = 900;
-const MAX_SPEED = 0.9;
+const REPEL_STRENGTH = 110;
+// Ceiling used to clamp top speed (mainly reached during a mouse-repel burst) —
+// kept independent of the ambient wander tuning below so a hover always feels the
+// same regardless of how slow/fast idle drifting is.
+const MAX_SPEED = 0.5;
+// Idle drift: initial spawn speed and the steering force that continuously nudges
+// each icon along its own slowly-turning heading, so it roams the field instead of
+// jittering in place. Tuned well below MAX_SPEED for a slow, lazy flow — the clamp
+// above almost never engages during ordinary wandering.
+const AMBIENT_SPEED = 0.18;
+const WANDER_FORCE = 0.4;
+const WANDER_TURN_RATE = 0.0025;
 const COLS = 4;
 
 interface IconState {
@@ -54,6 +64,7 @@ interface IconState {
   y: number;
   vx: number;
   vy: number;
+  wanderAngle: number;
   rotOffset: number;
   rotSpeed: number;
   pulseOffset: number;
@@ -109,8 +120,9 @@ export function ChaosToOrder() {
           el,
           x: 30 + col * ((fieldWidth - 80) / (COLS - 1 || 1)) + (Math.random() * 20 - 10),
           y: 40 + row * 110 + (Math.random() * 20 - 10),
-          vx: (Math.random() - 0.5) * MAX_SPEED,
-          vy: (Math.random() - 0.5) * MAX_SPEED,
+          vx: (Math.random() - 0.5) * AMBIENT_SPEED,
+          vy: (Math.random() - 0.5) * AMBIENT_SPEED,
+          wanderAngle: Math.random() * Math.PI * 2,
           rotOffset: Math.random() * Math.PI * 2,
           rotSpeed: 0.0004 + Math.random() * 0.0006,
           pulseOffset: Math.random() * Math.PI * 2,
@@ -131,44 +143,59 @@ export function ChaosToOrder() {
           const dy = s.y - mouseY;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
           if (dist < REPEL_RADIUS) {
-            const force = (REPEL_STRENGTH * (1 - dist / REPEL_RADIUS)) / dist;
+            // Floor the denominator so the force doesn't spike when the cursor is
+            // right on top of an icon — without it, force approaches infinity as
+            // dist approaches 0.
+            const forceDist = Math.max(dist, 24);
+            const force = (REPEL_STRENGTH * (1 - dist / REPEL_RADIUS)) / forceDist;
             s.vx += (dx / dist) * force * (dt / 1000);
             s.vy += (dy / dist) * force * (dt / 1000);
           }
         }
 
-        s.vx += (Math.random() - 0.5) * 0.02;
-        s.vy += (Math.random() - 0.5) * 0.02;
+        // Slowly turn this icon's own heading and steer toward it — a gentle random
+        // walk in direction (not velocity) produces smooth curving paths that carry
+        // it around the field, rather than noise that cancels itself out in place.
+        s.wanderAngle += (Math.random() - 0.5) * WANDER_TURN_RATE * dt;
+        s.vx += Math.cos(s.wanderAngle) * WANDER_FORCE * (dt / 1000);
+        s.vy += Math.sin(s.wanderAngle) * WANDER_FORCE * (dt / 1000);
 
         const speed = Math.sqrt(s.vx * s.vx + s.vy * s.vy);
-        if (speed > MAX_SPEED * 3) {
-          s.vx = (s.vx / speed) * MAX_SPEED * 3;
-          s.vy = (s.vy / speed) * MAX_SPEED * 3;
+        if (speed > MAX_SPEED * 1.4) {
+          s.vx = (s.vx / speed) * MAX_SPEED * 1.4;
+          s.vy = (s.vy / speed) * MAX_SPEED * 1.4;
         }
 
-        s.vx *= 0.985;
-        s.vy *= 0.985;
+        s.vx *= 0.97;
+        s.vy *= 0.97;
 
         s.x += s.vx * dt;
         s.y += s.vy * dt;
 
         const maxX = fieldWidth - ICON_SIZE;
         const maxY = fieldHeight - ICON_SIZE;
+        // Reflect the wander heading along with velocity on a wall bounce — otherwise
+        // the steering force keeps nudging the icon straight back into the wall it
+        // just bounced off, and it pins itself against the edge.
         if (s.x < 0) {
           s.x = 0;
           s.vx *= -1;
+          s.wanderAngle = Math.PI - s.wanderAngle;
         }
         if (s.x > maxX) {
           s.x = maxX;
           s.vx *= -1;
+          s.wanderAngle = Math.PI - s.wanderAngle;
         }
         if (s.y < 0) {
           s.y = 0;
           s.vy *= -1;
+          s.wanderAngle = -s.wanderAngle;
         }
         if (s.y > maxY) {
           s.y = maxY;
           s.vy *= -1;
+          s.wanderAngle = -s.wanderAngle;
         }
 
         const rotation = Math.sin(now * s.rotSpeed + s.rotOffset) * 10;
@@ -195,7 +222,7 @@ export function ChaosToOrder() {
       {/* Chaos */}
       <div className="rounded-2xl border border-border bg-card/60 p-5">
         <span className="mb-3.5 block text-center text-[0.82rem] font-semibold text-muted-foreground">
-          Your knowledge today...
+          Scattered everywhere...
         </span>
         <div
           ref={fieldRef}
@@ -213,7 +240,7 @@ export function ChaosToOrder() {
                 title={tool.label}
               >
                 <div
-                  className="flex size-[42px] items-center justify-center rounded-[10px] shadow-lg ring-1 ring-white/5"
+                  className="flex size-[42px] items-center justify-center rounded-none shadow-lg ring-1 ring-white/5"
                   style={{ backgroundColor: tool.bg, color: tool.color }}
                 >
                   <Icon className="size-4.5" />
@@ -232,7 +259,7 @@ export function ChaosToOrder() {
       {/* Dashboard */}
       <div className="rounded-2xl border border-border bg-card/60 p-5">
         <span className="mb-3.5 block text-center text-[0.82rem] font-semibold text-muted-foreground">
-          ...with Kept
+          ...kept in one place.
         </span>
         <div className="grid h-65 grid-cols-[76px_1fr] gap-3 rounded-lg border border-border/70 bg-background p-3 sm:grid-cols-[100px_1fr]">
           <div className="flex flex-col gap-1.5">
@@ -258,7 +285,7 @@ export function ChaosToOrder() {
               <div
                 key={i}
                 className="rounded-lg border border-border bg-card"
-                style={{ borderTop: `3px solid ${accent}` }}
+                style={{ borderLeft: `2px solid ${accent}` }}
               />
             ))}
           </div>

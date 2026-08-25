@@ -14,7 +14,7 @@ export function AiSection() {
     <section className="border-y border-border bg-gradient-to-b from-transparent via-primary/[0.04] to-transparent px-6 py-24">
       <div className="mx-auto grid max-w-5xl grid-cols-1 items-center gap-14 lg:grid-cols-2">
         <ScrollFadeIn>
-          <Badge className="mb-4 bg-gradient-to-br from-amber-400 to-amber-500 text-amber-950">
+          <Badge variant="outline" className="mb-4 text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
             Pro Feature
           </Badge>
           <h2 className="mb-3.5 text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -34,7 +34,7 @@ export function AiSection() {
         </ScrollFadeIn>
 
         <ScrollFadeIn>
-          <div className="overflow-hidden rounded-2xl border border-border bg-[#0d0d13] shadow-2xl">
+          <div className="overflow-hidden rounded-2xl border border-border bg-[#0d0d13]">
             <div className="flex items-center gap-1.5 border-b border-border bg-[#14141c] px-3.5 py-3">
               <span className="size-2.5 rounded-full bg-[#ff5f56]" />
               <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
@@ -67,9 +67,9 @@ export function AiSection() {
               {["react", "hooks", "typescript", "debounce"].map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary"
+                  className="text-[10px] tracking-[0.08em] text-muted-foreground uppercase"
                 >
-                  {tag}
+                  [{tag}]
                 </span>
               ))}
             </div>

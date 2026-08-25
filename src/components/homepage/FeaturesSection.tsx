@@ -38,7 +38,7 @@ const FEATURES: Feature[] = [
   },
   {
     title: "Files & Docs",
-    description: "Attach files and images alongside the knowledge they belong to.",
+    description: "Attach files and images alongside everything else they belong with.",
     icon: File,
     accent: "#6b7280",
   },
@@ -52,25 +52,26 @@ const FEATURES: Feature[] = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="px-6 py-24">
+    <section id="features" className="scroll-mt-17 px-6 py-24">
       <ScrollFadeIn className="mx-auto mb-13 max-w-xl text-center">
         <span className="mb-3 inline-block text-[0.78rem] font-semibold tracking-wide text-primary uppercase">
           Features
         </span>
         <h2 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Everything, kept in one place
+          Everything, Kept
         </h2>
         <p className="text-muted-foreground">
-          Every type of developer knowledge, organized the way you actually think.
+          Snippets, prompts, commands, notes, links, and files — organized the way you actually
+          think, not the way a dozen different tools force you to.
         </p>
       </ScrollFadeIn>
 
-      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map((feature, i) => (
           <ScrollFadeIn key={feature.title} delay={i * 60}>
-            <div className="h-full rounded-2xl border border-border bg-card p-6.5 transition-all hover:-translate-y-1 hover:border-foreground/20">
+            <div className="h-full bg-card p-6.5 transition-colors hover:bg-muted">
               <div
-                className="mb-4 flex size-11 items-center justify-center rounded-[10px]"
+                className="mb-4 flex size-11 items-center justify-center rounded-none"
                 style={{ color: feature.accent, backgroundColor: `${feature.accent}24` }}
               >
                 <feature.icon className="size-5.5" />

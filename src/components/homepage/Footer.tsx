@@ -31,13 +31,13 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-2.5 max-w-56 text-sm text-muted-foreground">
-            Your developer knowledge, organized.
+            Everything you meant to keep, in one place.
           </p>
         </div>
         <div className="flex flex-wrap gap-14">
           {FOOTER_COLUMNS.map((col) => (
             <div key={col.heading} className="flex flex-col gap-2.5">
-              <h4 className="mb-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              <h4 className="mb-1 text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
                 {col.heading}
               </h4>
               {col.links.map((link) => (
