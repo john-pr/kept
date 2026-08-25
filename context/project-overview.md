@@ -337,7 +337,9 @@ Notes:
 
 ## 10. Design References
 
-Refer to the screenshots for the dashboard UI. It doesnt have to be exact, use it aas reference.
+The app is being redesigned screen-by-screen around the "ledger" design system documented in
+@context/design-system.md — read that file before restyling any screen. It supersedes the
+older screenshots below, which predate the redesign and no longer reflect the current look:
 
 - @context/screenshots/dashboard.png
 - @context/screenshots/dashboard-drawer-ui.png

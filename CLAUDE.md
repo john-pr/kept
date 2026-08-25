@@ -9,6 +9,7 @@ Read the following to get the full context of the project:
 - @context/project-overview.md
 - @context/coding-standards.md
 - @context/ai-interaction.md
+- @context/design-system.md
 - @context/current-feature.md
 
 ## Commands
