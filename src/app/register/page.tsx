@@ -10,7 +10,7 @@ export default function RegisterPage() {
       <div className="flex flex-1 items-center justify-center p-4 pt-24">
         <AuthCard
           title="Create your account"
-          description="Get started with DevStash"
+          description="Get started with Kept"
           contentClassName="flex flex-col gap-4"
         >
           <RegisterForm />

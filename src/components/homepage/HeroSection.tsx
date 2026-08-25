@@ -17,7 +17,7 @@ export function HeroSection() {
           </span>
         </h1>
         <p className="mx-auto mb-8 max-w-lg text-lg text-muted-foreground">
-          Snippets, prompts, commands, notes, and links — scattered across a dozen tools. DevStash
+          Snippets, prompts, commands, notes, and links — scattered across a dozen tools. Kept
           brings it all into one fast, searchable, AI-enhanced hub.
         </p>
         <div className="flex flex-wrap justify-center gap-3.5">

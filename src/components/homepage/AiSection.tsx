@@ -21,7 +21,7 @@ export function AiSection() {
             Let AI do the busywork
           </h2>
           <p className="mb-6 text-muted-foreground">
-            DevStash Pro uses AI to keep your stash organized without the manual effort.
+            Kept Pro uses AI to keep everything organized without the manual effort.
           </p>
           <ul className="flex flex-col gap-3">
             {AI_CHECKLIST.map((item) => (

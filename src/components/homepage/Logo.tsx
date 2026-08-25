@@ -9,7 +9,7 @@ export function Logo() {
         <span className="rounded-[2px] bg-[#fde047]" />
         <span className="rounded-[2px] bg-[#ec4899]" />
       </span>
-      DevStash
+      Kept
     </Link>
   );
 }

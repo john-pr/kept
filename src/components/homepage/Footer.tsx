@@ -55,7 +55,7 @@ export function Footer() {
       </div>
       <div className="mx-auto max-w-5xl border-t border-border py-5 text-center">
         <p className="text-[0.82rem] text-muted-foreground">
-          &copy; {new Date().getFullYear()} DevStash. All rights reserved.
+          &copy; {new Date().getFullYear()} Kept. All rights reserved.
         </p>
       </div>
     </footer>

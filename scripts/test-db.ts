@@ -29,7 +29,7 @@ async function main() {
   });
 
   const demoUser = await prisma.user.findUnique({
-    where: { email: "demo@devstash.io" },
+    where: { email: "demo@kept.app" },
     select: {
       id: true,
       email: true,
@@ -59,7 +59,7 @@ async function main() {
   });
 
   if (!demoUser) {
-    throw new Error("Demo user (demo@devstash.io) not found — run `npm run db:seed`.");
+    throw new Error("Demo user (demo@kept.app) not found — run `npm run db:seed`.");
   }
 
   console.log("\nDemo user:");

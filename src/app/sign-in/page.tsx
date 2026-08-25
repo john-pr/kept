@@ -10,7 +10,7 @@ export default function SignInPage() {
       <HomeNav />
       <div className="flex flex-1 items-center justify-center p-4 pt-24">
         <AuthCard
-          title="Sign in to DevStash"
+          title="Sign in to Kept"
           description="Enter your email and password to continue"
           contentClassName="flex flex-col gap-4"
         >

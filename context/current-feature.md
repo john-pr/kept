@@ -4,29 +4,35 @@
 Implemented — pending commit approval
 
 ## Goals
-Reduce Pro gating for portfolio use (item #3 of the "public portfolio" plan). Since this app
-will be public with Stripe in test mode, anyone can "pay" — so the gate should be easy to
-demonstrate rather than a real barrier:
+Rebrand DevStash → **Kept**, ahead of making the repo public as a portfolio project.
+Text/branding rename only — no schema changes, no feature changes.
 
-1. Lower free-tier limits so a visitor hits the Pro gate quickly instead of never seeing it:
-   - `FREE_ITEM_LIMIT`: 50 → 5
-   - `FREE_COLLECTION_LIMIT`: 3 → 1
-   - (`FREE_GATED_TYPE_NAMES` — file/image — unchanged)
-2. Add a one-click "Try Pro instantly (demo, no payment)" bypass alongside the real Stripe
-   test-mode Checkout flow, on both `/upgrade` and `/settings` (Billing section):
-   - New server action(s) that directly set `User.isPro = true` / `false` without touching
-     Stripe fields.
-   - Only allow reverting to Free via the demo button when there's no real
-     `stripeCustomerId` — a real paying (test-mode) subscriber should use the existing
-     "Manage subscription" Stripe portal flow instead.
-   - `/settings` Billing section should visually distinguish "Demo Pro" (no Stripe
-     subscription) from a real Stripe-backed Pro subscription.
-3. No changes to `PLAN_GATING_ENABLED` handling itself — stays a flag, defaults off in
-   `.env.example`; deployment env sets it `true` (an env-var/deploy decision, not code).
+1. Update every user-facing "DevStash" string to "Kept" in app code:
+   - `src/app/layout.tsx` (metadata title), `src/app/sign-in/page.tsx`, `src/app/register/page.tsx`,
+     `src/app/(app)/settings/page.tsx`, `src/components/homepage/Logo.tsx`,
+     `src/components/homepage/HeroSection.tsx`, `src/components/homepage/ChaosToOrder.tsx`,
+     `src/components/homepage/AiSection.tsx`, `src/components/homepage/Footer.tsx`,
+     `src/lib/email.ts` (from-name, subjects, body text/HTML templates).
+   - Reword the two "stash" puns that no longer fit the new name:
+     `FeaturesSection.tsx`'s "Everything in one stash" and `AiSection.tsx`'s "keep your stash
+     organized".
+2. `package.json` `"name"` field: `devstash` → `kept`.
+3. `prisma/seed.ts`: demo user email `demo@devstash.io` → `demo@kept.app`; the seeded Command
+   item's example deploy string (`pm2 restart devstash`) → `pm2 restart kept`. Also run a
+   scoped `UPDATE "User" SET email = 'demo@kept.app' WHERE email = 'demo@devstash.io'` on the
+   Neon **development** branch so the live demo login matches immediately (not a schema
+   migration — a data update, per user confirmation).
+4. `CLAUDE.md`/`context/project-overview.md`: update the "DevStash" project name references
+   (titles/prose) — but leave the Neon MCP section's literal `devstash` project id/name alone,
+   since that's the actual external Neon project identifier, not branding text.
+5. GitHub repo: rename `john-pr/devstash` → `john-pr/kept` via `gh` after this branch is
+   merged (GitHub auto-redirects the old URL; update the local `origin` remote after).
 
-Out of scope for this feature (deferred): Stripe test-card hint in the UI/README (portfolio
-item #2), README/LICENSE rewrite (item #1). Item #4 (OpenAI cost protection) is a follow-up
-after this — per user decision, handled via an OpenAI dashboard spending cap, not code.
+Explicitly out of scope: `context/current-feature.md`'s History log (past entries keep saying
+"DevStash" — historical record, not rewritten), old dated feature specs under
+`context/features/`/`context/research/` (historical), the actual Neon project's display name
+in the Neon dashboard (no rename capability in the available tooling; cosmetic only, low
+priority), any custom domain (none configured).
 
 ## Notes
 
@@ -179,3 +185,4 @@ after this — per user decision, handled via an OpenAI dashboard spending cap, 
 - 2026-08-24: Documented and completed Sidebar Active Item Highlighting — `SidebarNav.tsx` is now a client component (`usePathname()`) that highlights (`bg-muted font-medium`) the item-type link, favorite-collection link, recent-collection link, or "View all collections" link matching the current route, e.g. being on `/items/links` highlights "Links"; both `Sidebar`/`MobileSidebar` already rendered it from client components so no other wiring was needed. Verified live via Playwright MCP (signed in as the demo user): confirmed a collection that's both favorited and recent (e.g. "React Patterns") highlights in both the "Favorite Collections" and "Recent Collections" sections simultaneously when active — flagged this to the user as a design question (dedupe vs. keep) and they confirmed keeping both highlighted is fine, since both are legitimate independent links to the active page. UI-only change in a client component — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build (27 routes), lint, and test (231/231, unchanged) pass.
 - 2026-08-24: Investigated and fixed a reported "very long scroll that shouldn't be there" on the item drawer for a Note with very large markdown content (the seeded "Big markdown file" item), via Playwright MCP. Root cause: `MarkdownEditor.tsx`'s `TabsContent` panels (`max-h-[400px] overflow-auto`, correctly self-clipping and internally scrollable) were, despite being visually clipped correctly, still contributing their full unclipped content height (~7300px for this item) to the enclosing `Sheet`/`SheetContent` dialog's own `scrollHeight` — producing a second, much longer outer scrollbar on the whole drawer on top of the markdown panel's own internal one. Confirmed live in the browser (`dialog.scrollHeight` 7514px vs. `clientHeight` 896px) and bisected the cause by toggling `display`, `overflow`, explicit `height`, and `min-height` on every ancestor in the chain — none of those fixed it (a genuine, non-obvious nested-flex/overflow browser quirk, not a simple missing-min-h-0 case) — until testing CSS `contain: layout` on the `TabsContent` panel itself, which per spec prevents a box's descendants from affecting an ancestor's scrollable-overflow computation; confirmed it eliminated the outer scrollbar entirely (`scrollHeight` dropped to match `clientHeight`) without affecting the panel's own internal scrolling. Applied `[contain:layout]` (Tailwind arbitrary property) to both the "write" and "preview" `TabsContent` panels in `MarkdownEditor.tsx` — the only file using `TabsContent` in the codebase, so no other `Tabs` usages were affected; `CodeEditor.tsx` (Monaco-based, canvas-rendered) doesn't use this `overflow-auto`+`max-height` pattern and wasn't affected by the bug. Verified fixed in both view mode (drawer's read-only preview) and edit mode (Write/Preview tabs) via Playwright screenshots — edit mode's larger `scrollHeight` (1125 vs. 870) is legitimate (more form fields: title/description/tags/collections), not a leak. UI-only CSS fix in a client component — no server actions or `src/lib/` utilities touched, so no new tests. Build (27 routes), lint, and test (231/231, unchanged) pass.
 - 2026-08-25: Documented and completed Reduce Pro Gating for Portfolio (item #3 of the public-portfolio plan) — lowered `FREE_ITEM_LIMIT` (50 → 5) and `FREE_COLLECTION_LIMIT` (3 → 1) in `src/lib/plan-limits.ts` so a visitor hits the Pro gate quickly instead of never seeing it (pricing copy in `pricing-features.ts` already derives from these constants, so no copy changes needed); added `getUserStripeCustomerId`/`setUserPro` (`src/lib/db/users.ts`, thin Prisma passthroughs) and a new `src/actions/billing.ts` with `activateDemoPro`/`deactivateDemoPro` server actions — a portfolio-only bypass that flips `User.isPro` directly without touching Stripe, alongside (not replacing) the real test-mode Checkout/portal flow; `deactivateDemoPro` refuses to run for a user with a real `stripeCustomerId`, directing them to "Manage subscription" instead. New `ActivateDemoProButton`/`DeactivateDemoProButton` (`src/components/pricing/DemoProButtons.tsx`) wired into `/upgrade` (`UpgradePlans.tsx`, small link-style prompt below the pricing cards) and `/settings`'s Billing card (`BillingSection.tsx`, alongside the real Upgrade button when on Free; replaces "Manage subscription" with "Revert to Free (demo)" when Pro was granted via the bypass) — `BillingSection` now takes a `stripeCustomerId` prop (from `getCurrentUser()`, already fetched) to distinguish "Demo Pro" from a real Stripe-backed subscription and label/behave accordingly. Added `src/actions/billing.test.ts` (4 tests: no-session for both actions, happy path for `activateDemoPro`, and the real-subscription guard for `deactivateDemoPro`), matching the project's existing per-action test coverage pattern. No changes to `PLAN_GATING_ENABLED` itself — stays a flag, defaults off in `.env.example`; the deployment environment still needs to set it `true` for gating/limits to actually enforce (an env-var/deploy decision, not code). Deferred to later portfolio-prep passes: Stripe test-card UI hint, README/LICENSE rewrite. Build (27 routes), lint, and test (236/236, up from 231) pass.
+- 2026-08-25: Documented and completed the DevStash → Kept rebrand (name settled after brainstorming several directions — cozy-storage: Trove/Hutch/Kept; Severance/Lumon-coded: Refine/Ledger/Bureau; rejected My Depot for the "My"-prefix/Home Depot association, and Silo for its "information silo" connotation clashing with the app's own unify-scattered-tools pitch). Replaced every user-facing "DevStash" string with "Kept" across `src/app/layout.tsx` (metadata title), `sign-in`/`register`/`settings` page copy, all `src/components/homepage/*` sections (`Logo`, `HeroSection`, `ChaosToOrder`, `AiSection`, `Footer`), and `src/lib/email.ts` (from-name, subjects, body text, both HTML templates); reworded the two now-orphaned "stash" puns (`FeaturesSection.tsx`'s "Everything in one stash" → "Everything, kept in one place", `AiSection.tsx`'s "keep your stash organized" → "keep everything organized"). `package.json` `"name"` → `kept`. `prisma/seed.ts`, `scripts/delete-non-demo-users.ts`, and `scripts/test-db.ts` now reference `demo@kept.app` instead of `demo@devstash.io`; ran a scoped `UPDATE "User" SET email = 'demo@kept.app' WHERE email = 'demo@devstash.io'` (via Neon MCP, `development` branch) so the live demo login matches immediately rather than the next `db:seed` silently creating an orphaned second demo user under the old email. `CLAUDE.md`/`context/project-overview.md` titles updated to "Kept" — deliberately left the Neon MCP section's literal `devstash` project id/name in `CLAUDE.md` untouched, since that's the actual external Neon project identifier (no rename capability in the available tooling), not branding text. Deliberately left untouched: `context/current-feature.md`'s History log above this line and dated specs under `context/features/`/`context/research/` (historical record, not rewritten). GitHub repo rename (`john-pr/devstash` → `john-pr/kept`) deferred to after this branch merges. No schema changes, no server action/lib logic changes — pure text rename plus one scoped data UPDATE, so no new tests. Build (27 routes), lint, and test (236/236, unchanged) pass.

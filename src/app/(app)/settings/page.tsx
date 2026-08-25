@@ -24,7 +24,7 @@ export default async function SettingsPage() {
         <CardHeader>
           <CardTitle>Billing</CardTitle>
           <CardDescription>
-            {user.isPro ? "Manage your DevStash Pro subscription." : "Upgrade to Pro for unlimited items and collections."}
+            {user.isPro ? "Manage your Kept Pro subscription." : "Upgrade to Pro for unlimited items and collections."}
           </CardDescription>
         </CardHeader>
         <CardContent>
