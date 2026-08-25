@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollFadeIn } from "./ScrollFadeIn";
+import { ScrollableCodeBlock } from "./ScrollableCodeBlock";
 
 const AI_CHECKLIST = [
   "Auto-tag suggestions",
@@ -43,7 +44,7 @@ export function AiSection() {
                 use-debounce.ts
               </span>
             </div>
-            <pre className="overflow-x-auto px-5 py-4.5 font-mono text-[0.8rem] leading-relaxed text-[#d4d4dc]">
+            <ScrollableCodeBlock>
               <code>
                 <span className="text-pink-400">function</span>{" "}
                 <span className="text-blue-400">useDebounce</span>
@@ -59,7 +60,7 @@ export function AiSection() {
                 <span className="text-pink-400">return</span>
                 {" debounced;\n}"}
               </code>
-            </pre>
+            </ScrollableCodeBlock>
             <div className="flex flex-wrap items-center gap-2 border-t border-dashed border-border px-5 py-4">
               <span className="mr-1 text-[0.78rem] font-semibold text-amber-500">
                 ✨ AI Generated Tags
