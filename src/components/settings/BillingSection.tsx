@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { startProCheckout } from "@/lib/stripe-client";
 import { PricingIntervalToggle } from "@/components/pricing/PricingIntervalToggle";
+import { ActivateDemoProButton, DeactivateDemoProButton } from "@/components/pricing/DemoProButtons";
 
 interface BillingSectionProps {
   isPro: boolean;
@@ -14,6 +15,7 @@ interface BillingSectionProps {
   itemLimit: number;
   collectionCount: number;
   collectionLimit: number;
+  stripeCustomerId: string | null;
   stripeSubscriptionStatus: string | null;
   stripeCurrentPeriodEnd: Date | null;
 }
@@ -24,6 +26,7 @@ export function BillingSection({
   itemLimit,
   collectionCount,
   collectionLimit,
+  stripeCustomerId,
   stripeSubscriptionStatus,
   stripeCurrentPeriodEnd,
 }: BillingSectionProps) {
@@ -67,6 +70,7 @@ export function BillingSection({
   }
 
   if (isPro) {
+    const isDemoPro = !stripeCustomerId;
     const isCanceling = stripeSubscriptionStatus === "canceled" && stripeCurrentPeriodEnd;
     const periodEndLabel = stripeCurrentPeriodEnd
       ? new Date(stripeCurrentPeriodEnd).toLocaleDateString(undefined, {
@@ -79,7 +83,11 @@ export function BillingSection({
     return (
       <div className="flex flex-col gap-4">
         <p className="text-sm text-foreground">
-          {isCanceling ? (
+          {isDemoPro ? (
+            <>
+              <span className="font-medium">Demo Pro</span> — activated instantly, no payment made
+            </>
+          ) : isCanceling ? (
             <>
               <span className="font-medium">Pro</span> — cancels on {periodEndLabel}
             </>
@@ -91,10 +99,14 @@ export function BillingSection({
             <span className="font-medium">Pro</span>
           )}
         </p>
-        <Button variant="outline" className="w-fit" disabled={isRedirecting} onClick={handleManageSubscription}>
-          {isRedirecting && <Loader2 className="size-4 animate-spin" />}
-          Manage subscription
-        </Button>
+        {isDemoPro ? (
+          <DeactivateDemoProButton className="w-fit" />
+        ) : (
+          <Button variant="outline" className="w-fit" disabled={isRedirecting} onClick={handleManageSubscription}>
+            {isRedirecting && <Loader2 className="size-4 animate-spin" />}
+            Manage subscription
+          </Button>
+        )}
       </div>
     );
   }
@@ -118,10 +130,13 @@ export function BillingSection({
 
       <PricingIntervalToggle isYearly={isYearly} onChange={setIsYearly} size="compact" />
 
-      <Button className="w-fit" disabled={isRedirecting} onClick={handleUpgrade}>
-        {isRedirecting && <Loader2 className="size-4 animate-spin" />}
-        Upgrade to Pro — {isYearly ? "$72/yr" : "$8/mo"}
-      </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button disabled={isRedirecting} onClick={handleUpgrade}>
+          {isRedirecting && <Loader2 className="size-4 animate-spin" />}
+          Upgrade to Pro — {isYearly ? "$72/yr" : "$8/mo"}
+        </Button>
+        <ActivateDemoProButton />
+      </div>
     </div>
   );
 }

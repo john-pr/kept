@@ -49,6 +49,22 @@ export async function getEditorPreferences(userId: string): Promise<EditorPrefer
   return parseEditorPreferences(user.editorPreferences);
 }
 
+export async function getUserStripeCustomerId(userId: string): Promise<string | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { stripeCustomerId: true },
+  });
+
+  return user?.stripeCustomerId ?? null;
+}
+
+export async function setUserPro(userId: string, isPro: boolean): Promise<void> {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { isPro },
+  });
+}
+
 export async function updateEditorPreferences(
   userId: string,
   preferences: EditorPreferences

@@ -35,6 +35,7 @@ export default async function SettingsPage() {
               itemLimit={FREE_ITEM_LIMIT}
               collectionCount={collectionCount}
               collectionLimit={FREE_COLLECTION_LIMIT}
+              stripeCustomerId={user.stripeCustomerId}
               stripeSubscriptionStatus={user.stripeSubscriptionStatus}
               stripeCurrentPeriodEnd={user.stripeCurrentPeriodEnd}
             />
