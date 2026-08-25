@@ -1,5 +1,6 @@
 import { Code, Sparkles, Search, Terminal, File, Layers, type LucideIcon } from "lucide-react";
 import { ScrollFadeIn } from "./ScrollFadeIn";
+import { SectionEyebrow } from "./SectionEyebrow";
 
 interface Feature {
   title: string;
@@ -54,9 +55,7 @@ export function FeaturesSection() {
   return (
     <section id="features" className="scroll-mt-17 px-6 py-24">
       <ScrollFadeIn className="mx-auto mb-13 max-w-xl text-center">
-        <span className="mb-3 inline-block text-[0.78rem] font-semibold tracking-wide text-primary uppercase">
-          Features
-        </span>
+        <SectionEyebrow className="mb-3">Features</SectionEyebrow>
         <h2 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
           Everything, Kept
         </h2>
