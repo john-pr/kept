@@ -27,7 +27,7 @@ export function PricingToggle({ freeFeatures, proFeatures }: PricingToggleProps)
             <span className="text-sm text-muted-foreground">/mo</span>
           </div>
           <FeatureList features={freeFeatures} />
-          <Button variant="ghost" className="w-full" nativeButton={false} render={<Link href="/register" />}>
+          <Button variant="outline" className="w-full" nativeButton={false} render={<Link href="/register" />}>
             <span className="tracking-[0.14em] uppercase">Get Started</span>
           </Button>
         </div>
