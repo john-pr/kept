@@ -11,6 +11,10 @@ interface UserAvatarProps {
    * token chain, so it needs an explicit override rather than flattening for free. */
   shape?: "circle" | "square";
   className?: string;
+  /** Overrides `AvatarFallback`'s initials styling — needed by `UserFooter`'s square
+   * variant to match the ledger design system's 11px/0.08em spec instead of the
+   * primitive's default `text-sm`. Left undefined everywhere else (e.g. `/profile`). */
+  fallbackClassName?: string;
 }
 
 function getInitials(name: string) {
@@ -29,6 +33,7 @@ export function UserAvatar({
   size = "default",
   shape = "circle",
   className,
+  fallbackClassName,
 }: UserAvatarProps) {
   const isSquare = shape === "square";
 
@@ -38,7 +43,7 @@ export function UserAvatar({
       className={cn(isSquare && "rounded-none after:rounded-none", className)}
     >
       {image && <AvatarImage src={image} alt={name} className={cn(isSquare && "rounded-none")} />}
-      <AvatarFallback className={cn(isSquare && "rounded-none")}>
+      <AvatarFallback className={cn(isSquare && "rounded-none", fallbackClassName)}>
         {getInitials(name)}
       </AvatarFallback>
     </Avatar>
