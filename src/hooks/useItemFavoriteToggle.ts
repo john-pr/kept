@@ -2,6 +2,7 @@ import type { MouseEvent } from "react";
 import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { toggleItemFavorite } from "@/actions/items";
 import type { ItemSummary } from "@/lib/db/items";
+import { toast } from "@/lib/toast";
 
 /**
  * Optimistic favorite toggle for an item card/row. Wraps `useOptimisticToggle`
@@ -14,7 +15,8 @@ export function useItemFavoriteToggle(
   const [isFavorite, toggle] = useOptimisticToggle(
     item.isFavorite,
     (next) => toggleItemFavorite(item.id, next),
-    "Failed to update favorite"
+    "Failed to update favorite",
+    (next) => toast.success(next ? "Item favorited" : "Item unfavorited")
   );
 
   async function handleToggleFavorite(event: MouseEvent) {
