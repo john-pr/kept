@@ -3,7 +3,7 @@
 import { useState, type ReactElement, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -235,6 +235,7 @@ export function NewItemDialog({
 
   const createButton = (
     <Button onClick={handleCreate} disabled={isCreateDisabled} className="tracking-[0.14em] uppercase">
+      {isSaving && <Loader2 className="size-4 animate-spin" />}
       {isSaving ? "Creating..." : "Create"}
     </Button>
   );
