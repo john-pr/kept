@@ -61,7 +61,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
         </div>
       </div>
       <h4 className="truncate text-sm text-foreground">{item.title}</h4>
-      <div className="h-[58px] overflow-hidden border border-border bg-muted p-2.5 font-mono text-xs leading-[18px] text-ink-body">
+      <div className="h-[92px] overflow-hidden border border-border bg-muted p-2.5 font-mono text-xs leading-[18px] whitespace-pre-wrap break-words text-ink-body">
         {item.content}
       </div>
       <div className="flex flex-wrap gap-2.5">
