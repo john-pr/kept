@@ -1,22 +1,10 @@
-# Current Feature: Auth Pages Polish (Breadcrumb, Centering, Nav Links)
+# Current Feature
 
 ## Status
 
-In Progress
-
 ## Goals
 
-- On `/sign-in` and `/register`, simplify the `AuthCard` breadcrumb row above the form: drop the word "Access" and the "N fields" step-count label entirely — leave just "Sign in" / "Sign up" above the form.
-  - Register's crumb currently reads "Register"; rename to "Sign up" to match the requested wording (mirrors the nav's own "Sign Up" label), even though the card `title` stays "Create account".
-  - `AuthCard`'s breadcrumb row currently only renders when both `crumb` and `stepLabel` are set — needs reworking so a lone label can render without a step count.
-- Center the sign-in/register form vertically on the page, not just horizontally. Currently `min-h-screen` + `items-center` + `pt-24` only centers horizontally and pins content near the top on desktop.
-- Fix the `Features`/`Pricing` links in `HomeNav` when rendered on `/sign-in` or `/register` (also visible via `HomeNav`'s shared use): they're plain `#features`/`#pricing` anchors, which only work when already on `/`. Point them at `/#features`/`/#pricing` so they navigate back to the homepage and land on the right section.
-
 ## Notes
-
-- Key files: `src/components/auth/AuthCard.tsx`, `src/app/sign-in/page.tsx`, `src/app/register/page.tsx`, `src/components/homepage/HomeNav.tsx`.
-- Visual-only / wording-only changes — no new fields, validation, or server action changes expected.
-- Per `design-system.md`, `forgot-password`/`reset-password`/`check-email` inherit `AuthCard` styling but aren't separately redesigned — check whether they pass `crumb`/`stepLabel` too and need the same treatment for consistency (they don't currently, per the earlier auth redesign history entry, but worth confirming during implementation).
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -134,3 +122,4 @@ In Progress
 - 2026-08-26: Documented `context/features/topbar-footer-theme-spec.md` — remaining sidebar-chrome follow-up (TopBar buttons/search, `UserFooter` avatar shape, Light/Dark toggle), flagging the toggle as real new functionality with open questions (library vs. hand-rolled, persistence) rather than assuming an approach. Docs only.
 - 2026-08-26: User Menu — Account Popup + Light/Dark Toggle. Found `next-themes` already installed but never mounted; added a `ThemeProvider` (`layout.tsx`, `attribute="class"`, `defaultTheme="dark"`, `enableSystem={false}`), replacing the hardcoded `.dark` class. Restyled `UserFooter.tsx`'s dropdown (Account label, Profile/Settings, new Appearance section with a Light/Dark toggle, Sign out). Added `UserAvatar.tsx`'s `shape?: "circle" | "square"` prop (only `UserFooter` uses square) and `useHasMounted.ts` hook to guard the toggle highlight against a hydration mismatch. Ran a live `ui-reviewer` pass in light mode (first time it was reachable) and fixed 3 rounds of findings: (1) `withAlpha()` chips hardcoded the dark alpha suffix — added `useSoftTintAlpha()` across all 4 call sites, and retuned `:root`'s `--border`/`--sidebar-border` for contrast (deliberate departure from the mockup's own light value; dark mode untouched); (2) the collapsed-border-grid's empty trailing cells showed as a visible gray hole in light mode — added `computeFillerClasses()`/`GridFillerCells.tsx` (unit-tested) to `ItemCardGrid`/`DashboardGridSection`; (3) that fix missed `PinnedItemsSection`/`RecentItemsSection` and a related row-height inconsistency — fixed by rendering `GridFillerCells` unconditionally and threading `h-full` through. Added 6 new `grid-filler.ts` tests. Merged `feature/user-menu-theme-toggle` into `master`, branch deleted (never pushed).
 - 2026-08-26: Toast Redesign — "Ledger" Design System. Source: `prototypes/redesign/Kept Toasts.dc.html`. Restyled the sonner `Toaster` (`sonner.tsx`) to a flat bordered panel with an accent left-stripe — two variants only (success/error), dedicated tokens in `globals.css`, `unstyled: true` (a few sonner-internal rules still needed `!important` to lose, documented inline). Position/width tuned to the mockup, responsive to bottom-center/full-width on mobile via `useIsMobile()`. Skipped per `AskUserQuestion`: the mockup's meta code badge (no such code system exists) and action-button row (would be new functionality). Accepted deviation: no per-type toast duration (sonner limitation). Follow-up: added `src/lib/toast.ts` wrapper so titles are generic status words ("Success"/"Error") with the message as description — all 23 `sonner` import sites switched to it (mechanical, call signatures unchanged). Known accepted edge case: a toast fired over a full-screen mobile dialog lands near its footer button instead of floating free. Documented in `context/design-system.md`. Merged `feature/toast-redesign` into `master`, branch deleted (never pushed).
+- 2026-08-26: Auth Pages Polish (Breadcrumb, Centering, Nav Links) — `AuthCard`'s breadcrumb row simplified to a single label (dropped the "Access /" prefix and "N fields" step count; reworked to render `crumb` alone without requiring `stepLabel`), register's crumb reworded "Register" → "Sign up". `/sign-in`/`/register` now center the form vertically as well as horizontally (`absolute inset-0` centering instead of `pt-24`). `HomeNav`'s `Features`/`Pricing` links pointed at `/#features`/`/#pricing` so they resolve correctly when rendered off the homepage. Also picked up an unrelated small fix already staged: `cursor-pointer` on `PricingIntervalToggle`'s track. Visual/wording-only, no logic changes.
