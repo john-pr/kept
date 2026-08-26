@@ -1,121 +1,10 @@
-# Current Feature: User Menu — Account Popup + Light/Dark Toggle
+# Current Feature
 
 ## Status
 
-In Progress
-
 ## Goals
 
-- Wire up a real working theme toggle using `next-themes` (`^0.4.6`, already a project
-  dependency — see Notes) in `src/app/layout.tsx`: mount a `ThemeProvider`
-  (`attribute="class"`, `defaultTheme="dark"`, `enableSystem={false}`) and drop the
-  hardcoded `className="dark ..."` on `<html>` in favor of next-themes' own FOUC-safe class
-  injection.
-- Restyle `UserFooter.tsx`'s dropdown to match `kept-dashboard.html`'s user-menu popup
-  (its `data-user-menu` block): an "Account" section label, then Profile, then a new
-  "Appearance" row with a bordered Light/Dark segmented toggle wired to
-  `next-themes`' `useTheme()`/`setTheme()`, then Sign out. Keep the existing "Settings" menu
-  item too — the mockup doesn't show one because it predates the real `/settings` page; this
-  pass doesn't remove real navigation, only restyles + adds Appearance.
-- Restyle the popup container itself at the `UserFooter.tsx` call site
-  (`DropdownMenuContent`'s `className`) toward the ledger's flat bordered-panel look (no
-  shadow/ring, `border-rule-strong`-equivalent border) — same scope-discipline pattern
-  already used for `Dialog`/`Sheet` call sites; do not edit `src/components/ui/dropdown-menu.tsx`
-  itself, since it's shared by every dropdown in the app.
-- Square avatar: add an optional `shape?: "circle" | "square"` prop to
-  `src/components/auth/UserAvatar.tsx` (default `"circle"`, so `profile/page.tsx`'s existing
-  usage is unaffected), and pass `shape="square"` only from `UserFooter.tsx` — matches the
-  mockup's bordered square initials box (currently a circular `Avatar`).
-
 ## Notes
-
-- `next-themes` is already an installed dependency and already imported by the shadcn
-  `Toaster` (`src/components/ui/sonner.tsx`'s `useTheme()` call) — but **no `ThemeProvider`
-  is mounted anywhere today**, so that call always falls back to `"system"` with no way to
-  change it. This resolves the open "library vs. hand-rolled" question from
-  `context/features/topbar-footer-theme-spec.md`'s item #3: use `next-themes`, don't hand-roll.
-- `globals.css` already has complete, symmetric `:root` (light) / `.dark` token blocks from
-  the original ledger port (verified: same variable names, both fully populated) — zero CSS
-  changes needed. `next-themes`' default `attribute="class"` strategy targets exactly the
-  existing `.dark` selector already used throughout the stylesheet.
-- Default stays `"dark"` with `enableSystem={false}` — per `project-overview.md`'s UI
-  principle "Dark mode default, light mode optional," existing users shouldn't get
-  auto-switched to their OS preference on first load after this ships; light only activates
-  once someone explicitly picks it from the new Appearance toggle.
-- **Known, accepted risk** (flag clearly in the completion summary, don't silently ship it):
-  this is the first time light mode becomes reachable by a real user, not just stubbed CSS.
-  `src/lib/color.ts`'s `withAlpha()` hardcodes the dark-mode alpha suffix (`"2E"`) as its
-  default and every call site (`ItemCard`, `CollectionCard`, `SidebarNav`, etc.) omits the
-  second argument — so soft-tint type-color chips will likely look washed out / low-contrast
-  in light mode, since that alpha was tuned against dark backgrounds only. Per this project's
-  established pattern (e.g. the homepage redesign's Button-radius finding, the dashboard
-  redesign's `FavoritesList` hydration mismatch — both flagged, not fixed, when found outside
-  a pass's stated scope), this feature ships the working toggle without a full light-mode
-  visual audit of every screen; any light-mode contrast/legibility bugs found become their
-  own follow-up work, not a blocker here.
-- `UserAvatar` (`src/components/auth/UserAvatar.tsx`) has exactly two call sites (grep-
-  confirmed): `UserFooter.tsx` and `profile/page.tsx`. Only `UserFooter.tsx` opts into the
-  new `shape="square"`.
-- Source of truth: `prototypes/redesign/kept-dashboard.html`'s `data-user-menu` markup plus
-  its embedded `Component` class (`state.menuOpen`, `toggleMenu`, `setLight`/`setDark`,
-  `applyVars()`). `prototypes/redesign/support.js` is the generic Claude Design canvas
-  runtime that made that file interactive in-editor — no app-specific styling lives there.
-- Explicitly **out of scope**: `TopBar.tsx`'s "New Collection"/"New Item" buttons and search
-  bar restyle — that's item #1 of `context/features/topbar-footer-theme-spec.md`, a separate,
-  independent pass not bundled into this one.
-- No schema changes. Theme preference persistence is `next-themes`' own `localStorage`
-  handling (its standard default) — no new server action or DB column needed for this pass.
-- **Update after implementation**: ran a live `ui-reviewer` pass in light mode once the
-  toggle shipped, per plan. Confirmed the flagged `withAlpha()` risk (measured contrast as
-  low as 1.07:1 on the Notes type chip) plus two more findings: `--border` measured only
-  ~1.2-1.4:1 against `--background`/`--card` (a token-level issue, not just `withAlpha`), and
-  the collapsed-border grid pattern's empty trailing cells render as a visible gray "hole" in
-  light mode (was invisible in dark mode only because `--border` sits close to
-  `--background`/`--card` there). Fixed the first two: added `useSoftTintAlpha()` (new hook,
-  `src/hooks/`) wired into all 4 `withAlpha()` call sites (`ItemCard`, `CollectionCard`,
-  `SidebarNav`, `ItemDrawer`) to pass the lighter `"1F"` suffix in light mode (matching the
-  mockup's own `alpha = dark ? '2E' : '1F'` logic, previously never wired up); retuned
-  `:root`'s `--border`/`--sidebar-border` from `#D6D9D3` to `#8E9791` (blended toward
-  `--muted-foreground`'s hue, ~2.5-2.9:1 against `--card`/`--background` — a deliberate
-  departure from the original mockup's own light-mode value for accessibility; dark mode's
-  `--border` left untouched, not flagged).
-- **Update, round 2**: fixed the empty-grid-cell finding too, on request. Added
-  `computeFillerClasses()` (`src/lib/grid-filler.ts`, unit-tested — 6 new tests) — computes,
-  per breakpoint, how many trailing filler cells a "collapsed-border grid" needs so a ragged
-  last row doesn't expose the container's `bg-border` fill; since the count needed differs by
-  breakpoint's column count (e.g. a 3-item row is short 1 cell at 2 columns but short 0 at 3
-  columns), each filler cell's Tailwind `hidden`/`block` visibility is computed per
-  breakpoint rather than using a single fixed count. Wired into `ItemCardGrid.tsx` (used by
-  `/items/[type]`, `/collections/[id]`) and `DashboardGridSection.tsx`'s non-`mobileScroll`
-  path (used by Pinned/Recent Items and Recent Collections on `/dashboard`) via a new
-  `GridFillerCells.tsx` component — every grid consumer of the pattern with *dynamic* item
-  counts is now covered. Checked `FeaturesSection.tsx` (homepage) — also uses the same
-  `bg-border` grid pattern, but its `FEATURES` array is a fixed 6 items (evenly divides both
-  2 and 3 columns), so it was never actually ragged; left untouched, no fix needed there.
-  Verified via Playwright at multiple viewport widths (2-col and 3-col breakpoints) in both
-  themes — filler cells now blend seamlessly (`bg-card`) instead of showing a gray hole in
-  light mode; dark mode unaffected (was already blending, just for a different reason —
-  `--border` sitting close to `--card` there).
-- **Update, round 3**: user screenshotted `/dashboard`'s "Recent Items" section in dark mode
-  showing the round-2 fix hadn't actually applied there, plus a second, related bug: cards in
-  the same row weren't equal height (row 3's "Big PDF" — has a tags row — visibly taller than
-  "Big markdown file"/"Note 1" beside it, which don't). Root cause for both: `PinnedItemsSection`/
-  `RecentItemsSection` pass `DashboardGridSection`'s `mobileScroll` prop, whose children-
-  rendering branch wraps each card in an extra sizing `<div>` for the mobile snap-scroll strip
-  — my round-2 `<GridFillerCells>` call only sat in the *non*-`mobileScroll` branch, so these
-  two sections' `sm:`/`lg:` grid (still a real grid at those breakpoints, only the *mobile*
-  layout differs) never got filler cells at all. Same wrapper div also broke automatic CSS
-  Grid row-stretch for card height: the wrapper (the real grid item) stretched correctly, but
-  a plain block child doesn't inherit a stretched parent's height on its own — `ItemCard`'s
-  own root div stayed sized to its own content instead of filling the wrapper. Fixed both:
-  moved `<GridFillerCells>` to render unconditionally after either branch (inert on mobile,
-  since the base/unprefixed breakpoint is always 1 column, never ragged); added `sm:h-full` to
-  the `mobileScroll` wrapper div and `h-full` to `ItemCard.tsx`'s own root (harmless no-op for
-  the plain `ItemCardGrid` case, where `ItemCard` is already the direct, auto-stretched grid
-  item). Verified via `getBoundingClientRect()`/computed-style checks (not just visual
-  inspection, after initially misreading a screenshot) — all three cards in the ragged row
-  measured exactly 189px in both themes; filler cells confirmed `display:block` only at the
-  breakpoints needing them, `backgroundColor: rgb(33,31,30)` (`--card`) as intended.
 
 ## History
 [//]: # (keep this updated. earliest to latest)
@@ -136,3 +25,5 @@ In Progress
 - 2026-08-25: Increased the logo size on the landing page too — `HomeNav.tsx` now renders `<Logo size="lg" />` (same 26px icon/`1.3rem` text as `TopBar`), reusing the existing `size` prop with no further `Logo.tsx` changes. `HomeNav` is shared with `/sign-in`/`/register`, so both picked up the larger mark too (per the project's existing convention of accepting the ripple on shared components). `Footer.tsx`'s separate, un-prop'd `<Logo />` usage stays at the default size — not covered by "landing page nav," left as-is. Verified via Playwright on `/sign-in` (stands in for the shared `HomeNav`) at 1440px and 390px — no overlap with nav links/mobile hamburger. UI-only change — no new tests. Build (27 routes), lint, and test (245/245, unchanged) pass.
 - 2026-08-25: Documented and completed Sidebar Active Item Highlighting — `SidebarNav.tsx` is now a client component (`usePathname()`) that highlights (`bg-muted font-medium`) the item-type link, favorite-collection link, recent-collection link, or "View all collections" link matching the current route, e.g. being on `/items/links` highlights "Links"; both `Sidebar`/`MobileSidebar` already rendered it from client components so no other wiring was needed. Verified live via Playwright MCP (signed in as the demo user): confirmed a collection that's both favorited and recent (e.g. "React Patterns") highlights in both the "Favorite Collections" and "Recent Collections" sections simultaneously when active — flagged this to the user as a design question (dedupe vs. keep) and they confirmed keeping both highlighted is fine, since both are legitimate independent links to the active page. UI-only change in a client component — no server actions or `src/lib/` utilities added/modified, so no new tests per the project's testing scope. Build (27 routes), lint, and test (231/231, unchanged) pass.
 - 2026-08-26: Documented and completed Sidebar Redesign — "Ledger" Design System, closing a scope cut from the 2026-08-25 dashboard redesign pass where `Sidebar.tsx`/`SidebarNav.tsx` were deliberately left with only color-token inheritance, no component-level restyle. Scanned the full `prototypes/redesign/kept-dashboard.html` mockup (including its embedded `<script data-dc-script>` state logic) against the live app first — confirmed `prototypes/redesign/support.js` is just the generic Claude Design canvas runtime (`dc-runtime`) that makes `.dc.html` files interactive in-editor, not app-specific styling to port. Found `StatsCards`/`ItemCard`/`CollectionCard`/`ItemDrawerView` already matched the mockup closely, but `Sidebar`/`SidebarNav`/`TopBar`/`UserFooter` chrome did not; scoped this pass to sidebar chrome only via `AskUserQuestion` (TopBar buttons/search, `UserFooter`'s avatar, and a Light/Dark toggle — real new functionality, no light mode exists yet — deferred). `SidebarNav.tsx`: section labels ("Item Types"/"Favorite Collections"/"Recent Collections") now uppercase, tracked, dotted-divider underline, matching `ItemDrawerView`'s established section-label convention; item-type icons render in `withAlpha()`-tinted chip squares (same technique as `ItemCard`/`CollectionCard`); item-type names uppercase (per follow-up request — collections stay Title Case, since collection names are user content vs. type names being static labels); item counts zero-padded and tabular; zero-count types dim to `opacity-60` instead of hiding (`getItemTypes()` already returns all types regardless of count, so purely a className condition — no "hide zero types" toggle, since that was a canvas-editor authoring knob in the mockup, not a product feature); favorite-collection markers swapped from a yellow `Star` icon to a small accent-green square (`bg-primary`), recent-collection markers swapped from a circle to a square (kept the existing per-collection dominant-type color). `Sidebar.tsx`'s "Navigation" header label restyled to match. Ripples into `MobileSidebar.tsx` (shares `SidebarNav` via its `comfortable` prop) — verified via Playwright the 44px touch rows still read correctly with the new chip/label treatment, alongside desktop expanded and collapsed states. `MobileSidebar`'s own "Quick Actions"/sheet "Navigation" title headers left in their old plain style (out of scope), a known minor inconsistency within the same drawer. No schema/server-action changes — UI-only, so no new tests. Build (29 routes), lint (clean on changed files — 10 pre-existing issues remain in the unrelated, generated `prototypes/redesign/support.js`, flagged not fixed), and test (247/247, unchanged) pass. Committed (`feat: restyle sidebar chrome to match ledger design system`) and merged `feature/sidebar-redesign` into `master`; local branch deleted (never pushed to origin).
+- 2026-08-26: Documented (`context/features/topbar-footer-theme-spec.md`) the remaining sidebar-chrome follow-up work deferred from the redesign above — TopBar buttons/search restyle, `UserFooter`'s avatar shape, and a Light/Dark toggle — flagging the toggle as real new functionality (not just a restyle) with open implementation questions (library vs. hand-rolled, persistence strategy) rather than assuming an approach. Documentation only, no code changes.
+- 2026-08-26: Documented and completed User Menu — Account Popup + Light/Dark Toggle. Checked `kept-dashboard.html`'s user-menu popup (its `data-user-menu` block + embedded `menuOpen`/`setLight`/`setDark` logic) against `UserFooter.tsx` on request; found `next-themes` (`^0.4.6`) already installed and already imported by the shadcn `Toaster` (`sonner.tsx`'s `useTheme()`) but with no `ThemeProvider` ever mounted — resolved the prior spec's open "library vs. hand-rolled" question by using it. Mounted a `ThemeProvider` (`attribute="class"`, `defaultTheme="dark"`, `enableSystem={false}`) in `layout.tsx`, replacing the hardcoded `className="dark ..."` with next-themes' FOUC-safe class injection (`suppressHydrationWarning` added to `<html>`). Restyled `UserFooter.tsx`'s dropdown to match the mockup: "Account" label (dotted-divider, uppercase/tracked), Profile + Settings (kept Settings despite the mockup predating that page — not removing real navigation), a new "Appearance" section with a working Light/Dark segmented toggle, then Sign out; fixed a Base UI runtime error along the way (`DropdownMenuLabel` needs a `DropdownMenuGroup` wrapper). Added `UserAvatar.tsx`'s optional `shape?: "circle" | "square"` prop (default circle, `/profile` unaffected; only `UserFooter` opts into square) and `useHasMounted.ts` (new hook, `useSyncExternalStore`-based — same idiom as `useIsMobile.ts` — guards the Light/Dark highlight against a hydration mismatch, avoiding the `react-hooks/set-state-in-effect` lint error an effect-based flag would trigger). Verified via Playwright: toggle switches the whole app instantly, menu stays open on click, `/profile`'s avatar stayed circular while `UserFooter`'s went square. Ran a live `ui-reviewer` pass in light mode once the toggle shipped (light mode reachable by a real user for the first time) and fixed everything it found, across three follow-up rounds: (1) `withAlpha()`'s soft-tint chips hardcoded the dark alpha suffix (measured as low as 1.07:1 contrast on the Notes type chip) — added `useSoftTintAlpha()` (new hook) wired into all 4 call sites (`ItemCard`, `CollectionCard`, `SidebarNav`, `ItemDrawer`) to pass the mockup's own never-wired-up light-mode `"1F"` suffix; retuned `:root`'s `--border`/`--sidebar-border` from `#D6D9D3` to `#8E9791` (~1.2-1.4:1 → ~2.5-2.9:1 against `--card`/`--background`, blended toward `--muted-foreground`'s hue — a deliberate departure from the mockup's own light value for accessibility; dark mode's `--border` left untouched, not flagged). (2) The collapsed-border-grid pattern's empty trailing cells exposed `bg-border` as a visible gray "hole" once that border got dark enough to read as a real color (was invisible in dark mode purely because `--border` sits close to `--card` there) — added `computeFillerClasses()` (`src/lib/grid-filler.ts`, unit-tested, 6 new tests) and a `GridFillerCells.tsx` component computing, per Tailwind breakpoint, how many filler cells a ragged row needs (the count differs by column count, so a single fixed number can't work); wired into `ItemCardGrid.tsx` and `DashboardGridSection.tsx`. Checked `FeaturesSection.tsx` (homepage) for the same pattern — its fixed 6-item `FEATURES` array evenly divides both 2 and 3 columns, never actually ragged, left untouched. (3) A user screenshot caught that round 2's filler-cell fix silently missed `PinnedItemsSection`/`RecentItemsSection` (both pass `DashboardGridSection`'s `mobileScroll` prop, whose children-wrapping `<div>` sat outside the branch `GridFillerCells` was rendered in) — the same wrapper also broke CSS Grid's automatic row-stretch for card height, since a plain block child doesn't inherit a stretched parent's height on its own, leaving same-row cards visibly uneven (e.g. a card with a tags row taller than siblings without one). Fixed by rendering `GridFillerCells` unconditionally regardless of branch (inert on mobile, since the base breakpoint is always 1 column) and threading `h-full` down the wrapper → `ItemCard` chain; verified via `getBoundingClientRect()`/computed-style checks after initially misjudging a busy screenshot by eye — confirmed all cards in the previously-ragged row measure identically (189px) in both themes. Cleaned up stray screenshot files the `ui-reviewer` subagent left in the repo root before committing (not part of the feature). No schema changes. Build (29 routes), lint clean on every changed file, and test (253/253, up from 247 — 6 new `grid-filler.ts` tests) pass throughout. Committed (`feat: working light/dark theme toggle via restyled user menu`) and merged `feature/user-menu-theme-toggle` into `master`; local branch deleted (never pushed to origin).
