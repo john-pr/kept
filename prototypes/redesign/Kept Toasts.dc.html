@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6B57' stroke-width='1.8' stroke-linejoin='miter'%3E%3Cpolygon points='4.5,2.5 19.5,2.5 19.5,21.5 12,16.6 4.5,21.5'/%3E%3Cpolyline points='8.6,10.4 11.4,13.2 16,7.2'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg-page: #E9EAE5; --bg-panel: #FBFBF8; --bg-inset: #F2F2ED;
+  --ink: #1E3A32; --ink-body: #33463F; --ink-muted: #67736D;
+  --rule: #D6D9D3; --rule-strong: #1E3A32;
+  --accent: #2F6B57;
+  --error: #A63A2E; --error-panel: #FDF4F2; --error-line: #E0B2A8;
+  --success: #2F6B57; --success-panel: #F3F8F4; --success-line: #B4CDC0;
+}
+@keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-in-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #E9EAE5; }
+body { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; -webkit-font-smoothing: antialiased; }
+a { color: #2F6B57; text-decoration: none; }
+a:hover { color: #1E3A32; text-decoration: underline; }
+</style>
+</helmet>
+
+<div style="width:1280px;padding:44px 48px 64px;background:var(--bg-page);color:var(--ink-body);display:flex;flex-direction:column;gap:38px">
+
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--rule-strong)">
+    <div style="display:flex;align-items:center;gap:11px">
+      <span style="display:flex;color:var(--accent)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="miter"><polygon points="4.5,2.5 19.5,2.5 19.5,21.5 12,16.6 4.5,21.5"></polygon><polyline points="8.6,10.4 11.4,13.2 16,7.2"></polyline></svg></span>
+      <span style="font-size:14px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink)">Kept</span>
+      <span style="width:1px;height:15px;background:var(--rule)"></span>
+      <span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-muted)">Toasts — error &amp; success</span>
+    </div>
+    <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums">4 states · 2 themes · desktop + mobile</span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink)">01 — Desktop</span>
+      <span style="flex:1;height:1px;background:var(--rule)"></span>
+      <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted)">420px · top center · stacks downward, gap 10</span>
+    </div>
+
+    <div style="display:flex;gap:20px">
+
+      <div style="flex:1;min-width:0;--bg-panel:#211F1E;--bg-inset:#2A2826;--ink:#EDEAE6;--ink-body:#C2BDB7;--ink-muted:#918B84;--rule:#363330;--error:#D9776A;--error-panel:#2B1D1B;--error-line:#5E322B;--success:#5AA687;--success-panel:#1C2621;--success-line:#2F4A3D;background:#191817;border:1px solid #363330;padding:26px 24px;display:flex;flex-direction:column;gap:12px;align-items:center">
+        <span style="align-self:flex-start;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-muted)">Dark</span>
+
+        <div style="width:420px;display:flex;align-items:flex-start;gap:11px;padding:13px 14px;background:var(--error-panel);border:1px solid var(--error-line);border-left:3px solid var(--error);box-shadow:0 8px 24px rgba(0,0,0,0.32)">
+          <span style="display:flex;flex:none;margin-top:1px;color:var(--error)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><line x1="5.7" y1="5.7" x2="10.3" y2="10.3"></line><line x1="10.3" y1="5.7" x2="5.7" y2="10.3"></line></svg></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--error)">Invalid URL</span>
+              <span style="flex:1;height:1px;background:var(--error-line)"></span>
+              <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums">ERR 422</span>
+            </span>
+            <span style="font-size:12px;line-height:19px;color:var(--ink-body);text-wrap:pretty">That link could not be parsed. Check the protocol and try again.</span>
+          </span>
+          <button type="button" style="width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;color:var(--ink-muted);cursor:pointer;transition:all 120ms" style-hover="border-color:var(--error-line);color:var(--ink)">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+          </button>
+        </div>
+
+        <div style="width:420px;display:flex;align-items:flex-start;gap:11px;padding:13px 14px;background:var(--success-panel);border:1px solid var(--success-line);border-left:3px solid var(--success);box-shadow:0 8px 24px rgba(0,0,0,0.32)">
+          <span style="display:flex;flex:none;margin-top:1px;color:var(--success)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><polyline points="5.2,8.2 7.2,10.2 10.8,5.8"></polyline></svg></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--success)">Saved</span>
+              <span style="flex:1;height:1px;background:var(--success-line)"></span>
+              <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums">ITM-0151</span>
+            </span>
+            <span style="font-size:12px;line-height:19px;color:var(--ink-body);text-wrap:pretty">Snippet added to React Patterns.</span>
+          </span>
+          <button type="button" style="width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;color:var(--ink-muted);cursor:pointer;transition:all 120ms" style-hover="border-color:var(--success-line);color:var(--ink)">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+          </button>
+        </div>
+
+        <div style="width:420px;display:flex;align-items:flex-start;gap:11px;padding:13px 14px;background:var(--error-panel);border:1px solid var(--error-line);border-left:3px solid var(--error);box-shadow:0 8px 24px rgba(0,0,0,0.32)">
+          <span style="display:flex;flex:none;margin-top:1px;color:var(--error)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><line x1="5.7" y1="5.7" x2="10.3" y2="10.3"></line><line x1="10.3" y1="5.7" x2="5.7" y2="10.3"></line></svg></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:9px">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--error)">Delete failed</span>
+              <span style="flex:1;height:1px;background:var(--error-line)"></span>
+              <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums">ERR 409</span>
+            </span>
+            <span style="font-size:12px;line-height:19px;color:var(--ink-body);text-wrap:pretty">Item is referenced by an active collection.</span>
+            <span style="display:flex;gap:8px">
+              <button type="button" style="height:26px;display:flex;align-items:center;padding:0 10px;background:transparent;border:1px solid var(--error);color:var(--error);font-family:inherit;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background 120ms" style-hover="background:rgba(217,119,106,0.12)">Force delete</button>
+              <button type="button" style="height:26px;display:flex;align-items:center;padding:0 10px;background:transparent;border:1px solid var(--rule);color:var(--ink-muted);font-family:inherit;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 120ms" style-hover="border-color:var(--ink-muted);color:var(--ink)">Dismiss</button>
+            </span>
+          </span>
+          <button type="button" style="width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;color:var(--ink-muted);cursor:pointer;transition:all 120ms" style-hover="border-color:var(--error-line);color:var(--ink)">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+          </button>
+        </div>
+
+        <span style="align-self:flex-start;margin-top:2px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted)">Third variant: error with recovery actions</span>
+      </div>
+
+      <div style="flex:1;min-width:0;background:var(--bg-page);border:1px solid var(--rule);padding:26px 24px;display:flex;flex-direction:column;gap:12px;align-items:center">
+        <span style="align-self:flex-start;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-muted)">Light</span>
+
+        <div style="width:420px;display:flex;align-items:flex-start;gap:11px;padding:13px 14px;background:var(--error-panel);border:1px solid var(--error-line);border-left:3px solid var(--error);box-shadow:0 8px 24px rgba(30,58,50,0.12)">
+          <span style="display:flex;flex:none;margin-top:1px;color:var(--error)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><line x1="5.7" y1="5.7" x2="10.3" y2="10.3"></line><line x1="10.3" y1="5.7" x2="5.7" y2="10.3"></line></svg></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--error)">Invalid URL</span>
+              <span style="flex:1;height:1px;background:var(--error-line)"></span>
+              <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums">ERR 422</span>
+            </span>
+            <span style="font-size:12px;line-height:19px;color:var(--ink-body);text-wrap:pretty">That link could not be parsed. Check the protocol and try again.</span>
+          </span>
+          <button type="button" style="width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;color:var(--ink-muted);cursor:pointer;transition:all 120ms" style-hover="border-color:var(--error-line);color:var(--ink)">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+          </button>
+        </div>
+
+        <div style="width:420px;display:flex;align-items:flex-start;gap:11px;padding:13px 14px;background:var(--success-panel);border:1px solid var(--success-line);border-left:3px solid var(--success);box-shadow:0 8px 24px rgba(30,58,50,0.12)">
+          <span style="display:flex;flex:none;margin-top:1px;color:var(--success)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><polyline points="5.2,8.2 7.2,10.2 10.8,5.8"></polyline></svg></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--success)">Saved</span>
+              <span style="flex:1;height:1px;background:var(--success-line)"></span>
+              <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums">ITM-0151</span>
+            </span>
+            <span style="font-size:12px;line-height:19px;color:var(--ink-body);text-wrap:pretty">Snippet added to React Patterns.</span>
+          </span>
+          <button type="button" style="width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;color:var(--ink-muted);cursor:pointer;transition:all 120ms" style-hover="border-color:var(--success-line);color:var(--ink)">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+          </button>
+        </div>
+
+        <div style="width:420px;display:flex;align-items:flex-start;gap:11px;padding:13px 14px;background:var(--success-panel);border:1px solid var(--success-line);border-left:3px solid var(--success);box-shadow:0 8px 24px rgba(30,58,50,0.12)">
+          <span style="display:flex;flex:none;margin-top:1px;color:var(--success)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><polyline points="5.2,8.2 7.2,10.2 10.8,5.8"></polyline></svg></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:9px">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--success)">Item deleted</span>
+              <span style="flex:1;height:1px;background:var(--success-line)"></span>
+              <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums">ITM-0131</span>
+            </span>
+            <span style="font-size:12px;line-height:19px;color:var(--ink-body);text-wrap:pretty">Git Reset Hard removed from Terminal Commands.</span>
+            <span style="display:flex;gap:8px">
+              <button type="button" style="height:26px;display:flex;align-items:center;padding:0 10px;background:transparent;border:1px solid var(--success);color:var(--success);font-family:inherit;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background 120ms" style-hover="background:rgba(47,107,87,0.1)">Undo</button>
+            </span>
+          </span>
+          <button type="button" style="width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;color:var(--ink-muted);cursor:pointer;transition:all 120ms" style-hover="border-color:var(--success-line);color:var(--ink)">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+          </button>
+        </div>
+
+        <span style="align-self:flex-start;margin-top:2px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted)">Third variant: success with undo</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink)">02 — Mobile</span>
+      <span style="flex:1;height:1px;background:var(--rule)"></span>
+      <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted)">390px · edge inset 12 · rises from bottom, clears tab bar</span>
+    </div>
+
+    <div style="display:flex;gap:20px;align-items:flex-start">
+
+      <div style="width:390px;flex:none;--bg-panel:#211F1E;--bg-inset:#2A2826;--ink:#EDEAE6;--ink-body:#C2BDB7;--ink-muted:#918B84;--rule:#363330;--error:#D9776A;--error-panel:#2B1D1B;--error-line:#5E322B;--success:#5AA687;--success-panel:#1C2621;--success-line:#2F4A3D;height:432px;background:#191817;border:1px solid #363330;position:relative;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px 8px;font-size:10px;letter-spacing:0.1em;color:var(--ink-muted);font-variant-numeric:tabular-nums">
+          <span>09:41</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:7px;border:1px solid var(--ink-muted)"></span><span style="width:2px;height:7px;background:var(--ink-muted)"></span></span>
+        </div>
+        <div style="padding:6px 16px 0;display:flex;align-items:center;justify-content:center;gap:8px">
+          <span style="display:flex;color:var(--accent)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="miter"><polygon points="4.5,2.5 19.5,2.5 19.5,21.5 12,16.6 4.5,21.5"></polygon><polyline points="8.6,10.4 11.4,13.2 16,7.2"></polyline></svg></span>
+          <span style="font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink)">Kept</span>
+        </div>
+        <div style="flex:1;padding:18px 16px;display:flex;flex-direction:column;gap:9px;opacity:0.28">
+          <span style="height:38px;background:var(--bg-panel);border:1px solid var(--rule)"></span>
+          <span style="height:52px;background:var(--bg-panel);border-left:2px solid var(--rule-strong)"></span>
+          <span style="height:52px;background:var(--bg-panel);border-left:2px solid var(--rule-strong)"></span>
+        </div>
+
+        <div style="position:absolute;left:12px;right:12px;bottom:74px;display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:13px 13px;background:var(--error-panel);border:1px solid var(--error-line);border-left:3px solid var(--error);box-shadow:0 10px 28px rgba(0,0,0,0.45)">
+            <span style="display:flex;flex:none;margin-top:1px;color:var(--error)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><line x1="5.7" y1="5.7" x2="10.3" y2="10.3"></line><line x1="10.3" y1="5.7" x2="5.7" y2="10.3"></line></svg></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+              <span style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--error)">Invalid URL</span>
+                <span style="flex:1;height:1px;background:var(--error-line)"></span>
+                <span style="font-size:10px;letter-spacing:0.08em;color:var(--ink-muted);font-variant-numeric:tabular-nums">422</span>
+              </span>
+              <span style="font-size:12px;line-height:18px;color:var(--ink-body);text-wrap:pretty">That link could not be parsed.</span>
+            </span>
+            <button type="button" style="width:30px;height:30px;flex:none;margin:-4px -4px 0 0;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--ink-muted);cursor:pointer">
+              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+            </button>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:13px 13px;background:var(--success-panel);border:1px solid var(--success-line);border-left:3px solid var(--success);box-shadow:0 10px 28px rgba(0,0,0,0.45)">
+            <span style="display:flex;flex:none;margin-top:1px;color:var(--success)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><polyline points="5.2,8.2 7.2,10.2 10.8,5.8"></polyline></svg></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+              <span style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--success)">Saved</span>
+                <span style="flex:1;height:1px;background:var(--success-line)"></span>
+                <span style="font-size:10px;letter-spacing:0.08em;color:var(--ink-muted);font-variant-numeric:tabular-nums">0151</span>
+              </span>
+              <span style="font-size:12px;line-height:18px;color:var(--ink-body);text-wrap:pretty">Snippet added to React Patterns.</span>
+            </span>
+            <button type="button" style="width:30px;height:30px;flex:none;margin:-4px -4px 0 0;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--ink-muted);cursor:pointer">
+              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+            </button>
+          </div>
+        </div>
+
+        <div style="height:62px;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-around;padding:0 8px 8px">
+          <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent)">Dash</span>
+          <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted)">Items</span>
+          <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted)">Colls</span>
+          <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted)">You</span>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="background:var(--bg-panel);border:1px solid var(--rule);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+          <span style="padding-bottom:7px;border-bottom:1px dotted var(--rule);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink)">Behaviour</span>
+          <div style="display:grid;grid-template-columns:126px 1fr;gap:9px 16px;font-size:11px;line-height:18px;color:var(--ink-body)">
+            <span style="color:var(--ink-muted);letter-spacing:0.1em;text-transform:uppercase">Position</span><span>Desktop: top center, 20px from the chrome. Mobile: bottom, above the tab bar.</span>
+            <span style="color:var(--ink-muted);letter-spacing:0.1em;text-transform:uppercase">Duration</span><span>Success 3.2s. Error 5.5s. Toasts with actions never auto-dismiss.</span>
+            <span style="color:var(--ink-muted);letter-spacing:0.1em;text-transform:uppercase">Stack</span><span>Newest last, max 3 visible; older ones drop off silently.</span>
+            <span style="color:var(--ink-muted);letter-spacing:0.1em;text-transform:uppercase">Motion</span><span>180ms ease-out, 10px translate from the entry edge. Opacity only on exit.</span>
+            <span style="color:var(--ink-muted);letter-spacing:0.1em;text-transform:uppercase">Mobile dismiss</span><span>Swipe down, or the 44px close target.</span>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-panel);border:1px solid var(--rule);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+          <span style="padding-bottom:7px;border-bottom:1px dotted var(--rule);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink)">Tokens</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px">
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-muted)">Light</span>
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-body)"><span style="width:14px;height:14px;background:#A63A2E"></span>--error #A63A2E</span>
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-body)"><span style="width:14px;height:14px;background:#FDF4F2;border:1px solid var(--rule)"></span>--error-panel #FDF4F2</span>
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-body)"><span style="width:14px;height:14px;background:#2F6B57"></span>--success #2F6B57</span>
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-body)"><span style="width:14px;height:14px;background:#F3F8F4;border:1px solid var(--rule)"></span>--success-panel #F3F8F4</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-muted)">Dark</span>
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-body)"><span style="width:14px;height:14px;background:#D9776A"></span>--error #D9776A</span>
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-body)"><span style="width:14px;height:14px;background:#2B1D1B;border:1px solid var(--rule)"></span>--error-panel #2B1D1B</span>
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-body)"><span style="width:14px;height:14px;background:#5AA687"></span>--success #5AA687</span>
+              <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-body)"><span style="width:14px;height:14px;background:#1C2621;border:1px solid var(--rule)"></span>--success-panel #1C2621</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink)">03 — Live</span>
+      <span style="flex:1;height:1px;background:var(--rule)"></span>
+      <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted)">fire a toast to check motion and stacking</span>
+    </div>
+
+    <div style="--bg-panel:#211F1E;--ink:#EDEAE6;--ink-body:#C2BDB7;--ink-muted:#918B84;--rule:#363330;--error:#D9776A;--error-panel:#2B1D1B;--error-line:#5E322B;--success:#5AA687;--success-panel:#1C2621;--success-line:#2F4A3D;position:relative;height:260px;background:#191817;border:1px solid #363330;display:flex;align-items:flex-end;justify-content:center;padding:22px">
+      <div style="display:flex;gap:10px">
+        <button type="button" onClick="{{ fireError }}" style="height:32px;display:flex;align-items:center;padding:0 14px;background:transparent;border:1px solid var(--error);color:var(--error);font-family:inherit;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background 120ms" style-hover="background:rgba(217,119,106,0.12)">Fire error</button>
+        <button type="button" onClick="{{ fireSuccess }}" style="height:32px;display:flex;align-items:center;padding:0 14px;background:transparent;border:1px solid var(--success);color:var(--success);font-family:inherit;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background 120ms" style-hover="background:rgba(90,166,135,0.12)">Fire success</button>
+      </div>
+
+      <div style="position:absolute;top:20px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none">
+        <sc-for list="{{ toasts }}" as="t" hint-placeholder-count="0">
+          <div style="width:420px;display:flex;align-items:flex-start;gap:11px;padding:13px 14px;background:{{ t.panel }};border:1px solid {{ t.line }};border-left:3px solid {{ t.color }};box-shadow:0 8px 24px rgba(0,0,0,0.32);pointer-events:auto;animation:toast-in 180ms ease-out">
+            <span style="display:flex;flex:none;margin-top:1px;color:{{ t.color }}">
+              <sc-if value="{{ t.isError }}" hint-placeholder-val="{{ false }}">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><line x1="5.7" y1="5.7" x2="10.3" y2="10.3"></line><line x1="10.3" y1="5.7" x2="5.7" y2="10.3"></line></svg>
+              </sc-if>
+              <sc-if value="{{ t.isSuccess }}" hint-placeholder-val="{{ false }}">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.4"></circle><polyline points="5.2,8.2 7.2,10.2 10.8,5.8"></polyline></svg>
+              </sc-if>
+            </span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+              <span style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:{{ t.color }}">{{ t.label }}</span>
+                <span style="flex:1;height:1px;background:{{ t.line }}"></span>
+                <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums">{{ t.code }}</span>
+              </span>
+              <span style="font-size:12px;line-height:19px;color:var(--ink-body);text-wrap:pretty">{{ t.msg }}</span>
+            </span>
+            <button type="button" onClick="{{ t.dismiss }}" style="width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;color:var(--ink-muted);cursor:pointer;transition:all 120ms" style-hover="border-color:var(--rule);color:var(--ink)">
+              <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2.5" y1="2.5" x2="11.5" y2="11.5"></line><line x1="11.5" y1="2.5" x2="2.5" y2="11.5"></line></svg>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ERRORS = [
+  ['Invalid URL', 'ERR 422', 'That link could not be parsed. Check the protocol and try again.'],
+  ['Delete failed', 'ERR 409', 'Item is referenced by an active collection.'],
+  ['Sync failed', 'ERR 503', 'Could not reach the stash. Retrying in 30s.']
+];
+const SUCCESSES = [
+  ['Saved', 'ITM-0151', 'Snippet added to React Patterns.'],
+  ['Copied', 'ITM-0142', 'Content copied to clipboard.'],
+  ['Collection created', 'COL-0012', 'Terminal Commands is ready.']
+];
+
+class Component extends DCLogic {
+  state = { toasts: [], next: 1, ei: 0, si: 0 };
+
+  push(kind, spec) {
+    const id = this.state.next;
+    const t = { id, kind, label: spec[0], code: spec[1], msg: spec[2] };
+    this.setState(s => ({ toasts: s.toasts.slice(-2).concat(t), next: id + 1 }));
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(x => x.id !== id) })), kind === 'error' ? 5500 : 3200);
+  }
+
+  renderVals() {
+    return {
+      toasts: this.state.toasts.map(t => ({
+        ...t,
+        isError: t.kind === 'error',
+        isSuccess: t.kind === 'success',
+        color: t.kind === 'error' ? 'var(--error)' : 'var(--success)',
+        panel: t.kind === 'error' ? 'var(--error-panel)' : 'var(--success-panel)',
+        line: t.kind === 'error' ? 'var(--error-line)' : 'var(--success-line)',
+        dismiss: () => this.setState(s => ({ toasts: s.toasts.filter(x => x.id !== t.id) }))
+      })),
+      fireError: () => {
+        this.push('error', ERRORS[this.state.ei % ERRORS.length]);
+        this.setState(s => ({ ei: s.ei + 1 }));
+      },
+      fireSuccess: () => {
+        this.push('success', SUCCESSES[this.state.si % SUCCESSES.length]);
+        this.setState(s => ({ si: s.si + 1 }));
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

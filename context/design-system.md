@@ -23,6 +23,7 @@ what's already responsive; ask before styling a screen's mobile breakpoint.
 | Mobile dashboard | ❌ Deferred |
 | `/collections/[id]` header, `/settings`, `/profile`, `/upgrade` | ❌ Not started |
 | Marketing homepage (`/`) | ❌ Not started — pre-dates the ledger system, still on the old look |
+| Toasts (`src/components/ui/sonner.tsx`) | ✅ Done — including a scoped mobile position/width treatment, an exception to "mobile not yet designed" above |
 
 ## Design tokens (`src/app/globals.css`)
 
@@ -200,6 +201,37 @@ confirmations, Stripe checkout flows). Restyle at the call site instead, overrid
 
 Same principle applied to `ItemDrawer.tsx`'s `SheetContent` (narrowed width, restyled header/
 toolbar via `className` overrides on the call site, not `sheet.tsx`).
+
+## Toasts
+
+Source: `prototypes/redesign/Kept Toasts.dc.html`. Unlike Dialogs/Sheets above, the sonner
+`Toaster` primitive (`src/components/ui/sonner.tsx`) **is** restyled directly — it's the one
+component being skinned, not a generic wrapper shared by unrelated features, so the same
+"don't touch shared `ui/` primitives" rule doesn't apply here.
+
+- **Two variants only**: success and error. Flat panel, 1px border in a variant tint color,
+  `border-left: 3px solid` in the variant's full accent color, drop shadow — dedicated
+  `--toast-error`/`--toast-error-panel`/`--toast-error-line` and
+  `--toast-success-panel`/`--toast-success-line` tokens in `globals.css` (light + dark); the
+  success accent reuses `--primary` rather than a new token, since it matches exactly in both
+  themes.
+- **Title is always the generic status word** ("Success"/"Error"), never a contextual message
+  — the caller's message becomes the description below it. This is a deliberate departure from
+  the mockup itself (which used per-message contextual titles like "Saved"/"Invalid URL"), per
+  explicit request. Owned by `src/lib/toast.ts`, a thin wrapper around sonner's `toast` —
+  import `toast` from there, not `"sonner"` directly, so every call site keeps writing
+  `toast.success(message, options)`/`toast.error(message, options)` without hand-rolling the
+  "status word / message" mapping itself.
+- `toastOptions.unstyled: true` and no `richColors` — sonner's own baked-in CSS is fully
+  disabled so this skin owns every visual without a specificity fight; see the code comments
+  in `globals.css`'s toast block and `sonner.tsx` for the handful of sonner-internal rules that
+  still needed `!important` to lose (dark-theme close-button/description colors that aren't
+  gated behind `data-styled`).
+- **Mobile position is an explicit, scoped exception** to "mobile not yet designed" above:
+  bottom-center (vs. desktop's top-center), full width minus a 12px edge inset, offset to
+  clear `MobileTabBar`. Known accepted gap: a toast fired while a full-screen mobile
+  dialog/sheet is open (which already covers the tab bar) lands close to the dialog's footer
+  button instead of floating free — not fixed, a rare combination.
 
 ## Icons
 

@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { updateEditorPreferences } from "@/actions/editor-preferences";
 import { DEFAULT_EDITOR_PREFERENCES, type EditorPreferences } from "@/lib/editor-preferences";
 

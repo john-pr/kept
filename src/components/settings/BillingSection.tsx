@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { startProCheckout } from "@/lib/stripe-client";
 import { PricingIntervalToggle } from "@/components/pricing/PricingIntervalToggle";

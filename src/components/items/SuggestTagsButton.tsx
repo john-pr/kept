@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, Loader2, Sparkles, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { generateAutoTags } from "@/actions/ai";

@@ -2,15 +2,27 @@
 
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
+import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, CircleXIcon, Loader2Icon } from "lucide-react"
+import { useIsMobile } from "@/hooks/useIsMobile"
 
-const Toaster = ({ ...props }: ToasterProps) => {
+const Toaster = ({ position, ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
+  const isMobile = useIsMobile()
 
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      // Desktop: top center, 20px from the chrome, stacks downward (matches the
+      // mockup's "01 — Desktop" spec). Mobile: bottom, above the tab bar, rises from
+      // the bottom edge (the mockup's "02 — Mobile" spec) — MobileTabBar.tsx is a 56px
+      // sticky bar plus its 1px top border, so the 76px bottom offset below clears it
+      // with room to spare.
+      position={position ?? (isMobile ? "bottom-center" : "top-center")}
+      offset={{ top: 20 }}
+      mobileOffset={{ bottom: 76, left: 12, right: 12 }}
+      gap={10}
+      closeButton
       icons={{
         success: (
           <CircleCheckIcon className="size-4" />
@@ -22,7 +34,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           <TriangleAlertIcon className="size-4" />
         ),
         error: (
-          <OctagonXIcon className="size-4" />
+          <CircleXIcon className="size-4" />
         ),
         loading: (
           <Loader2Icon className="size-4 animate-spin" />
@@ -34,10 +46,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+          "--width": "420px",
         } as React.CSSProperties
       }
-      richColors
       toastOptions={{
+        // Sonner's own `[data-styled=true]`-gated CSS is turned off here so the
+        // "Ledger" skin in globals.css (`.cn-toast[data-sonner-toast]` and friends)
+        // fully owns the visuals with no specificity fight — see the comment there.
+        unstyled: true,
         classNames: {
           toast: "cn-toast",
         },

@@ -1,10 +1,58 @@
-# Current Feature
+# Current Feature: Toast Redesign — "Ledger" Design System
 
 ## Status
 
+In Progress
+
 ## Goals
 
+- Restyle the app's toasts (sonner `Toaster`, `src/components/ui/sonner.tsx`, mounted `position="top-center"` in `layout.tsx`) to match `prototypes/redesign/Kept Toasts.dc.html`.
+- Panel shape: flat rectangle, 1px border in a variant-specific tint color, `border-left: 3px solid` in the variant's full accent color, drop shadow. No rounded corners (already true app-wide via `--radius: 0`).
+- Header row inside the toast: small icon (custom circle+X for error, circle+check for success — mockup uses hand-drawn SVGs, but per the design system's existing "keep lucide-react" decision, use the closest lucide icons instead of porting new SVGs) + uppercase tracked label (e.g. "SAVED", "INVALID URL") in the accent color + a thin horizontal rule filling remaining space + a small meta tag on the right (tabular-nums, muted).
+- Body row: description text in `--ink-body`-equivalent styling.
+- Close button: small icon-only square, muted, hover state.
+- Two variants only (error/success), each with light + dark tokens per the mockup's palette:
+  - Light: `--error #A63A2E` / `--error-panel #FDF4F2` / `--error-line #E0B2A8`; `--success #2F6B57` / `--success-panel #F3F8F4` / `--success-line #B4CDC0`.
+  - Dark: `--error #D9776A` / `--error-panel #2B1D1B` / `--error-line #5E322B`; `--success #5AA687` / `--success-panel #1C2621` / `--success-line #2F4A3D`.
+  - Map onto real app tokens where they already line up (e.g. dark `--success` ≈ existing `--primary` `#5AA687`) rather than hardcoding new one-off hex values where an existing token already matches.
+- Motion: 180ms ease-out, 10px translate from the entry edge on enter, opacity-only on exit (mockup's `toast-in`/`toast-in-up` keyframes) — check what sonner's own animation API allows before deciding whether this needs custom CSS overrides.
+- Desktop: 420px wide, top-center (already the position), stacks downward.
+- Mobile: bottom position, inset from edges, sits above the tab bar/nav — mobile dashboard is otherwise undesigned (per `context/design-system.md`), so scope this to just the toast's own mobile position/width, not a broader mobile pass.
+
+- Toast title is always the generic status word ("Success"/"Error"), with the caller's
+  message shown as the description below it — e.g. `toast.success("Collection created")`
+  now renders "SUCCESS" / "Collection created", not "COLLECTION CREATED" with no detail
+  line. A deliberate departure from the mockup itself (which used a specific contextual
+  title per message, e.g. "Saved"/"Invalid URL") per explicit follow-up request.
+
 ## Notes
+
+- Source mockup: `prototypes/redesign/Kept Toasts.dc.html` (desktop + mobile + a live interactive demo section; `support.js` alongside it is just the generic Claude Design canvas runtime, not app styling — already established in the sidebar redesign entry).
+- This is a **visual-only restyle** of the existing sonner-based toast system, not a rewrite. No new toast library, no new call sites — every existing `toast.success(...)`/`toast.error(...)` call across the app (~25 files, grep'd) keeps working unchanged; only `sonner.tsx`'s theming (`toastOptions`, the CSS custom properties, `richColors`/icons) and any needed global CSS changes.
+- Resolved via `AskUserQuestion` at `start`: the mockup's two extra pieces of structure are both **skipped entirely**, not built even as unused styling —
+  - No meta code badge (`ERR 422`, `ITM-0151`) in the header row — just label + rule, no fabricated codes, no new data plumbing.
+  - No action-button row (`Force delete`/`Dismiss`, `Undo`) — only the plain label+description variant every current call site actually uses.
+- Sonner's own `richColors` prop currently drives success/error coloring — check whether it conflicts with or can be fully overridden by custom `toastOptions.classNames`/CSS vars, or whether it should be turned off in favor of fully custom styling.
+- No entry yet in `context/design-system.md`'s status table for "Toasts" — add one when this ships, per the doc's own maintenance pattern.
+- Neither `context/design-system.md` nor any prior redesign pass has touched `src/components/ui/sonner.tsx` yet — this is the first pass at it.
+- Added `src/lib/toast.ts`, a thin wrapper around sonner's `toast` that owns the
+  "Success"/"Error" title + message-as-description mapping in one place — every call
+  site's `toast.success(message, options)`/`toast.error(message, options)` call is
+  byte-for-byte unchanged, only the import source moved from `"sonner"` to
+  `"@/lib/toast"` (23 files, mechanical). The ~6 call sites that already passed an
+  explicit `description` (e.g. `toast.success("Reset link sent", { description:
+  "Check x@y.com for the link." })`) now get both folded into one description
+  ("Reset link sent. Check x@y.com for the link.") rather than losing either string.
+  The one `toast.info(...)` call site (`BillingSection.tsx`) passes through unchanged —
+  out of scope, the mockup only defines success/error.
+- Verified on mobile (390×844) via Playwright: success toast (fired from the dashboard)
+  and error toast (fired from the New Item dialog) both render correctly. Found and
+  flagged, accepted as-is per explicit decision: the 76px mobile bottom offset is tuned
+  to clear `MobileTabBar`, but a full-screen dialog/sheet (e.g. New Item) already covers
+  the tab bar, so a toast fired while one is open lands flush against the dialog's
+  sticky footer button instead of floating free — still a proper dismissible overlay,
+  just visually cramped in that one combination (error toast + full-screen dialog +
+  mobile). Not fixed — a minor, rare edge case.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

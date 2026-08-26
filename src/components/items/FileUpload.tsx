@@ -2,7 +2,7 @@
 
 import { useRef, useState, type DragEvent } from "react";
 import { File as FileIcon, Upload, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import {
   ALLOWED_EXTENSIONS,

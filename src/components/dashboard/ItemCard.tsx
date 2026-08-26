@@ -2,7 +2,7 @@
 
 import { type MouseEvent } from "react";
 import { Copy, Pin } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { iconMap } from "@/lib/icon-map";
 import { withAlpha } from "@/lib/color";

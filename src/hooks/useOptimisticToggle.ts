@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 type ToggleAction = (next: boolean) => Promise<{ success: boolean; error?: string }>;
 

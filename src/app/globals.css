@@ -81,6 +81,12 @@
     --ring: #2F6B57;
     --ink-body: #33463F;
     --rule-strong: #1E3A32;
+    --toast-error: #A63A2E;
+    --toast-error-panel: #FDF4F2;
+    --toast-error-line: #E0B2A8;
+    --toast-success-panel: #F3F8F4;
+    --toast-success-line: #B4CDC0;
+    --toast-shadow: 0 8px 24px rgba(30, 58, 50, 0.12);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
@@ -118,6 +124,12 @@
     --ring: #5AA687;
     --ink-body: #C2BDB7;
     --rule-strong: #5E5852;
+    --toast-error: #D9776A;
+    --toast-error-panel: #2B1D1B;
+    --toast-error-line: #5E322B;
+    --toast-success-panel: #1C2621;
+    --toast-success-line: #2F4A3D;
+    --toast-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
@@ -280,4 +292,130 @@
 .markdown-preview img {
   max-width: 100%;
   border-radius: 0.375rem;
+}
+
+/*
+ * Toast styling — "Ledger" design system, ported from
+ * prototypes/redesign/Kept Toasts.dc.html. Toaster.tsx passes `unstyled: true` so
+ * sonner's own `[data-styled=true]`-gated CSS never applies, avoiding a specificity
+ * fight over most of these properties. A handful of sonner rules aren't gated on
+ * `data-styled` (dark-theme close-button colors, dark-theme description color) and stay
+ * active regardless — those few are called out below and need `!important` to win,
+ * since sonner's own stylesheet is more specific (multiple chained attribute selectors)
+ * than a single class selector and injects at an unpredictable time relative to this file.
+ */
+.cn-toast[data-sonner-toast] {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: var(--width);
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: var(--toast-shadow);
+  font-size: 12px;
+  transition-duration: 180ms;
+}
+
+@media (max-width: 767px) {
+  .cn-toast[data-sonner-toast] {
+    width: calc(100vw - 24px);
+  }
+}
+
+.cn-toast[data-type="success"] {
+  background: var(--toast-success-panel);
+  border-color: var(--toast-success-line);
+  border-left: 3px solid var(--primary);
+}
+
+.cn-toast[data-type="error"] {
+  background: var(--toast-error-panel);
+  border-color: var(--toast-error-line);
+  border-left: 3px solid var(--toast-error);
+}
+
+.cn-toast [data-icon] {
+  display: flex;
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin-top: 1px;
+}
+
+.cn-toast[data-type="success"] [data-icon] {
+  color: var(--primary);
+}
+
+.cn-toast[data-type="error"] [data-icon] {
+  color: var(--toast-error);
+}
+
+.cn-toast [data-content] {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cn-toast [data-title] {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.cn-toast[data-type="success"] [data-title] {
+  color: var(--primary);
+}
+
+.cn-toast[data-type="error"] [data-title] {
+  color: var(--toast-error);
+}
+
+.cn-toast [data-description] {
+  font-size: 12px;
+  line-height: 19px;
+  color: var(--ink-body) !important; /* beats sonner's ungated dark-theme description color rule */
+}
+
+.cn-toast [data-close-button] {
+  position: static;
+  order: 1;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border-radius: 0;
+  background: transparent !important; /* beats sonner's ungated dark-theme close-button color rule */
+  border: 1px solid transparent !important;
+  color: var(--muted-foreground) !important;
+  transition: border-color 120ms, color 120ms;
+}
+
+.cn-toast [data-close-button] svg {
+  width: 10px;
+  height: 10px;
+}
+
+.cn-toast[data-type="success"] [data-close-button]:hover {
+  border-color: var(--toast-success-line) !important;
+  color: var(--popover-foreground) !important;
+}
+
+.cn-toast[data-type="error"] [data-close-button]:hover {
+  border-color: var(--toast-error-line) !important;
+  color: var(--popover-foreground) !important;
+}
+
+@media (max-width: 767px) {
+  .cn-toast [data-close-button] {
+    width: 30px;
+    height: 30px;
+  }
 }
