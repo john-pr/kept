@@ -1,10 +1,17 @@
-# Current Feature
+# Current Feature: Cursor Pointer Audit — All Clickable Elements
 
 ## Status
+In Progress
 
 ## Goals
+- Go through every screen in the app (marketing homepage, auth pages, dashboard, items list/drawer, collections list/detail, favorites, settings, profile, upgrade) and identify every element that triggers an action but doesn't show `cursor-pointer` on hover: icon-only buttons, custom clickable divs/rows (cards, dropdown triggers), toggle switches, and anything currently non-interactive but intended to become clickable.
+- Add `cursor-pointer` (or the project's existing equivalent pattern) to each one so hover affordance is consistent app-wide.
+- Don't touch shared `ui/*` primitives unless the fix is meant to be global (per `context/design-system.md`'s engineering principles) — prefer fixing at call sites first, and only touch a shared primitive (e.g. `Button`) if the gap is systemic across every usage.
 
 ## Notes
+- This has been fixed piecemeal before — e.g. `useClickableCard` already sets `cursor-pointer` on `ItemCard`/`CollectionCard`-style clickable divs, and `PricingIntervalToggle`'s track got a standalone `cursor-pointer` fix on 2026-08-26. This pass is meant to close out the remaining gaps app-wide rather than reacting one report at a time.
+- Check whether shadcn's `Button` component already applies `cursor-pointer` by default before assuming every button needs a per-instance fix — verify in the browser rather than assuming.
+- Visual-only change (CSS/className), no logic/behavior change expected. Verify with Playwright per the workflow's normal allowance for UI-heavy passes (design-system.md's engineering principle #6 also expects a visual check).
 
 ## History
 [//]: # (keep this updated. earliest to latest)

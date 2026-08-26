@@ -103,7 +103,7 @@ export function MarkdownEditor({
                     type="button"
                     onClick={() => setView(option)}
                     className={cn(
-                      "rounded-md px-1.5 py-0.5 text-xs font-medium capitalize transition-colors",
+                      "cursor-pointer rounded-md px-1.5 py-0.5 text-xs font-medium capitalize transition-colors",
                       view === option
                         ? "bg-background text-foreground"
                         : "text-neutral-400 hover:text-neutral-100",

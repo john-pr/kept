@@ -63,7 +63,7 @@ export function GlobalSearch({ items, collections, open: openProp, onOpenChange 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-9 w-full items-center gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm text-muted-foreground shadow-xs transition-colors hover:bg-accent/50"
+        className="flex h-9 w-full cursor-pointer items-center gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm text-muted-foreground shadow-xs transition-colors hover:bg-accent/50"
       >
         <Search className="size-4 shrink-0" />
         <span className="flex-1 text-left">Search items, collections, tags...</span>

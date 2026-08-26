@@ -82,7 +82,7 @@ export function SuggestTagsButton({
                 type="button"
                 aria-label={`Accept tag ${tag}`}
                 onClick={() => acceptTag(tag)}
-                className="rounded p-0.5 hover:bg-muted"
+                className="cursor-pointer rounded p-0.5 hover:bg-muted"
               >
                 <Check className="size-3" />
               </button>
@@ -90,7 +90,7 @@ export function SuggestTagsButton({
                 type="button"
                 aria-label={`Reject tag ${tag}`}
                 onClick={() => rejectTag(tag)}
-                className="rounded p-0.5 hover:bg-muted"
+                className="cursor-pointer rounded p-0.5 hover:bg-muted"
               >
                 <X className="size-3" />
               </button>

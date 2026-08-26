@@ -17,7 +17,7 @@ interface MobileTabBarProps {
 }
 
 const TAB_CLASS =
-  "flex h-14 flex-col items-center justify-center gap-1 text-[9px] tracking-[0.10em] uppercase";
+  "flex h-14 cursor-pointer flex-col items-center justify-center gap-1 text-[9px] tracking-[0.10em] uppercase";
 
 /**
  * Sticky bottom tab bar + floating "+" FAB, from the mobile ledger prototype
