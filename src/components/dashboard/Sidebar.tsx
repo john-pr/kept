@@ -34,7 +34,7 @@ export function Sidebar({ itemTypes, favoriteCollections, recentCollections, use
         )}
       >
         {!collapsed && (
-          <span className="px-2 text-xs font-medium tracking-wide text-muted-foreground">
+          <span className="px-2 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
             Navigation
           </span>
         )}

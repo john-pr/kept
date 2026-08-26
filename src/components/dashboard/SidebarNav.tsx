@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Star } from "lucide-react";
 import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionSummary } from "@/lib/db/collections";
 import { iconMap } from "@/lib/icon-map";
+import { withAlpha } from "@/lib/color";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -19,6 +19,12 @@ interface SidebarNavProps {
    * `Sidebar` stays pixel-identical; only `MobileSidebar`'s drawer passes this. */
   comfortable?: boolean;
 }
+
+// Matches the dotted-divider section-label convention already established on
+// `ItemDrawerView.tsx` ("Content"/"Tags"/"Collections" headers) — see
+// context/design-system.md's "Typography conventions".
+const SECTION_LABEL_CLASS =
+  "border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase";
 
 export function SidebarNav({
   itemTypes,
@@ -34,16 +40,13 @@ export function SidebarNav({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        {!collapsed && (
-          <h3 className="mb-2 px-2 text-xs font-medium tracking-wide text-muted-foreground">
-            Item Types
-          </h3>
-        )}
+        {!collapsed && <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>Item Types</h3>}
         <nav className="flex flex-col gap-0.5">
           {itemTypes.map((type) => {
             const Icon = iconMap[type.icon];
             const showProBadge = type.isPro && !userIsPro;
             const isActive = pathname === `/items/${type.slug}`;
+            const isEmpty = type.itemCount === 0;
             return (
               <Link
                 key={type.id}
@@ -53,18 +56,22 @@ export function SidebarNav({
                   "flex items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted",
                   rowPadding,
                   collapsed && "justify-center",
-                  isActive && "bg-muted font-medium"
+                  isActive && "bg-muted font-medium",
+                  isEmpty && "opacity-60"
                 )}
               >
-                <span className="relative shrink-0">
-                  <Icon className="size-4" style={{ color: type.color }} />
+                <span
+                  className="relative flex size-6 shrink-0 items-center justify-center"
+                  style={{ backgroundColor: withAlpha(type.color) }}
+                >
+                  {Icon && <Icon className="size-3.5" style={{ color: type.color }} />}
                   {collapsed && showProBadge && (
                     <span className="absolute -top-1 -right-1 size-1.5 rounded-full bg-muted-foreground" />
                   )}
                 </span>
                 {!collapsed && (
                   <>
-                    <span className="truncate">{type.name}</span>
+                    <span className="truncate tracking-[0.06em] uppercase">{type.name}</span>
                     {showProBadge && (
                       <Badge
                         variant="outline"
@@ -73,8 +80,8 @@ export function SidebarNav({
                         PRO
                       </Badge>
                     )}
-                    <span className="ml-auto text-xs text-muted-foreground">
-                      {type.itemCount}
+                    <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
+                      {String(type.itemCount).padStart(2, "0")}
                     </span>
                   </>
                 )}
@@ -87,9 +94,7 @@ export function SidebarNav({
       {favoriteCollections.length > 0 && (
         <div>
           {!collapsed && (
-            <h3 className="mb-2 px-2 text-xs font-medium tracking-wide text-muted-foreground">
-              Favorite Collections
-            </h3>
+            <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>Favorite Collections</h3>
           )}
           <nav className="flex flex-col gap-0.5">
             {favoriteCollections.map((collection) => (
@@ -98,13 +103,13 @@ export function SidebarNav({
                 href={`/collections/${collection.id}`}
                 title={collapsed ? collection.name : undefined}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted",
+                  "flex items-center gap-2.5 rounded-md px-2 text-sm text-foreground hover:bg-muted",
                   rowPadding,
                   collapsed && "justify-center",
                   pathname === `/collections/${collection.id}` && "bg-muted font-medium"
                 )}
               >
-                <Star className="size-4 shrink-0 fill-yellow-400 text-yellow-400" />
+                <span className="size-2 shrink-0 bg-primary" />
                 {!collapsed && <span className="truncate">{collection.name}</span>}
               </Link>
             ))}
@@ -114,9 +119,7 @@ export function SidebarNav({
 
       <div>
         {!collapsed && (
-          <h3 className="mb-2 px-2 text-xs font-medium tracking-wide text-muted-foreground">
-            Recent Collections
-          </h3>
+          <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>Recent Collections</h3>
         )}
         <nav className="flex flex-col gap-0.5">
           {recentCollections.map((collection) => (
@@ -125,14 +128,14 @@ export function SidebarNav({
               href={`/collections/${collection.id}`}
               title={collapsed ? collection.name : undefined}
               className={cn(
-                "flex items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted",
+                "flex items-center gap-2.5 rounded-md px-2 text-sm text-foreground hover:bg-muted",
                 rowPadding,
                 collapsed && "justify-center",
                 pathname === `/collections/${collection.id}` && "bg-muted font-medium"
               )}
             >
               <span
-                className="size-4 shrink-0 rounded-full"
+                className="size-2 shrink-0"
                 style={{ backgroundColor: collection.borderColor }}
               />
               {!collapsed && <span className="truncate">{collection.name}</span>}
