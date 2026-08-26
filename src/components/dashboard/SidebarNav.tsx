@@ -55,7 +55,7 @@ export function SidebarNav({
                 href={`/items/${type.slug}`}
                 title={collapsed ? type.name : undefined}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted",
+                  "flex items-center gap-2 rounded-md px-2 text-[11px] text-foreground hover:bg-muted",
                   rowPadding,
                   collapsed && "justify-center",
                   isActive && "bg-muted font-medium",
@@ -73,7 +73,7 @@ export function SidebarNav({
                 </span>
                 {!collapsed && (
                   <>
-                    <span className="truncate tracking-[0.06em] uppercase">{type.name}</span>
+                    <span className="truncate tracking-[0.12em] uppercase">{type.name}</span>
                     {showProBadge && (
                       <Badge
                         variant="outline"
@@ -105,7 +105,7 @@ export function SidebarNav({
                 href={`/collections/${collection.id}`}
                 title={collapsed ? collection.name : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-md px-2 text-sm text-foreground hover:bg-muted",
+                  "flex items-center gap-2.5 rounded-md px-2 text-[11px] text-foreground hover:bg-muted",
                   rowPadding,
                   collapsed && "justify-center",
                   pathname === `/collections/${collection.id}` && "bg-muted font-medium"
@@ -130,7 +130,7 @@ export function SidebarNav({
               href={`/collections/${collection.id}`}
               title={collapsed ? collection.name : undefined}
               className={cn(
-                "flex items-center gap-2.5 rounded-md px-2 text-sm text-foreground hover:bg-muted",
+                "flex items-center gap-2.5 rounded-md px-2 text-[11px] text-foreground hover:bg-muted",
                 rowPadding,
                 collapsed && "justify-center",
                 pathname === `/collections/${collection.id}` && "bg-muted font-medium"
@@ -147,7 +147,7 @@ export function SidebarNav({
             href="/collections"
             title={collapsed ? "View all collections" : undefined}
             className={cn(
-              "flex items-center gap-2 rounded-md px-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+              "flex items-center gap-2 rounded-md px-2 text-[11px] text-muted-foreground hover:bg-muted hover:text-foreground",
               rowPadding,
               collapsed && "justify-center",
               pathname === "/collections" && "bg-muted font-medium text-foreground"
