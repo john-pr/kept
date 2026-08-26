@@ -6,15 +6,14 @@ import { HomeNav } from "@/components/homepage/HomeNav";
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative min-h-screen">
       <HomeNav />
-      <div className="flex flex-1 flex-col items-center gap-4 p-4 pt-24">
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4">
         <AuthCard
           title="Sign in"
           description="Enter your email and password to continue."
           contentClassName="flex flex-col gap-[22px]"
-          crumb="Access / Sign in"
-          stepLabel="2 fields"
+          crumb="Sign in"
         >
           <Suspense>
             <SignInForm />

@@ -1,10 +1,22 @@
-# Current Feature
+# Current Feature: Auth Pages Polish (Breadcrumb, Centering, Nav Links)
 
 ## Status
 
+In Progress
+
 ## Goals
 
+- On `/sign-in` and `/register`, simplify the `AuthCard` breadcrumb row above the form: drop the word "Access" and the "N fields" step-count label entirely — leave just "Sign in" / "Sign up" above the form.
+  - Register's crumb currently reads "Register"; rename to "Sign up" to match the requested wording (mirrors the nav's own "Sign Up" label), even though the card `title` stays "Create account".
+  - `AuthCard`'s breadcrumb row currently only renders when both `crumb` and `stepLabel` are set — needs reworking so a lone label can render without a step count.
+- Center the sign-in/register form vertically on the page, not just horizontally. Currently `min-h-screen` + `items-center` + `pt-24` only centers horizontally and pins content near the top on desktop.
+- Fix the `Features`/`Pricing` links in `HomeNav` when rendered on `/sign-in` or `/register` (also visible via `HomeNav`'s shared use): they're plain `#features`/`#pricing` anchors, which only work when already on `/`. Point them at `/#features`/`/#pricing` so they navigate back to the homepage and land on the right section.
+
 ## Notes
+
+- Key files: `src/components/auth/AuthCard.tsx`, `src/app/sign-in/page.tsx`, `src/app/register/page.tsx`, `src/components/homepage/HomeNav.tsx`.
+- Visual-only / wording-only changes — no new fields, validation, or server action changes expected.
+- Per `design-system.md`, `forgot-password`/`reset-password`/`check-email` inherit `AuthCard` styling but aren't separately redesigned — check whether they pass `crumb`/`stepLabel` too and need the same treatment for consistency (they don't currently, per the earlier auth redesign history entry, but worth confirming during implementation).
 
 ## History
 [//]: # (keep this updated. earliest to latest)

@@ -38,7 +38,7 @@ export function PricingIntervalToggle({
         aria-label="Toggle yearly pricing"
         onClick={() => onChange(!isYearly)}
         className={cn(
-          "relative rounded-full border border-border bg-muted outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+          "relative cursor-pointer rounded-full border border-border bg-muted outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
           compact ? "h-6 w-11" : "h-6.5 w-11.5",
           isYearly && "border-primary bg-primary"
         )}

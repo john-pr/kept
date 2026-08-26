@@ -5,15 +5,14 @@ import { HomeNav } from "@/components/homepage/HomeNav";
 
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative min-h-screen">
       <HomeNav />
-      <div className="flex flex-1 flex-col items-center gap-4 p-4 pt-24">
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4">
         <AuthCard
           title="Create account"
           description="Get started with Kept — one place for links, snippets and commands."
           contentClassName="flex flex-col gap-[22px]"
-          crumb="Access / Register"
-          stepLabel="4 fields"
+          crumb="Sign up"
         >
           <RegisterForm />
           <p className="flex items-center justify-center gap-2 border-t border-dotted border-border pt-4 text-[11px] tracking-[0.08em] text-muted-foreground uppercase">

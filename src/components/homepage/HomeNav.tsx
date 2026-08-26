@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 
 const NAV_LINKS = [
-  { href: "#features", label: "Features" },
-  { href: "#pricing", label: "Pricing" },
+  { href: "/#features", label: "Features" },
+  { href: "/#pricing", label: "Pricing" },
 ];
 
 export function HomeNav() {

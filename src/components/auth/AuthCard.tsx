@@ -5,21 +5,17 @@ interface AuthCardProps {
   description: ReactNode;
   children: ReactNode;
   contentClassName?: string;
-  /** Optional "Access / Sign in"-style breadcrumb row above the card. Both must be set to render. */
+  /** Optional short label above the card, e.g. "Sign in" / "Sign up". */
   crumb?: string;
-  stepLabel?: string;
 }
 
 /** Shared `w-full max-w-sm` card skeleton used by every auth page. */
-export function AuthCard({ title, description, children, contentClassName, crumb, stepLabel }: AuthCardProps) {
+export function AuthCard({ title, description, children, contentClassName, crumb }: AuthCardProps) {
   return (
     <div className="flex w-full max-w-sm flex-col gap-3">
-      {crumb && stepLabel && (
-        <div className="flex items-baseline justify-between border-b border-rule-strong pb-2.5">
+      {crumb && (
+        <div className="border-b border-rule-strong pb-2.5">
           <span className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase">{crumb}</span>
-          <span className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase tabular-nums">
-            {stepLabel}
-          </span>
         </div>
       )}
       <div className="flex flex-col gap-[22px] border border-border border-l-2 border-l-primary bg-card px-7 pt-7 pb-6">
