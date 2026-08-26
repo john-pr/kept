@@ -26,12 +26,6 @@ export default function SignInPage() {
             </Link>
           </p>
         </AuthCard>
-        <div className="flex w-full max-w-sm items-center justify-between text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
-          <span>Encrypted at rest</span>
-          <a href="#terms" className="hover:text-foreground hover:underline">
-            Terms
-          </a>
-        </div>
       </div>
     </div>
   );
