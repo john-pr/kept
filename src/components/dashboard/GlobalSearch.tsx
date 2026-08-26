@@ -23,10 +23,16 @@ import type { CollectionSearchEntry } from "@/lib/db/collections";
 interface GlobalSearchProps {
   items: ItemSearchEntry[];
   collections: CollectionSearchEntry[];
+  /** Controlled open state — lets `TopBar`'s mobile search icon open the same dialog as this
+   * component's own trigger bar. Falls back to internal state when omitted. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function GlobalSearch({ items, collections }: GlobalSearchProps) {
-  const [open, setOpen] = useState(false);
+export function GlobalSearch({ items, collections, open: openProp, onOpenChange }: GlobalSearchProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = openProp ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const router = useRouter();
   const { openItem } = useItemDrawer();
 
@@ -34,13 +40,13 @@ export function GlobalSearch({ items, collections }: GlobalSearchProps) {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        setOpen((prev) => !prev);
+        setOpen(!open);
       }
     }
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [open, setOpen]);
 
   function handleSelectItem(id: string) {
     setOpen(false);

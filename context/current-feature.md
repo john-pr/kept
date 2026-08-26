@@ -1,10 +1,26 @@
-# Current Feature
+# Current Feature: Mobile Dashboard Redesign — "Ledger" Design System
 
 ## Status
 
+In Progress
+
 ## Goals
 
+- Implement the mobile dashboard chrome from `prototypes/redesign/kept-mobile-dashboard.html` (the last undesigned area per `context/design-system.md`'s status table), applied app-wide since the header/nav/tab-bar live in the shared `(app)` layout, not just `/dashboard`.
+- Add a sticky bottom tab bar (Dash / Items / Collections / You) with a floating "+" FAB for New Item, mobile-only (`md:hidden`), matching the prototype.
+- Simplify the mobile `TopBar` header to hamburger + centered logo + search icon, matching the prototype's minimal header (search opens the existing `GlobalSearch` command dialog).
+- Relocate the mobile-only Favorites / New Collection / Upgrade actions (currently a header icon row, dropped from the prototype's minimal header) into the slide-in nav drawer as a "Quick Actions" block — preserves functionality without inventing new structure outside the drawer.
+- Wire the bottom tab bar's "Items" tab and the header's hamburger to open the *same* nav drawer (shared state via a small context), per user decision — there's no unified `/items` route to link to directly.
+- On the dashboard specifically: Pinned Items / Recent Items sections become horizontal snap-scroll card strips on mobile (matching the prototype), while Recent Collections stays a vertical stacked list (already matches the prototype at the current `grid-cols-1` mobile behavior — no change needed there).
+- Leave desktop (`md:` and up) pixel-identical — this is a mobile-only addition/restructure, not a restyle of already-completed desktop screens.
+- Leave `Sidebar.tsx`/`SidebarNav.tsx` (desktop) untouched — Quick Actions live only in the mobile drawer wrapper, not the shared nav content, so desktop doesn't get duplicate Favorites/New Collection affordances it already has in its own `TopBar` row.
+
 ## Notes
+
+- Source prototype: `prototypes/redesign/kept-mobile-dashboard.html` (390px width mockup, part of the three-mockup "ledger" set already adopted for desktop/auth/dialogs).
+- Per explicit decision (asked): the bottom tab bar's "Items" tab opens the nav drawer (same as the hamburger) rather than linking to a specific item type, since no unified items list route exists.
+- `DashboardGridSection.tsx` gains an opt-in `mobileScroll` prop (wraps children in a sizing div via `Children.map`, no changes to `ItemCard`/`CollectionCard` themselves) — used by `PinnedItemsSection`/`RecentItemsSection` only.
+- Ran the `ui-reviewer` subagent against the finished mobile chrome (375px, signed in as the demo user) and fixed its High/Medium findings: (1) the FAB's fixed footprint could permanently strand trailing list content underneath it with no way to scroll it clear — `main`'s mobile bottom padding bumped `pb-20`→`pb-36` (144px, clears tab bar + FAB); the FAB still transiently overlaps content mid-scroll, same as any fixed FAB over a scrollable list (Gmail/Twitter-style), which isn't chased further. (2) horizontal snap-scroll cards were sized `w-[82vw]` — *wider* than their own scroll track (inside `main`'s padding), so nothing peeked in at rest and there was no visual cue the row scrolled; resized to `w-[calc(80vw-32px)]` so a partial next-card is now visible at rest (confirmed via Playwright: 294px track, 268px card). (3) several new/touched touch targets were 28-34px, under the project's own guideline (already enforced once this session for `HomeNav`) — bumped `TopBar`'s mobile hamburger/search icons and the drawer's close button from `icon-sm` (28px) to `icon-lg` (36px, matching the `HomeNav` precedent exactly rather than inventing a new 44px standard), added a custom call-site close button in `MobileSidebar.tsx` (`showCloseButton={false}` on `SheetContent` + a `SheetClose` render prop, since `sheet.tsx`'s built-in one is shared app-wide), and gave `SidebarNav.tsx` a new opt-in `comfortable` prop (default `false`, row padding `py-1.5`→`py-3` when true) so `MobileSidebar` can request ~44px rows without changing desktop `Sidebar`'s rows at all (verified via Playwright: still exactly 32px on desktop). Verified all three fixes live via Playwright at 375px and reconfirmed desktop (1440px) is still pixel-identical. Build (29 routes), lint, and test (247/247, unchanged) pass.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

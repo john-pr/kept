@@ -10,7 +10,7 @@ export async function RecentItemsSection({ userId }: RecentItemsSectionProps) {
   const recentItems = await getRecentItems(userId);
 
   return (
-    <DashboardGridSection title="Recent Items" count={recentItems.length}>
+    <DashboardGridSection title="Recent Items" count={recentItems.length} mobileScroll>
       {recentItems.map((item) => (
         <ItemCard key={item.id} item={item} />
       ))}

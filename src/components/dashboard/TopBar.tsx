@@ -1,5 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { FolderPlus, Plus, Star } from "lucide-react";
+import { FolderPlus, Plus, Search, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
@@ -29,6 +32,8 @@ export function TopBar({
   searchCollections,
   user,
 }: TopBarProps) {
+  const [searchOpen, setSearchOpen] = useState(false);
+
   return (
     <header className="flex flex-col gap-3 border-b border-border px-4 py-3 md:grid md:grid-cols-3 md:items-center md:gap-4">
       <div className="flex items-center justify-between gap-2 md:justify-start">
@@ -43,44 +48,24 @@ export function TopBar({
           </div>
           <Logo size="lg" />
         </div>
-        <div className="flex items-center gap-2 md:hidden">
-          {!user.isPro && (
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/upgrade" />}
-            >
-              Upgrade
-            </Button>
-          )}
-          <Button
-            variant="outline"
-            size="icon-sm"
-            aria-label="Favorites"
-            nativeButton={false}
-            render={<Link href="/favorites" />}
-          >
-            <Star />
-          </Button>
-          <NewCollectionDialog
-            trigger={<Button variant="outline" size="icon-sm" aria-label="New Collection" />}
-          >
-            <FolderPlus />
-          </NewCollectionDialog>
-          <NewItemDialog
-            itemTypes={itemTypes}
-            collectionOptions={collectionOptions}
-            isPro={user.isPro}
-            trigger={<Button size="icon-sm" aria-label="New Item" />}
-          >
-            <Plus />
-          </NewItemDialog>
-        </div>
+        <Button
+          variant="ghost"
+          size="icon-lg"
+          aria-label="Search"
+          className="md:hidden"
+          onClick={() => setSearchOpen(true)}
+        >
+          <Search />
+        </Button>
       </div>
 
-      <div className="w-full md:mx-auto md:max-w-md">
-        <GlobalSearch items={searchItems} collections={searchCollections} />
+      <div className="hidden w-full md:mx-auto md:block md:max-w-md">
+        <GlobalSearch
+          items={searchItems}
+          collections={searchCollections}
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+        />
       </div>
 
       <div className="hidden items-center justify-end gap-2 md:flex">

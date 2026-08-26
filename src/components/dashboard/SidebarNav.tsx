@@ -15,6 +15,9 @@ interface SidebarNavProps {
   recentCollections: CollectionSummary[];
   collapsed?: boolean;
   userIsPro?: boolean;
+  /** Taller rows (~44px vs. ~32px) for touch use — opt-in so desktop's mouse-driven
+   * `Sidebar` stays pixel-identical; only `MobileSidebar`'s drawer passes this. */
+  comfortable?: boolean;
 }
 
 export function SidebarNav({
@@ -23,8 +26,10 @@ export function SidebarNav({
   recentCollections,
   collapsed = false,
   userIsPro = false,
+  comfortable = false,
 }: SidebarNavProps) {
   const pathname = usePathname();
+  const rowPadding = comfortable ? "py-3" : "py-1.5";
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,7 +50,8 @@ export function SidebarNav({
                 href={`/items/${type.slug}`}
                 title={collapsed ? type.name : undefined}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-muted",
+                  "flex items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted",
+                  rowPadding,
                   collapsed && "justify-center",
                   isActive && "bg-muted font-medium"
                 )}
@@ -92,7 +98,8 @@ export function SidebarNav({
                 href={`/collections/${collection.id}`}
                 title={collapsed ? collection.name : undefined}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-muted",
+                  "flex items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted",
+                  rowPadding,
                   collapsed && "justify-center",
                   pathname === `/collections/${collection.id}` && "bg-muted font-medium"
                 )}
@@ -118,7 +125,8 @@ export function SidebarNav({
               href={`/collections/${collection.id}`}
               title={collapsed ? collection.name : undefined}
               className={cn(
-                "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-muted",
+                "flex items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted",
+                rowPadding,
                 collapsed && "justify-center",
                 pathname === `/collections/${collection.id}` && "bg-muted font-medium"
               )}
@@ -134,7 +142,8 @@ export function SidebarNav({
             href="/collections"
             title={collapsed ? "View all collections" : undefined}
             className={cn(
-              "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+              "flex items-center gap-2 rounded-md px-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+              rowPadding,
               collapsed && "justify-center",
               pathname === "/collections" && "bg-muted font-medium text-foreground"
             )}
