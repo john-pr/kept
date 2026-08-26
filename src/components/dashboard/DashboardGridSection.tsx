@@ -1,5 +1,8 @@
 import { Children, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { GridFillerCells } from "@/components/dashboard/GridFillerCells";
+
+const GRID_BREAKPOINTS = [{ cols: 1 }, { prefix: "sm", cols: 2 }, { prefix: "lg", cols: 3 }];
 
 interface DashboardGridSectionProps {
   title: string;
@@ -39,12 +42,20 @@ export function DashboardGridSection({
               // Sized narrower than the scroll track itself (100vw minus `main`'s p-4
               // horizontal padding) so the next card visibly peeks in at rest — the previous
               // 82vw was *wider* than the track, hiding even the first card fully and giving
-              // no visual cue the row scrolls (flagged by ui-reviewer).
-              <div key={index} className="w-[calc(80vw-32px)] shrink-0 snap-start sm:w-auto">
+              // no visual cue the row scrolls (flagged by ui-reviewer). `h-full` lets the
+              // wrapped card (itself `h-full`) fill the grid row's stretched height at
+              // sm:/lg: — without it, the wrapper stretches (it's the actual grid item) but
+              // the card inside stays only as tall as its own content, since a plain block
+              // child doesn't inherit a stretched parent's height automatically.
+              <div key={index} className="w-[calc(80vw-32px)] shrink-0 snap-start sm:h-full sm:w-auto">
                 {child}
               </div>
             ))
           : children}
+        {/* `mobileScroll` sections still render the sm:/lg: grid (only the mobile layout
+            differs), so filler cells apply to both branches — hidden by default (base stage
+            is always 1 column, never ragged), so they're inert in the mobile scroll strip. */}
+        <GridFillerCells itemCount={count} breakpoints={GRID_BREAKPOINTS} />
       </div>
     </section>
   );

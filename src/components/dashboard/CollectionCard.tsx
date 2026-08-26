@@ -17,6 +17,7 @@ import type { CollectionSummary } from "@/lib/db/collections";
 import { useClickableCard } from "@/hooks/useClickableCard";
 import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { useCollectionDialogs } from "@/hooks/useCollectionDialogs";
+import { useSoftTintAlpha } from "@/hooks/useSoftTintAlpha";
 import { toggleCollectionFavorite } from "@/actions/collections";
 
 export function CollectionCard({ collection }: { collection: CollectionSummary }) {
@@ -28,6 +29,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
     "Failed to update favorite"
   );
   const clickableCard = useClickableCard(() => router.push(`/collections/${collection.id}`));
+  const alphaSuffix = useSoftTintAlpha();
 
   function stopPropagation(event: MouseEvent) {
     event.stopPropagation();
@@ -88,7 +90,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
                 <span
                   key={type.id}
                   className="flex size-6 items-center justify-center"
-                  style={{ backgroundColor: withAlpha(type.color) }}
+                  style={{ backgroundColor: withAlpha(type.color, alphaSuffix) }}
                 >
                   <Icon className="size-3.5" style={{ color: type.color }} />
                 </span>

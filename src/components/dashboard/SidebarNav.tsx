@@ -8,6 +8,7 @@ import { iconMap } from "@/lib/icon-map";
 import { withAlpha } from "@/lib/color";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useSoftTintAlpha } from "@/hooks/useSoftTintAlpha";
 
 interface SidebarNavProps {
   itemTypes: ItemTypeSummary[];
@@ -36,6 +37,7 @@ export function SidebarNav({
 }: SidebarNavProps) {
   const pathname = usePathname();
   const rowPadding = comfortable ? "py-3" : "py-1.5";
+  const alphaSuffix = useSoftTintAlpha();
 
   return (
     <div className="flex flex-col gap-6">
@@ -62,7 +64,7 @@ export function SidebarNav({
               >
                 <span
                   className="relative flex size-6 shrink-0 items-center justify-center"
-                  style={{ backgroundColor: withAlpha(type.color) }}
+                  style={{ backgroundColor: withAlpha(type.color, alphaSuffix) }}
                 >
                   {Icon && <Icon className="size-3.5" style={{ color: type.color }} />}
                   {collapsed && showProBadge && (

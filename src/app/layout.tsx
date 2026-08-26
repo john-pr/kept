@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { ItemDrawerProvider } from "@/components/items/ItemDrawerProvider";
 import { EditorPreferencesProvider } from "@/components/editor/EditorPreferencesProvider";
@@ -32,14 +33,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${jetbrainsMonoSans.variable} ${jetbrainsMonoMono.variable} h-full scroll-smooth antialiased`}
+      suppressHydrationWarning
+      className={`${jetbrainsMonoSans.variable} ${jetbrainsMonoMono.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <EditorPreferencesProvider>
-          <ItemDrawerProvider>{children}</ItemDrawerProvider>
-        </EditorPreferencesProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <EditorPreferencesProvider>
+            <ItemDrawerProvider>{children}</ItemDrawerProvider>
+          </EditorPreferencesProvider>
 
-        <Toaster position="top-center" />
+          <Toaster position="top-center" />
+        </ThemeProvider>
       </body>
     </html>
   );

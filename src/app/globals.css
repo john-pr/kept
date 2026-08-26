@@ -52,9 +52,13 @@
 /*
  * "Ledger" design system tokens, ported from prototypes/redesign/kept-dashboard.html
  * (shared across kept-dashboard.html / kept-mobile-dashboard.html / kept-auth.html).
- * The app has no light/dark toggle yet (html is hardcoded to .dark in layout.tsx) — the
- * :root block below is the mockup's light-mode palette, stubbed in for a future toggle,
- * not currently rendered.
+ * Both :root (light) and .dark are live — next-themes toggles the `.dark` class on <html>
+ * (see the user-menu Appearance control, UserFooter.tsx). --border/--sidebar-border below
+ * are darkened from the original mockup's own --rule value (#D6D9D3, ~1.2-1.4:1 contrast
+ * against --background/--card) after a light-mode UI review found hairline borders and the
+ * collapsed-border grid pattern's empty cells nearly illegible — retuned toward
+ * --muted-foreground's hue for ~2.5-2.9:1, a deliberate departure from the mockup for
+ * accessibility. Dark mode's --border was left as-is (not flagged by the review).
  */
 :root {
     --background: #E9EAE5;
@@ -72,7 +76,7 @@
     --accent: #DCE9E1;
     --accent-foreground: var(--foreground);
     --destructive: #8A4A2F;
-    --border: #D6D9D3;
+    --border: #8E9791;
     --input: #F2F2ED;
     --ring: #2F6B57;
     --ink-body: #33463F;
@@ -89,7 +93,7 @@
     --sidebar-primary-foreground: #FBFBF8;
     --sidebar-accent: #DCE9E1;
     --sidebar-accent-foreground: var(--foreground);
-    --sidebar-border: #D6D9D3;
+    --sidebar-border: #8E9791;
     --sidebar-ring: #2F6B57;
 }
 

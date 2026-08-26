@@ -11,6 +11,7 @@ import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
 import { useItemFavoriteToggle } from "@/hooks/useItemFavoriteToggle";
+import { useSoftTintAlpha } from "@/hooks/useSoftTintAlpha";
 import { FavoriteToggleButton } from "@/components/items/FavoriteToggleButton";
 
 export function ItemCard({ item }: { item: ItemSummary }) {
@@ -18,6 +19,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
   const [isFavorite, handleToggleFavorite] = useItemFavoriteToggle(item);
+  const alphaSuffix = useSoftTintAlpha();
 
   function handleCopy(event: MouseEvent) {
     event.stopPropagation();
@@ -27,7 +29,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
 
   return (
     <div
-      className="flex cursor-pointer flex-col gap-3 border-l-2 bg-card px-[18px] py-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex h-full cursor-pointer flex-col gap-3 border-l-2 bg-card px-[18px] py-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       style={{ borderLeftColor: item.typeColor }}
       role="button"
       tabIndex={0}
@@ -36,7 +38,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
       <div className="flex items-center justify-between gap-2">
         <span
           className="flex items-center gap-1.5 px-1.5 py-0.5 text-[10px] tracking-[0.12em] uppercase"
-          style={{ backgroundColor: withAlpha(item.typeColor), color: item.typeColor }}
+          style={{ backgroundColor: withAlpha(item.typeColor, alphaSuffix), color: item.typeColor }}
         >
           {Icon && <Icon className="size-3.5" />}
           {item.typeName}

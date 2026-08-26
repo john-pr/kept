@@ -1,15 +1,19 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
 import { User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "@/components/auth/UserAvatar";
+import { useHasMounted } from "@/hooks/useHasMounted";
 import { cn } from "@/lib/utils";
 import type { CurrentUser } from "@/lib/db/users";
 
@@ -18,7 +22,27 @@ interface UserFooterProps {
   collapsed?: boolean;
 }
 
+// Matches ItemDrawerView's dotted-divider section-label convention and the sidebar's
+// uppercase/tracked row labels — see context/design-system.md.
+const SECTION_LABEL_CLASS = "text-[10px] tracking-[0.14em] text-muted-foreground uppercase";
+const MENU_ITEM_CLASS = "rounded-none px-2 py-2 text-xs tracking-[0.06em] uppercase";
+const APPEARANCE_OPTION_CLASS =
+  "flex-1 py-1.5 text-[10px] tracking-[0.12em] uppercase transition-colors";
+
 export function UserFooter({ user, collapsed = false }: UserFooterProps) {
+  const { theme, setTheme } = useTheme();
+  // next-themes can't know the persisted preference during SSR, so `theme` is undefined
+  // until after mount — guard the Light/Dark highlight to avoid a hydration mismatch
+  // (both render unhighlighted pre-mount, matching the server-rendered markup).
+  const mounted = useHasMounted();
+
+  function stopAndSetTheme(next: string) {
+    return (event: React.MouseEvent) => {
+      event.stopPropagation();
+      setTheme(next);
+    };
+  }
+
   return (
     <div
       className={cn(
@@ -30,21 +54,75 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
         <DropdownMenuTrigger
           render={<button type="button" aria-label="User menu" />}
         >
-          <UserAvatar name={user.name} image={user.image} />
+          <UserAvatar name={user.name} image={user.image} shape="square" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem render={<Link href="/profile" />}>
-            <User className="size-4" />
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem render={<Link href="/settings" />}>
-            <Settings className="size-4" />
-            Settings
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
-            <LogOut className="size-4" />
-            Sign out
-          </DropdownMenuItem>
+        <DropdownMenuContent
+          align="start"
+          className="w-56 rounded-none border border-rule-strong p-0 shadow-none ring-0"
+        >
+          <DropdownMenuGroup>
+            <DropdownMenuLabel
+              className={cn(
+                SECTION_LABEL_CLASS,
+                "border-b border-dotted border-border px-3 py-2.5"
+              )}
+            >
+              Account
+            </DropdownMenuLabel>
+
+            <div className="p-1">
+              <DropdownMenuItem render={<Link href="/profile" />} className={MENU_ITEM_CLASS}>
+                <User className="size-4" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem render={<Link href="/settings" />} className={MENU_ITEM_CLASS}>
+                <Settings className="size-4" />
+                Settings
+              </DropdownMenuItem>
+            </div>
+          </DropdownMenuGroup>
+
+          <div className="flex flex-col gap-2 border-y border-border px-3 py-2.5">
+            <span className={SECTION_LABEL_CLASS}>Appearance</span>
+            <div className="flex border border-border">
+              <button
+                type="button"
+                onClick={stopAndSetTheme("light")}
+                className={cn(
+                  APPEARANCE_OPTION_CLASS,
+                  "border-r border-border",
+                  mounted && theme === "light"
+                    ? "bg-accent text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Light
+              </button>
+              <button
+                type="button"
+                onClick={stopAndSetTheme("dark")}
+                className={cn(
+                  APPEARANCE_OPTION_CLASS,
+                  mounted && theme === "dark"
+                    ? "bg-accent text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Dark
+              </button>
+            </div>
+          </div>
+
+          <div className="p-1">
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className={MENU_ITEM_CLASS}
+            >
+              <LogOut className="size-4" />
+              Sign out
+            </DropdownMenuItem>
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
 

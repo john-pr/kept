@@ -13,6 +13,7 @@ import { parseTagsInput } from "@/lib/tags";
 import { toggleOptimisticField } from "@/hooks/useOptimisticToggle";
 import { ItemDrawerView } from "@/components/items/ItemDrawerView";
 import { ItemDrawerEditForm } from "@/components/items/ItemDrawerEditForm";
+import { useSoftTintAlpha } from "@/hooks/useSoftTintAlpha";
 
 export type ItemDetailResponse = Omit<ItemDetail, "createdAt" | "updatedAt"> & {
   createdAt: string;
@@ -62,6 +63,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   const [form, setForm] = useState<EditFormState | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const alphaSuffix = useSoftTintAlpha();
 
   useEffect(() => {
     if (!open || !itemId) return;
@@ -255,7 +257,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
               <div className="flex items-center gap-3">
                 <span
                   className="flex size-9 shrink-0 items-center justify-center"
-                  style={{ backgroundColor: withAlpha(item.itemType.color), color: item.itemType.color }}
+                  style={{ backgroundColor: withAlpha(item.itemType.color, alphaSuffix), color: item.itemType.color }}
                 >
                   {Icon && <Icon className="size-4" />}
                 </span>
