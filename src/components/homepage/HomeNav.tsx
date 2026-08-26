@@ -1,8 +1,4 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
 
@@ -12,11 +8,9 @@ const NAV_LINKS = [
 ];
 
 export function HomeNav() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background">
-      <div className="mx-auto flex h-17 max-w-6xl items-center justify-between gap-6 px-6">
+      <div className="mx-auto flex h-17 max-w-6xl items-center justify-between gap-3 px-4 sm:gap-6 sm:px-6">
         <Logo size="lg" />
 
         <nav className="ml-auto hidden gap-7 md:flex">
@@ -31,54 +25,27 @@ export function HomeNav() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" nativeButton={false} render={<Link href="/sign-in" />}>
-            <span className="tracking-[0.14em] uppercase">Sign In</span>
-          </Button>
-          <Button nativeButton={false} render={<Link href="/register" />}>
-            <span className="tracking-[0.14em] uppercase">Get Started</span>
-          </Button>
-        </div>
-
-        <button
-          type="button"
-          className="flex size-11 items-center justify-center text-foreground md:hidden"
-          aria-label="Toggle menu"
-          onClick={() => setMobileOpen((open) => !open)}
-        >
-          {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
-      </div>
-
-      {mobileOpen && (
-        <div className="flex min-h-[calc(100dvh_-_4.25rem)] flex-col gap-1 border-b border-border bg-background px-6 pb-5 pt-2 md:hidden">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="py-2.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase"
-            >
-              {link.label}
-            </a>
-          ))}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <Button
             variant="ghost"
-            className="mt-2 justify-start"
+            className="h-7 gap-1 px-2 text-[0.78rem] md:h-8 md:gap-1.5 md:px-2.5 md:text-sm"
             nativeButton={false}
-            render={<Link href="/sign-in" onClick={() => setMobileOpen(false)} />}
+            render={<Link href="/sign-in" />}
           >
-            <span className="tracking-[0.14em] uppercase">Sign In</span>
+            <span className="tracking-[0.08em] uppercase sm:tracking-[0.14em]">Sign In</span>
           </Button>
           <Button
-            className="justify-start"
+            className="h-7 gap-1 px-2 text-[0.78rem] md:h-8 md:gap-1.5 md:px-2.5 md:text-sm"
             nativeButton={false}
-            render={<Link href="/register" onClick={() => setMobileOpen(false)} />}
+            render={<Link href="/register" />}
           >
-            <span className="tracking-[0.14em] uppercase">Get Started</span>
+            <span className="tracking-[0.08em] uppercase sm:tracking-[0.14em]">
+              <span className="md:hidden">Sign Up</span>
+              <span className="hidden md:inline">Get Started</span>
+            </span>
           </Button>
         </div>
-      )}
+      </div>
     </header>
   );
 }
