@@ -27,7 +27,7 @@ interface UserFooterProps {
 const SECTION_LABEL_CLASS = "text-[10px] tracking-[0.14em] text-muted-foreground uppercase";
 const MENU_ITEM_CLASS = "rounded-none px-2 py-2 text-[11px] tracking-[0.12em] uppercase";
 const APPEARANCE_OPTION_CLASS =
-  "flex-1 py-1.5 text-[10px] tracking-[0.12em] uppercase transition-colors";
+  "flex-1 cursor-pointer py-1.5 text-[10px] tracking-[0.12em] uppercase transition-colors";
 
 export function UserFooter({ user, collapsed = false }: UserFooterProps) {
   const { theme, setTheme } = useTheme();
@@ -52,7 +52,7 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
     >
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={<button type="button" aria-label="User menu" />}
+          render={<button type="button" aria-label="User menu" className="cursor-pointer" />}
         >
           <UserAvatar
             name={user.name}
