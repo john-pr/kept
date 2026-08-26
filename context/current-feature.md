@@ -1,10 +1,20 @@
-# Current Feature
+# Current Feature: Mobile New Item Bottom Sheet
 
 ## Status
+In Progress
 
 ## Goals
+- On mobile (`md:hidden` breakpoint), the "New Item" flow (`NewItemDialog`, opened via `MobileTabBar`'s FAB) presents as a full-height bottom sheet instead of the small centered `Dialog` used on desktop.
+- Bottom sheet reuses the existing `Sheet`/`SheetContent` (`side="bottom"`) primitive already established for `MobileSidebar`'s drawer — no new sheet variant invented.
+- Sheet body (type select, title/description/content fields, file upload, tags, collections multi-select) scrolls internally; the Create button stays reachable via a sticky footer, fixing the current cutoff/overflow risk on a full form at 375px.
+- Desktop rendering of `NewItemDialog` is pixel-identical to today — this is a mobile-only presentation change, not a rewrite of the dialog's fields/logic.
+- All existing functionality preserved exactly: same fields per type, same validation/disabled-Create rules, same `createItem` server action call, same AI Suggest Tags button, same collections multi-select.
 
 ## Notes
+- Scope is `NewItemDialog` only (triggered by `MobileTabBar`'s FAB) — `NewCollectionDialog` is out of scope for this pass unless requested separately.
+- Design decision (bottom sheet vs. fixing the existing centered dialog with scroll) was confirmed with the user via AskUserQuestion: bottom sheet, matching the mobile chrome's existing drawer pattern.
+- No mockup exists for this (the mobile dashboard prototype doesn't depict the add-item flow) — extrapolating from `context/design-system.md` + the app's own existing `Sheet`/`MobileSidebar` pattern, consistent with the design system's "extrapolate rather than request a new mockup" principle.
+- Likely implementation shape: conditionally render `Sheet`+`SheetContent(side="bottom")` on mobile vs. `Dialog`+`DialogContent` on desktop from within (or around) `NewItemDialog`, sharing the same form state/fields/footer markup — exact approach (CSS-only dual-render vs. two components) to be decided at implementation time.
 - Ran the `ui-reviewer` subagent against the finished mobile chrome (375px, signed in as the demo user) and fixed its High/Medium findings: (1) the FAB's fixed footprint could permanently strand trailing list content underneath it with no way to scroll it clear — `main`'s mobile bottom padding bumped `pb-20`→`pb-36` (144px, clears tab bar + FAB); the FAB still transiently overlaps content mid-scroll, same as any fixed FAB over a scrollable list (Gmail/Twitter-style), which isn't chased further. (2) horizontal snap-scroll cards were sized `w-[82vw]` — *wider* than their own scroll track (inside `main`'s padding), so nothing peeked in at rest and there was no visual cue the row scrolled; resized to `w-[calc(80vw-32px)]` so a partial next-card is now visible at rest (confirmed via Playwright: 294px track, 268px card). (3) several new/touched touch targets were 28-34px, under the project's own guideline (already enforced once this session for `HomeNav`) — bumped `TopBar`'s mobile hamburger/search icons and the drawer's close button from `icon-sm` (28px) to `icon-lg` (36px, matching the `HomeNav` precedent exactly rather than inventing a new 44px standard), added a custom call-site close button in `MobileSidebar.tsx` (`showCloseButton={false}` on `SheetContent` + a `SheetClose` render prop, since `sheet.tsx`'s built-in one is shared app-wide), and gave `SidebarNav.tsx` a new opt-in `comfortable` prop (default `false`, row padding `py-1.5`→`py-3` when true) so `MobileSidebar` can request ~44px rows without changing desktop `Sidebar`'s rows at all (verified via Playwright: still exactly 32px on desktop). Verified all three fixes live via Playwright at 375px and reconfirmed desktop (1440px) is still pixel-identical. Build (29 routes), lint, and test (247/247, unchanged) pass.
 
 ## History

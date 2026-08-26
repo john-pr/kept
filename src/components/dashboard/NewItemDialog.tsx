@@ -3,6 +3,7 @@
 import { useState, type ReactElement, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,8 +13,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { FileUpload, type UploadedFile } from "@/components/items/FileUpload";
 import { CollectionMultiSelect } from "@/components/items/CollectionMultiSelect";
 import { ItemFormFields } from "@/components/items/ItemFormFields";
@@ -68,6 +80,7 @@ export function NewItemDialog({
   isPro = false,
 }: NewItemDialogProps) {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const selectableTypes = itemTypes;
   const isTypeLocked = Boolean(
     defaultItemTypeId && selectableTypes.some((type) => type.id === defaultItemTypeId),
@@ -129,6 +142,136 @@ export function NewItemDialog({
     }
   }
 
+  const formBody = (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <Label
+          htmlFor="new-item-type"
+          className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+        >
+          Type
+        </Label>
+        <Select
+          value={itemTypeId}
+          onValueChange={(value) => setItemTypeId(value ?? "")}
+          disabled={isTypeLocked}
+        >
+          <SelectTrigger
+            id="new-item-type"
+            className="h-[38px] w-full rounded-none border-border bg-muted text-[13px]"
+          >
+            <SelectValue placeholder="Select a type">
+              {selectedType ? (
+                <span className="flex items-center gap-1.5">
+                  {SelectedTypeIcon && (
+                    <SelectedTypeIcon className="size-4" style={{ color: selectedType.color }} />
+                  )}
+                  {singularize(selectedType.name)}
+                </span>
+              ) : null}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent alignItemWithTrigger={false}>
+            {selectableTypes.map((type) => {
+              const TypeIcon = iconMap[type.icon];
+              return (
+                <SelectItem key={type.id} value={type.id} label={singularize(type.name)}>
+                  {TypeIcon && <TypeIcon className="size-4" style={{ color: type.color }} />}
+                  {singularize(type.name)}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <ItemFormFields
+        idPrefix="new-item"
+        placeholders
+        title={form.title}
+        onTitleChange={(title) => setForm({ ...form, title })}
+        description={form.description}
+        onDescriptionChange={(description) => setForm({ ...form, description })}
+        content={form.content}
+        onContentChange={(content) => setForm({ ...form, content })}
+        language={form.language}
+        onLanguageChange={(language) => setForm({ ...form, language })}
+        url={form.url}
+        onUrlChange={(url) => setForm({ ...form, url })}
+        tags={form.tags}
+        onTagsChange={(tags) => setForm({ ...form, tags })}
+        onAcceptTag={handleAcceptTag}
+        showContent={showContent}
+        showLanguage={showLanguage}
+        showMarkdown={showMarkdown}
+        showUrl={showUrl}
+        isPro={isPro}
+        fileName={showFile ? form.file?.fileName ?? null : null}
+      >
+        {showFile && (
+          <div className="flex flex-col gap-2">
+            <Label className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+              {uploadKind === "image" ? "Image" : "File"}
+            </Label>
+            <FileUpload kind={uploadKind} value={form.file} onChange={(file) => setForm({ ...form, file })} />
+          </div>
+        )}
+      </ItemFormFields>
+
+      <CollectionMultiSelect
+        options={collectionOptions}
+        selectedIds={form.collectionIds}
+        onChange={(collectionIds) => setForm({ ...form, collectionIds })}
+      />
+    </div>
+  );
+
+  const isCreateDisabled =
+    !itemTypeId ||
+    form.title.trim() === "" ||
+    (showUrl && form.url.trim() === "") ||
+    (showFile && !form.file) ||
+    isSaving;
+
+  const createButton = (
+    <Button onClick={handleCreate} disabled={isCreateDisabled} className="tracking-[0.14em] uppercase">
+      {isSaving ? "Creating..." : "Create"}
+    </Button>
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={handleOpenChange}>
+        <SheetTrigger render={trigger}>{children}</SheetTrigger>
+        <SheetContent
+          side="bottom"
+          className="max-h-[88vh] gap-0 overflow-hidden p-0"
+          showCloseButton={false}
+        >
+          <SheetHeader className="flex-row items-start justify-between gap-3 border-b border-border">
+            <div className="flex flex-col gap-0.5">
+              <SheetTitle className="text-base font-medium tracking-[0.12em] uppercase">
+                New item
+              </SheetTitle>
+              <SheetDescription>
+                Create a new snippet, prompt, command, note, link, file, or image.
+              </SheetDescription>
+            </div>
+            {/* Custom, larger close button — `SheetContent`'s built-in one is size-7 (28px),
+                under the project's touch-target guideline (same override as `MobileSidebar`). */}
+            <SheetClose render={<Button variant="ghost" size="icon-lg" aria-label="Close" />}>
+              <X />
+            </SheetClose>
+          </SheetHeader>
+
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">{formBody}</div>
+
+          <SheetFooter className="mt-0 border-t border-border bg-muted/40">{createButton}</SheetFooter>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={trigger}>{children}</DialogTrigger>
@@ -142,109 +285,10 @@ export function NewItemDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label
-              htmlFor="new-item-type"
-              className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
-            >
-              Type
-            </Label>
-            <Select
-              value={itemTypeId}
-              onValueChange={(value) => setItemTypeId(value ?? "")}
-              disabled={isTypeLocked}
-            >
-              <SelectTrigger
-                id="new-item-type"
-                className="h-[38px] w-full rounded-none border-border bg-muted text-[13px]"
-              >
-                <SelectValue placeholder="Select a type">
-                  {selectedType ? (
-                    <span className="flex items-center gap-1.5">
-                      {SelectedTypeIcon && (
-                        <SelectedTypeIcon
-                          className="size-4"
-                          style={{ color: selectedType.color }}
-                        />
-                      )}
-                      {singularize(selectedType.name)}
-                    </span>
-                  ) : null}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent alignItemWithTrigger={false}>
-                {selectableTypes.map((type) => {
-                  const TypeIcon = iconMap[type.icon];
-                  return (
-                    <SelectItem key={type.id} value={type.id} label={singularize(type.name)}>
-                      {TypeIcon && <TypeIcon className="size-4" style={{ color: type.color }} />}
-                      {singularize(type.name)}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <ItemFormFields
-            idPrefix="new-item"
-            placeholders
-            title={form.title}
-            onTitleChange={(title) => setForm({ ...form, title })}
-            description={form.description}
-            onDescriptionChange={(description) => setForm({ ...form, description })}
-            content={form.content}
-            onContentChange={(content) => setForm({ ...form, content })}
-            language={form.language}
-            onLanguageChange={(language) => setForm({ ...form, language })}
-            url={form.url}
-            onUrlChange={(url) => setForm({ ...form, url })}
-            tags={form.tags}
-            onTagsChange={(tags) => setForm({ ...form, tags })}
-            onAcceptTag={handleAcceptTag}
-            showContent={showContent}
-            showLanguage={showLanguage}
-            showMarkdown={showMarkdown}
-            showUrl={showUrl}
-            isPro={isPro}
-            fileName={showFile ? form.file?.fileName ?? null : null}
-          >
-            {showFile && (
-              <div className="flex flex-col gap-2">
-                <Label className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                  {uploadKind === "image" ? "Image" : "File"}
-                </Label>
-                <FileUpload
-                  kind={uploadKind}
-                  value={form.file}
-                  onChange={(file) => setForm({ ...form, file })}
-                />
-              </div>
-            )}
-          </ItemFormFields>
-
-          <CollectionMultiSelect
-            options={collectionOptions}
-            selectedIds={form.collectionIds}
-            onChange={(collectionIds) => setForm({ ...form, collectionIds })}
-          />
-        </div>
+        {formBody}
 
         <DialogFooter className="-mx-4 -mb-4 rounded-none border-t border-border bg-muted/40 p-4">
-          <Button
-            onClick={handleCreate}
-            disabled={
-              !itemTypeId ||
-              form.title.trim() === "" ||
-              (showUrl && form.url.trim() === "") ||
-              (showFile && !form.file) ||
-              isSaving
-            }
-            className="tracking-[0.14em] uppercase"
-          >
-            {isSaving ? "Creating..." : "Create"}
-          </Button>
+          {createButton}
         </DialogFooter>
       </DialogContent>
     </Dialog>
