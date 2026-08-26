@@ -37,9 +37,13 @@ export async function toggleOptimisticField(
 export function useOptimisticToggle(
   initialValue: boolean,
   toggleAction: ToggleAction,
-  errorMessage: string
+  errorMessage: string,
+  onSuccess?: (next: boolean) => void
 ): [boolean, () => Promise<void>] {
   const [value, setValue] = useState(initialValue);
 
-  return [value, () => toggleOptimisticField(value, setValue, toggleAction, errorMessage)];
+  return [
+    value,
+    () => toggleOptimisticField(value, setValue, toggleAction, errorMessage, onSuccess),
+  ];
 }

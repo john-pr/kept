@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { type MouseEvent } from "react";
-import { MoreVertical, Pencil, Star, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CollectionDialogs } from "@/components/dashboard/CollectionDialogs";
+import { FavoriteToggleButton } from "@/components/items/FavoriteToggleButton";
 import { iconMap } from "@/lib/icon-map";
 import { withAlpha } from "@/lib/color";
 import type { CollectionSummary } from "@/lib/db/collections";
@@ -19,6 +20,7 @@ import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { useCollectionDialogs } from "@/hooks/useCollectionDialogs";
 import { useSoftTintAlpha } from "@/hooks/useSoftTintAlpha";
 import { toggleCollectionFavorite } from "@/actions/collections";
+import { toast } from "@/lib/toast";
 
 export function CollectionCard({ collection }: { collection: CollectionSummary }) {
   const router = useRouter();
@@ -26,7 +28,8 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
   const [isFavorite, toggleFavorite] = useOptimisticToggle(
     collection.isFavorite,
     (next) => toggleCollectionFavorite(collection.id, next),
-    "Failed to update favorite"
+    "Failed to update favorite",
+    (next) => toast.success(next ? "Collection favorited" : "Collection unfavorited")
   );
   const clickableCard = useClickableCard(() => router.push(`/collections/${collection.id}`));
   const alphaSuffix = useSoftTintAlpha();
@@ -47,7 +50,11 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
         <div className="flex items-start justify-between gap-2">
           <span className="truncate text-sm text-foreground">{collection.name}</span>
           <div className="flex shrink-0 items-center gap-2" onClick={stopPropagation}>
-            {isFavorite && <span className="mt-0.5 size-[9px] bg-primary" />}
+            <FavoriteToggleButton
+              isFavorite={isFavorite}
+              onToggle={() => toggleFavorite()}
+              color="primary"
+            />
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -62,10 +69,6 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
                 <MoreVertical className="size-3.5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={toggleFavorite}>
-                  <Star className="size-4" />
-                  {isFavorite ? "Unfavorite" : "Favorite"}
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setEditOpen(true)}>
                   <Pencil className="size-4" />
                   Edit

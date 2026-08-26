@@ -173,7 +173,8 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       item.isFavorite,
       (next) => setItem((current) => (current ? { ...current, isFavorite: next } : current)),
       (next) => toggleItemFavorite(item.id, next),
-      "Failed to update favorite"
+      "Failed to update favorite",
+      (next) => toast.success(next ? "Item favorited" : "Item unfavorited")
     );
     router.refresh();
   }

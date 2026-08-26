@@ -8,6 +8,7 @@ import type { CollectionDetail } from "@/lib/db/collections";
 import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { useCollectionDialogs } from "@/hooks/useCollectionDialogs";
 import { toggleCollectionFavorite } from "@/actions/collections";
+import { toast } from "@/lib/toast";
 
 interface CollectionDetailHeaderProps {
   collection: CollectionDetail;
@@ -19,7 +20,8 @@ export function CollectionDetailHeader({ collection }: CollectionDetailHeaderPro
   const [isFavorite, toggleFavorite] = useOptimisticToggle(
     collection.isFavorite,
     (next) => toggleCollectionFavorite(collection.id, next),
-    "Failed to update favorite"
+    "Failed to update favorite",
+    (next) => toast.success(next ? "Collection favorited" : "Collection unfavorited")
   );
 
   return (
