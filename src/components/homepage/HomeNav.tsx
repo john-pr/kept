@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 
 const NAV_LINKS = [
@@ -8,6 +12,10 @@ const NAV_LINKS = [
 ];
 
 export function HomeNav() {
+  const pathname = usePathname();
+  const isSignIn = pathname === "/sign-in";
+  const isRegister = pathname === "/register";
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background">
       <div className="mx-auto flex h-17 max-w-6xl items-center justify-between gap-3 px-4 sm:gap-6 sm:px-6">
@@ -28,18 +36,30 @@ export function HomeNav() {
         <div className="flex items-center gap-1.5 sm:gap-2">
           <Button
             variant="ghost"
-            className="h-7 gap-1 px-2 text-[0.78rem] md:h-8 md:gap-1.5 md:px-2.5 md:text-sm"
+            className="h-9 gap-1 px-2 text-[0.78rem] md:h-8 md:gap-1.5 md:px-2.5 md:text-sm"
             nativeButton={false}
             render={<Link href="/sign-in" />}
           >
-            <span className="tracking-[0.08em] uppercase sm:tracking-[0.14em]">Sign In</span>
+            <span
+              className={cn(
+                "tracking-[0.08em] uppercase sm:tracking-[0.14em]",
+                isSignIn && "underline underline-offset-4"
+              )}
+            >
+              Sign In
+            </span>
           </Button>
           <Button
-            className="h-7 gap-1 px-2 text-[0.78rem] md:h-8 md:gap-1.5 md:px-2.5 md:text-sm"
+            className="h-9 gap-1 px-2 text-[0.78rem] md:h-8 md:gap-1.5 md:px-2.5 md:text-sm"
             nativeButton={false}
             render={<Link href="/register" />}
           >
-            <span className="tracking-[0.08em] uppercase sm:tracking-[0.14em]">
+            <span
+              className={cn(
+                "tracking-[0.08em] uppercase sm:tracking-[0.14em]",
+                isRegister && "underline underline-offset-4"
+              )}
+            >
               <span className="md:hidden">Sign Up</span>
               <span className="hidden md:inline">Get Started</span>
             </span>
