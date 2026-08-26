@@ -25,6 +25,20 @@ This is the common workflow that we will use for every single feature/fix:
 
 Do NOT commit without permission and until the build passes. If build fails, fix the issues first.
 
+### History entry format
+
+Keep each history entry to ~3-5 sentences. Include: what shipped and the key files touched,
+non-obvious decisions/deviations, anything deliberately deferred or left out of scope, and any
+real bug found and fixed along the way. Leave out: play-by-play of how it was verified (e.g.
+Playwright click-by-click narration, screenshot pixel measurements), a full account of every
+follow-up round, and routine "build/lint/test pass" or "merged into master, branch deleted"
+notes — those are already implied by the workflow above. Full detail always survives in git
+history if it's ever needed; the point of this file is to stay skimmable, not exhaustive.
+If @context/current-feature.md ever exceeds ~150k chars again, move entries before some cutoff
+date into a new @context/current-feature-history.md (earliest to latest, do not rewrite past
+entries) and leave a pointer comment — but try compressing existing entries to this format
+first, since that alone may bring it back under the threshold without needing a second file.
+
 ## Branching
 
 We will create a new branch for every feature/fix. Name branch **feature/[feature]** or **fix[fix]**, etc. Ask to delete the branch once merged.
