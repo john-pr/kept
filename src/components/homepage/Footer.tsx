@@ -11,15 +11,15 @@ const FOOTER_COLUMNS = [
   {
     heading: "Company",
     links: [
-      { label: "About", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "About", href: null },
+      { label: "Contact", href: null },
     ],
   },
   {
     heading: "Legal",
     links: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
+      { label: "Privacy", href: null },
+      { label: "Terms", href: null },
     ],
   },
 ];
@@ -40,15 +40,26 @@ export function Footer() {
               <h4 className="mb-1 text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
                 {col.heading}
               </h4>
-              {col.links.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {link.label}
-                </a>
-              ))}
+              {col.links.map((link) =>
+                link.href ? (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <span
+                    key={link.label}
+                    aria-disabled="true"
+                    title="Coming soon"
+                    className="text-sm text-muted-foreground/40"
+                  >
+                    {link.label}
+                  </span>
+                )
+              )}
             </div>
           ))}
         </div>
