@@ -478,3 +478,21 @@ the full pattern reference live in `context/design-system.md`.
   minor/patch), `CONTRIBUTING.md` (mirrors `context/ai-interaction.md`). `gh repo edit` set
   the description, homepage, and topics. `e2e.yml` deferred to prep 5 (needs the Playwright
   suite + a CI database strategy first).
+- **2026-08-27 — Portfolio prep 5: Playwright E2E smoke suite.** `@playwright/test` +
+  `playwright.config.ts` (chromium, `webServer` runs `npm run dev`, baseURL from
+  `E2E_BASE_URL`, serial single-worker). `tests/e2e/`: `home` (hero + nav render, theme
+  toggle flips `<html>` class, Features/Pricing anchors resolve), `auth` (register throwaway
+  user → sign in → `/dashboard`; protected route redirects when signed out), `items` (create
+  a snippet via the New Item dialog → appears in the list → open drawer → favorite → reload →
+  still favorited), `search` (⌘/Ctrl+K palette → query → result → select opens the drawer).
+  `global-setup.ts` hard-fails if `EMAIL_VERIFICATION_ENABLED=true` and warns if Upstash is
+  configured; `playwright.config.ts` blanks `UPSTASH_*` for its own server so the 3-per-hour
+  IP-keyed register limiter fails open across runs. Added `test:e2e` / `test:e2e:ui` scripts;
+  the README "Testing" section documents the seeded-DB prereqs and `db:cleanup` for the
+  `e2e-smoke-…@example.test` throwaway users. `vitest.config.ts` untouched (E2E is outside
+  its globs). Non-obvious: the marketing nav's Sign In / Get Started CTAs render with an
+  implicit `button` role (not `link`) via the shadcn `Button` `render` prop; the item drawer
+  and command palette are both `role="dialog"`, so specs scope by accessible name; sign-in
+  failures are surfaced by racing `waitForURL` against the form's `[data-slot="alert"]` (a
+  bare `role="alert"` also matches sonner toasts, including the register success toast that
+  survives the redirect). All 7 specs green locally over repeated runs.
