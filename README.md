@@ -165,13 +165,37 @@ fails open, and so on.
 ## Testing
 
 ```bash
-npm run test        # Vitest — server actions (src/actions) + utilities (src/lib) only
-npm run test:watch  # the same, in watch mode
-npm run test:e2e    # Playwright smoke suite (added in portfolio-prep 5)
+npm run test         # Vitest — server actions (src/actions) + utilities (src/lib) only
+npm run test:watch   # the same, in watch mode
+npm run test:e2e     # Playwright smoke suite (tests/e2e)
+npm run test:e2e:ui  # Playwright UI mode
 ```
 
 By design there is **no component/DOM testing** — the unit suite covers server actions and
-pure utilities, and a small Playwright suite covers the critical user paths end to end.
+pure utilities, and a small Playwright smoke suite (`home`, `auth`, `items`, `search`) covers
+the critical user paths end to end.
+
+### Running the E2E suite
+
+It runs against a **locally seeded dev database** and starts its own dev server:
+
+```bash
+npm run db:migrate && npm run db:seed
+npm run test:e2e
+```
+
+Prerequisites (asserted in `tests/e2e/global-setup.ts`):
+
+- **`EMAIL_VERIFICATION_ENABLED=false`** in `.env` — otherwise the register → sign-in flow is
+  blocked by the verification interstitial.
+- Leave **`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` unset** for E2E — rate
+  limiting fails open when unconfigured, so repeated runs don't trip the login/register
+  limiters. `playwright.config.ts` blanks them for the server it starts; a dev server you
+  started yourself keeps them active.
+
+`auth`, `items`, and `search` each register a throwaway user (`e2e-smoke-…@example.test`).
+These accumulate in the shared Neon `development` branch — run **`npm run db:cleanup`**
+(`scripts/delete-non-demo-users.ts`) to remove every non-demo user.
 
 ---
 
