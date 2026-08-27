@@ -27,7 +27,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <MobileNavProvider>
-      <div className="flex h-screen flex-col overflow-hidden">
+      {/* h-dvh (not h-screen/100vh): on mobile browsers 100vh is the large viewport
+          and ignores the address-bar chrome, making this shell taller than the visible
+          area so the body itself scrolls (TopBar scrolls away, content slides under the
+          fixed MobileTabBar). h-dvh tracks the actually-visible height, keeping the scroll
+          inside <main>. */}
+      <div className="flex h-dvh flex-col overflow-hidden">
         <TopBar
           itemTypes={itemTypes}
           favoriteCollections={favoriteCollections}
