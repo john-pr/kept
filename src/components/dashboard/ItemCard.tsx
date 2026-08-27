@@ -67,7 +67,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
       {item.content.trim() && (
         <div
           aria-hidden
-          className="h-[92px] overflow-hidden border border-border bg-muted p-2.5 font-mono text-xs leading-[18px] whitespace-pre-wrap break-words text-ink-body mask-b-from-80% mask-b-to-100%"
+          className="h-[92px] overflow-hidden border border-border bg-muted p-2.5 font-mono text-xs leading-[18px] whitespace-pre-wrap break-words text-ink-body mask-b-from-55% mask-b-to-100%"
         >
           {item.content}
         </div>

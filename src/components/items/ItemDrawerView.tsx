@@ -75,6 +75,7 @@ export function ItemDrawerView({
           size="icon-sm"
           onClick={onEdit}
           disabled={!item.canEdit}
+          aria-label="Edit item"
           title={item.canEdit ? undefined : "You don't have permission to edit this item"}
         >
           <Pencil className="size-4" />
@@ -132,12 +133,16 @@ export function ItemDrawerView({
           <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
             Preview
           </h4>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={item.fileUrl}
-            alt={item.fileName ?? item.title}
-            className="max-h-80 w-full object-contain"
-          />
+          {/* Fixed-height muted box reserves space so a large image loading in
+              doesn't collapse then jump the drawer layout (ui-reviewer finding). */}
+          <div className="flex min-h-[200px] items-center justify-center border border-border bg-muted">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={item.fileUrl}
+              alt={item.fileName ?? item.title}
+              className="max-h-80 w-full object-contain"
+            />
+          </div>
         </div>
       )}
 

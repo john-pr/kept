@@ -31,6 +31,7 @@ export function DeleteItemDialog({ itemTitle, canDelete, isDeleting, onDelete }:
             size="icon-sm"
             className="ml-auto text-destructive"
             disabled={!canDelete}
+            aria-label="Delete item"
             title={canDelete ? undefined : "You don't have permission to delete this item"}
           />
         }

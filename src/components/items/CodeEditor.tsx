@@ -181,6 +181,8 @@ export function CodeEditor({
             size="icon-sm"
             className="text-neutral-400 hover:text-neutral-100"
             onClick={handleCopy}
+            aria-label="Copy code"
+            title="Copy code"
           >
             <Copy className="size-3.5" />
           </Button>

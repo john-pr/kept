@@ -10,6 +10,7 @@ import type { ItemDetail } from "@/lib/db/items";
 import type { CollectionOption } from "@/lib/db/collections";
 import { deleteItem, toggleItemFavorite, toggleItemPin, updateItem } from "@/actions/items";
 import { parseTagsInput } from "@/lib/tags";
+import { formatDate } from "@/lib/format-date";
 import { toggleOptimisticField } from "@/hooks/useOptimisticToggle";
 import { ItemDrawerView } from "@/components/items/ItemDrawerView";
 import { ItemDrawerEditForm } from "@/components/items/ItemDrawerEditForm";
@@ -267,7 +268,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   <span className="flex items-center gap-2 text-[10px] tracking-[0.12em] text-muted-foreground uppercase tabular-nums">
                     <span>{item.itemType.name}</span>
                     <span className="size-[3px] bg-muted-foreground" />
-                    <span>Created {new Date(item.createdAt).toLocaleDateString()}</span>
+                    <span>Created {formatDate(item.createdAt)}</span>
                   </span>
                 </div>
               </div>
