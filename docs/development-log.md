@@ -452,3 +452,14 @@ the full pattern reference live in `context/design-system.md`.
   `docs/audits/` (the auth security review, findings annotated with current status),
   `docs/images/` (populated in prep 3). Four sub-500-byte spec stubs dropped.
   `context/current-feature.md` reset to the bare Status/Goals/Notes template.
+- **2026-08-27 — Portfolio prep 3: README rewrite.** Replaced the create-next-app boilerplate
+  with a portfolio-grade README — hero + badge row (CI badge forward-references prep 4),
+  live-demo section (URL `kept-app-ten.vercel.app`; credentials left as placeholders per the
+  user), screenshot table pointing at `docs/images/` (capture pass deferred — user adds the
+  images), grouped feature list, tech-stack table, architecture blurb linking
+  `docs/architecture.md`, getting-started with an env-var table, testing (`test:e2e`
+  forward-references prep 5), `src/` tree, and a "how this was built" section linking
+  `docs/specs/` / `docs/development-log.md` / `.claude/`. Added an `MIT` `LICENSE` (holder
+  `john-pr`) and `docs/images/README.md` as a capture checklist. Noted but not fixed
+  (prep 6's scope): `layout.tsx` `generateMetadata` has `title`/`description` but no
+  `openGraph`.
