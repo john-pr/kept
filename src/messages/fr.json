@@ -40,7 +40,9 @@
     "getStarted": "Commencer",
     "switchToLight": "Passer au thème clair",
     "switchToDark": "Passer au thème sombre",
-    "language": "Langue"
+    "language": "Langue",
+    "theme": "Thème",
+    "menu": "Menu"
   },
   "home": {
     "hero": {

@@ -40,7 +40,9 @@
     "getStarted": "Rozpocznij",
     "switchToLight": "Przełącz na jasny motyw",
     "switchToDark": "Przełącz na ciemny motyw",
-    "language": "Język"
+    "language": "Język",
+    "theme": "Motyw",
+    "menu": "Menu"
   },
   "home": {
     "hero": {
