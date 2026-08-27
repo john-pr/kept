@@ -2,34 +2,43 @@
 
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useHasMounted } from "@/hooks/useHasMounted";
+import { cn } from "@/lib/utils";
 
 /**
  * Light/Dark toggle for the marketing nav — the only theme control reachable while signed
- * out (the in-app one lives in UserFooter's dropdown). Icon button rather than UserFooter's
- * segmented control, to sit compactly beside Sign In / Get Started.
+ * out (the in-app one lives in UserFooter's dropdown). A Sun/Switch/Moon control; checked
+ * means dark.
  *
  * next-themes can't resolve the persisted preference during SSR, so until the client has
- * mounted we render the dark-mode icon (defaultTheme is "dark") with a generic label — this
- * matches the server markup and avoids a hydration mismatch.
+ * mounted we render as checked (defaultTheme is "dark") — matching the server markup to
+ * avoid a hydration mismatch.
  */
 export function ThemeToggle() {
   const mounted = useHasMounted();
   const { resolvedTheme, setTheme } = useTheme();
-  const isLight = mounted && resolvedTheme === "light";
+  const isDark = !(mounted && resolvedTheme === "light");
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="size-9 md:size-8"
-      aria-label={
-        mounted ? `Switch to ${isLight ? "dark" : "light"} theme` : "Toggle theme"
-      }
-      onClick={() => setTheme(isLight ? "dark" : "light")}
-    >
-      {isLight ? <Moon /> : <Sun />}
-    </Button>
+    <div className="flex items-center gap-1.5">
+      <Sun
+        className={cn(
+          "size-3.5 transition-colors",
+          isDark ? "text-muted-foreground" : "text-foreground"
+        )}
+      />
+      <Switch
+        checked={isDark}
+        onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+        aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
+      />
+      <Moon
+        className={cn(
+          "size-3.5 transition-colors",
+          isDark ? "text-foreground" : "text-muted-foreground"
+        )}
+      />
+    </div>
   );
 }
