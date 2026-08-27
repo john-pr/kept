@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import type { Locale } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useResizableDrawerWidth } from "@/hooks/useResizableDrawerWidth";
 import { iconMap } from "@/lib/icon-map";
 import { withAlpha } from "@/lib/color";
 import type { ItemDetail } from "@/lib/db/items";
@@ -67,6 +70,14 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const alphaSuffix = useSoftTintAlpha();
+  const isMobile = useIsMobile();
+  const {
+    width: drawerWidth,
+    minWidth,
+    maxWidth,
+    isResizing,
+    handleProps,
+  } = useResizableDrawerWidth(!isMobile);
   const t = useTranslations("drawer");
   const tt = useTranslations("drawer.toasts");
   const cardsT = useTranslations("cards");
@@ -254,7 +265,39 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent className="gap-0 overflow-y-auto data-[side=right]:w-full data-[side=right]:sm:max-w-[28rem]">
+      <SheetContent
+        className={cn(
+          "gap-0 data-[side=right]:w-full data-[side=right]:sm:max-w-[28rem]",
+          isResizing && "select-none"
+        )}
+        style={drawerWidth != null ? { width: drawerWidth, maxWidth: "none" } : undefined}
+      >
+        {!isMobile && (
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            aria-label={t("resizeHandle")}
+            aria-valuemin={minWidth}
+            aria-valuemax={maxWidth}
+            aria-valuenow={drawerWidth ?? minWidth}
+            tabIndex={0}
+            {...handleProps}
+            data-resizing={isResizing ? "" : undefined}
+            className="group absolute inset-y-0 left-0 z-20 flex w-4 cursor-col-resize touch-none items-center justify-center outline-none"
+          >
+            {/* full-height accent line — always visibly green so the edge reads as draggable */}
+            <span
+              aria-hidden
+              className="absolute inset-y-0 left-0 w-0.5 bg-primary/40 transition-colors group-hover:bg-primary group-focus-visible:bg-primary group-data-[resizing]:bg-primary"
+            />
+            {/* centered grabber bar — grows and brightens on hover / focus / drag */}
+            <span
+              aria-hidden
+              className="relative h-14 w-1 bg-primary/70 transition-[height,width,background-color] duration-150 group-hover:h-20 group-hover:w-1.5 group-hover:bg-primary group-focus-visible:h-20 group-focus-visible:w-1.5 group-focus-visible:bg-primary group-data-[resizing]:h-20 group-data-[resizing]:w-1.5 group-data-[resizing]:bg-primary"
+            />
+          </div>
+        )}
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {isLoading || !item ? (
           <div className="flex flex-col gap-4 p-4">
             <div className="flex items-center gap-3">
@@ -324,6 +367,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
             </div>
           </>
         )}
+        </div>
       </SheetContent>
     </Sheet>
   );
