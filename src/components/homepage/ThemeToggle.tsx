@@ -32,6 +32,9 @@ export function ThemeToggle() {
         checked={isDark}
         onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
         aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
+        // Light mode's near-white default thumb barely reads against the pale unchecked
+        // track — darken it here (scoped to this toggle, not the shared ui/switch).
+        className="[&_[data-slot=switch-thumb][data-unchecked]]:bg-muted-foreground"
       />
       <Moon
         className={cn(
