@@ -4,7 +4,21 @@
  * runner — scoped to `src/lib/**` and `src/actions/**` — picks up `i18n.test.ts`.
  */
 
-export const SUPPORTED_LOCALES = ["en", "fr", "pl"] as const;
+/**
+ * Every locale we ship a message catalog for. `fr` is fully translated and kept
+ * in sync (see `messages-parity.test.ts`) but held back from users for now —
+ * it is NOT in `SUPPORTED_LOCALES`, so it can't be selected, matched from
+ * `Accept-Language`, or restored from a cookie.
+ */
+export const ALL_LOCALES = ["en", "fr", "pl"] as const;
+
+export type AnyLocale = (typeof ALL_LOCALES)[number];
+
+/**
+ * Locales actually exposed in the UI and accepted at runtime. To bring French
+ * back, add `"fr"` here — nothing else needs to change.
+ */
+export const SUPPORTED_LOCALES = ["en", "pl"] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -16,8 +30,9 @@ export const LOCALE_COOKIE = "locale";
 /** One year — the choice should outlive a browsing session. */
 export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-/** Display names for the language switcher, keyed by locale. */
-export const LOCALE_LABELS: Record<Locale, string> = {
+/** Display names for the language switcher. Keyed by every catalog locale so the
+ * French label is ready if `SUPPORTED_LOCALES` gets `"fr"` back. */
+export const LOCALE_LABELS: Record<AnyLocale, string> = {
   en: "English",
   fr: "Français",
   pl: "Polski",
