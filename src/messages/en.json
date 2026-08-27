@@ -345,6 +345,7 @@
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",
+    "resizeHandle": "Resize drawer",
     "toasts": {
       "itemUpdated": "Item updated",
       "failedUpdateItem": "Failed to update item",

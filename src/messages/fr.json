@@ -345,6 +345,7 @@
     "save": "Enregistrer",
     "saving": "Enregistrement...",
     "cancel": "Annuler",
+    "resizeHandle": "Redimensionner le panneau",
     "toasts": {
       "itemUpdated": "Élément mis à jour",
       "failedUpdateItem": "Échec de la mise à jour de l'élément",
