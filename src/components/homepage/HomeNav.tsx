@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 
 const NAV_LINKS = [
   { href: "/#features", label: "Features" },
@@ -34,6 +35,7 @@ export function HomeNav() {
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
+          <ThemeToggle />
           <Button
             variant="ghost"
             className="h-9 gap-1 px-2 text-[0.78rem] md:h-8 md:gap-1.5 md:px-2.5 md:text-sm"
