@@ -21,23 +21,20 @@ This is the common workflow that we will use for every single feature/fix:
 7. **Merge** - Merge to main
 8. **Delete Branch** - Delete branch after merge
 9. **Review** - Review AI-generated code periodically and on demand.
-10. Mark as completed in @context/current-feature.md and add to history
+10. Reset @context/current-feature.md's Status/Goals/Notes and add the entry to @docs/development-log.md
 
 Do NOT commit without permission and until the build passes. If build fails, fix the issues first.
 
 ### History entry format
 
-Keep each history entry to ~3-5 sentences. Include: what shipped and the key files touched,
+The development log is `@docs/development-log.md` (earliest to latest, grouped by month).
+Keep each entry to ~3-5 sentences. Include: what shipped and the key files touched,
 non-obvious decisions/deviations, anything deliberately deferred or left out of scope, and any
 real bug found and fixed along the way. Leave out: play-by-play of how it was verified (e.g.
 Playwright click-by-click narration, screenshot pixel measurements), a full account of every
 follow-up round, and routine "build/lint/test pass" or "merged into master, branch deleted"
 notes — those are already implied by the workflow above. Full detail always survives in git
 history if it's ever needed; the point of this file is to stay skimmable, not exhaustive.
-If @context/current-feature.md ever exceeds ~150k chars again, move entries before some cutoff
-date into a new @context/current-feature-history.md (earliest to latest, do not rewrite past
-entries) and leave a pointer comment — but try compressing existing entries to this format
-first, since that alone may bring it back under the threshold without needing a second file.
 
 ## Branching
 
