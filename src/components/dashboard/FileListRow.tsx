@@ -29,7 +29,7 @@ export function FileListRow({ item }: { item: ItemSummary }) {
 
   return (
     <div
-      className="flex cursor-pointer flex-col gap-2 border-b border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:gap-4"
+      className="flex cursor-pointer flex-col gap-2 border-b border-border bg-card px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:gap-4"
       role="button"
       tabIndex={0}
       {...clickableCard}
