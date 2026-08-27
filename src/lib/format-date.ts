@@ -1,6 +1,6 @@
-import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n";
+import { DEFAULT_LOCALE, type AnyLocale, type Locale } from "@/lib/i18n";
 
-const BCP47: Record<Locale, string> = {
+const BCP47: Record<AnyLocale, string> = {
   en: "en-GB",
   fr: "fr-FR",
   pl: "pl-PL",

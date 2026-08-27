@@ -15,8 +15,8 @@ import { SUPPORTED_LOCALES, LOCALE_LABELS, isLocale, type Locale } from "@/lib/i
 import { cn } from "@/lib/utils";
 
 interface LanguageSwitcherProps {
-  /** "select" — compact dropdown for the marketing nav. "segmented" — EN | FR | PL
-   * row matching `UserFooter`'s Light | Dark appearance control. */
+  /** "select" — compact dropdown for the marketing nav. "segmented" — one cell per
+   * supported locale (EN | PL) matching `UserFooter`'s Light | Dark control. */
   variant?: "select" | "segmented";
 }
 
