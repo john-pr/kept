@@ -463,3 +463,18 @@ the full pattern reference live in `context/design-system.md`.
   `john-pr`) and `docs/images/README.md` as a capture checklist. Noted but not fixed
   (prep 6's scope): `layout.tsx` `generateMetadata` has `title`/`description` but no
   `openGraph`.
+- **2026-08-27 — Portfolio prep 4: GitHub project furniture.** `.github/workflows/ci.yml`
+  (push + PR to `master`; Node 20 + npm cache; `db:generate` → lint → `tsc --noEmit` → unit
+  tests) — the target of the README CI badge. Making it green surfaced two pre-existing latent
+  failures: `npx tsc --noEmit` over the whole project (which `next build` doesn't do) flagged
+  19 `vi.mocked(auth).mockResolvedValue(null)` calls where NextAuth v5's overloaded `auth`
+  type makes `vi.mocked` infer a `NextMiddleware` parameter — fixed with `null as never` at
+  each site; and `npm run lint` (bare `eslint`) was linting `prototypes/redesign/support.js`
+  (the vendored Claude Design canvas runtime) — added `prototypes/**` and `src/generated/**`
+  to the eslint `globalIgnores`. Also: `LICENSE` holder set to `Jan Przybysz` / 2026 (per
+  explicit request, overriding the prep-1 name-scrub note), `"license": "MIT"` in
+  `package.json`; issue templates (bug/feature) + `config.yml` (blank issues off, demo/docs
+  links), `PULL_REQUEST_TEMPLATE.md`, `dependabot.yml` (npm + github-actions, weekly, grouped
+  minor/patch), `CONTRIBUTING.md` (mirrors `context/ai-interaction.md`). `gh repo edit` set
+  the description, homepage, and topics. `e2e.yml` deferred to prep 5 (needs the Playwright
+  suite + a CI database strategy first).

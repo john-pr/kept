@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Live demo
+    url: https://kept-app-ten.vercel.app/
+    about: Try the app before filing an issue.
+  - name: Architecture & development log
+    url: https://github.com/john-pr/kept/tree/master/docs
+    about: How the project is built — read before proposing structural changes.
