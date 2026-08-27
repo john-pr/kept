@@ -47,8 +47,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           {/* pb-36 (144px) clears both the tab bar (56px) and the FAB's fixed footprint
               (bottom-[76px] + 52px tall = 128px from the viewport bottom), so the last card
               in any scrollable list can be scrolled fully clear of the FAB — see the
-              ui-reviewer finding on the FAB permanently covering trailing content. */}
-          <main className="flex-1 overflow-y-auto p-4 pb-36 md:pb-4">{children}</main>
+              ui-reviewer finding on the FAB permanently covering trailing content. Drops to
+              pb-4 at lg, where the desktop layout (no tab bar / FAB) takes over. */}
+          <main className="flex-1 overflow-y-auto p-4 pb-36 lg:pb-4">{children}</main>
         </div>
         <MobileTabBar
           itemTypes={itemTypes}

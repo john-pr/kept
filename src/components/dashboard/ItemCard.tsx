@@ -23,7 +23,9 @@ export function ItemCard({ item }: { item: ItemSummary }) {
 
   function handleCopy(event: MouseEvent) {
     event.stopPropagation();
-    navigator.clipboard.writeText(item.content);
+    // item.content already folds in url/description; fall back to the title so
+    // file/image cards (no textual content) don't copy an empty string.
+    navigator.clipboard.writeText(item.content.trim() || item.title);
     toast.success("Copied to clipboard");
   }
 
@@ -33,6 +35,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
       style={{ borderLeftColor: item.typeColor }}
       role="button"
       tabIndex={0}
+      aria-label={`${item.typeName}: ${item.title}`}
       {...clickableCard}
     >
       <div className="flex items-center justify-between gap-2">
@@ -61,10 +64,15 @@ export function ItemCard({ item }: { item: ItemSummary }) {
         </div>
       </div>
       <h4 className="truncate text-sm text-foreground">{item.title}</h4>
-      <div className="h-[92px] overflow-hidden border border-border bg-muted p-2.5 font-mono text-xs leading-[18px] whitespace-pre-wrap break-words text-ink-body">
-        {item.content}
-      </div>
-      <div className="flex flex-wrap gap-2.5">
+      {item.content.trim() && (
+        <div
+          aria-hidden
+          className="h-[92px] overflow-hidden border border-border bg-muted p-2.5 font-mono text-xs leading-[18px] whitespace-pre-wrap break-words text-ink-body mask-b-from-80% mask-b-to-100%"
+        >
+          {item.content}
+        </div>
+      )}
+      <div className="flex flex-wrap gap-2.5" aria-hidden>
         {item.tags.map((tag) => (
           <span key={tag} className="text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
             [{tag}]

@@ -227,6 +227,8 @@ component being skinned, not a generic wrapper shared by unrelated features, so 
   in `globals.css`'s toast block and `sonner.tsx` for the handful of sonner-internal rules that
   still needed `!important` to lose (dark-theme close-button/description colors that aren't
   gated behind `data-styled`).
+- **Desktop position**: top-center, `offset={{ top: 76 }}` — the 76px clears the app `TopBar`
+  (~57px) so toasts don't land on the centered search field (a ui-reviewer finding; was `top: 20`).
 - **Mobile position is an explicit, scoped exception** to "mobile not yet designed" above:
   bottom-center (vs. desktop's top-center), full width minus a 12px edge inset, offset to
   clear `MobileTabBar`. Known accepted gap: a toast fired while a full-screen mobile

@@ -13,7 +13,9 @@ interface FavoriteToggleButtonProps {
   isFavorite: boolean;
   onToggle: (event: MouseEvent) => void;
   /** Fill/text color when favorited. "yellow" (default) matches items; "primary"
-   * is the ledger accent green, used by `CollectionCard`. */
+   * is the ledger accent green, used by `CollectionCard`. The item/collection split
+   * is deliberate (items = yellow star, collections = green star) — a ui-reviewer
+   * pass flagged it as an inconsistency; kept intentionally, not a bug. */
   color?: keyof typeof ACTIVE_COLOR_CLASS;
 }
 

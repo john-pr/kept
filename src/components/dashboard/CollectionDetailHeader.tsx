@@ -21,7 +21,12 @@ export function CollectionDetailHeader({ collection }: CollectionDetailHeaderPro
     collection.isFavorite,
     (next) => toggleCollectionFavorite(collection.id, next),
     "Failed to update favorite",
-    (next) => toast.success(next ? "Collection favorited" : "Collection unfavorited")
+    (next) => {
+      toast.success(next ? "Collection favorited" : "Collection unfavorited");
+      // Keep the sidebar's favorite-collections list / dashboard counts in sync
+      // (ui-reviewer finding on stale favorite state after a card toggle).
+      router.refresh();
+    }
   );
 
   return (
