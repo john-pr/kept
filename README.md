@@ -173,7 +173,9 @@ npm run test:e2e:ui  # Playwright UI mode
 
 By design there is **no component/DOM testing** — the unit suite covers server actions and
 pure utilities, and a small Playwright smoke suite (`home`, `auth`, `items`, `search`) covers
-the critical user paths end to end.
+the critical user paths end to end. `a11y.spec.ts` runs `@axe-core/playwright` (WCAG 2.1
+A/AA) against `/`, `/dashboard`, and `/items/snippets` — see
+[`docs/quality.md`](docs/quality.md).
 
 ### Running the E2E suite
 

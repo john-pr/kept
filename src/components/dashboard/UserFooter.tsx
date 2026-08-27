@@ -61,7 +61,7 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
             name={user.name}
             image={user.image}
             shape="square"
-            fallbackClassName="text-[11px] tracking-[0.08em]"
+            fallbackClassName="text-[11px] tracking-[0.08em] text-ink-body"
           />
         </DropdownMenuTrigger>
         <DropdownMenuContent
