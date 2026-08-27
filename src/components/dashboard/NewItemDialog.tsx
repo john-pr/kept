@@ -234,7 +234,14 @@ export function NewItemDialog({
     isSaving;
 
   const createButton = (
-    <Button onClick={handleCreate} disabled={isCreateDisabled} className="tracking-[0.14em] uppercase">
+    <Button
+      onClick={handleCreate}
+      disabled={isCreateDisabled}
+      // Stronger dim than the primitive's default disabled:opacity-50 — the mobile
+      // Sheet footer renders this as a full-width green CTA where 50% still reads as
+      // tappable (ui-reviewer finding).
+      className="tracking-[0.14em] uppercase disabled:opacity-40"
+    >
       {isSaving && <Loader2 className="size-4 animate-spin" />}
       {isSaving ? "Creating..." : "Create"}
     </Button>
@@ -276,7 +283,7 @@ export function NewItemDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={trigger}>{children}</DialogTrigger>
-      <DialogContent className="gap-5 rounded-none border border-border ring-0 sm:max-w-md">
+      <DialogContent className="max-h-[90vh] gap-5 overflow-y-auto rounded-none border border-border ring-0 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-base font-medium tracking-[0.12em] uppercase">
             New item

@@ -21,8 +21,9 @@ const TAB_CLASS =
 
 /**
  * Sticky bottom tab bar + floating "+" FAB, from the mobile ledger prototype
- * (`kept-mobile-dashboard.html`). Mobile-only (`md:hidden`), rendered once in the
- * `(app)` layout so it's available from every screen, not just `/dashboard`.
+ * (`kept-mobile-dashboard.html`). Shown below `lg` (mobile + tablet — the desktop
+ * sidebar/TopBar layout only kicks in at `lg`), rendered once in the `(app)` layout
+ * so it's available from every screen, not just `/dashboard`.
  *
  * "Items" has no single unified route to link to (only per-type `/items/[type]`
  * pages exist) — per explicit decision it opens the same nav drawer as the header's
@@ -36,7 +37,7 @@ export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabB
 
   return (
     <>
-      <div className="fixed right-4 bottom-[76px] z-40 md:hidden">
+      <div className="fixed right-4 bottom-[76px] z-40 lg:hidden">
         <NewItemDialog
           itemTypes={itemTypes}
           collectionOptions={collectionOptions}
@@ -53,7 +54,7 @@ export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabB
         </NewItemDialog>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card lg:hidden">
         <Link
           href="/dashboard"
           className={cn(

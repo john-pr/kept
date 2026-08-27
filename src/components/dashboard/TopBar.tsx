@@ -35,10 +35,10 @@ export function TopBar({
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
-    <header className="flex flex-col gap-3 border-b border-border px-4 py-3 md:grid md:grid-cols-3 md:items-center md:gap-4">
-      <div className="flex items-center justify-between gap-2 md:justify-start">
+    <header className="flex flex-col gap-3 border-b border-border px-4 py-3 lg:grid lg:grid-cols-3 lg:items-center lg:gap-4">
+      <div className="flex items-center justify-between gap-2 lg:justify-start">
         <div className="flex items-center gap-2">
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <MobileSidebar
               itemTypes={itemTypes}
               favoriteCollections={favoriteCollections}
@@ -52,14 +52,14 @@ export function TopBar({
           variant="ghost"
           size="icon-lg"
           aria-label="Search"
-          className="md:hidden"
+          className="lg:hidden"
           onClick={() => setSearchOpen(true)}
         >
           <Search />
         </Button>
       </div>
 
-      <div className="hidden w-full md:mx-auto md:block md:max-w-md">
+      <div className="hidden w-full lg:mx-auto lg:block lg:max-w-md">
         <GlobalSearch
           items={searchItems}
           collections={searchCollections}
@@ -68,7 +68,7 @@ export function TopBar({
         />
       </div>
 
-      <div className="hidden items-center justify-end gap-2 md:flex">
+      <div className="hidden items-center justify-end gap-2 lg:flex">
         {!user.isPro && (
           <Button variant="ghost" nativeButton={false} render={<Link href="/upgrade" />}>
             Upgrade

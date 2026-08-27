@@ -23,7 +23,7 @@ export function Sidebar({ itemTypes, favoriteCollections, recentCollections, use
   return (
     <aside
       className={cn(
-        "hidden h-full flex-col overflow-hidden border-r border-border transition-all duration-200 md:flex",
+        "hidden h-full flex-col overflow-hidden border-r border-border transition-all duration-200 lg:flex",
         collapsed ? "w-16" : "w-64"
       )}
     >

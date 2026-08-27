@@ -16,7 +16,7 @@ export default async function DashboardPage() {
           Dashboard
         </h1>
         <span className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase tabular-nums">
-          Register / {stats.totalItems} entries
+          Ledger / {stats.totalItems} records
         </span>
       </div>
       <StatsCards stats={stats} />

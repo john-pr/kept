@@ -1,4 +1,4 @@
-import { Package, FolderOpen, Heart, Star } from "lucide-react";
+import { Package, FolderOpen, Star } from "lucide-react";
 import type { DashboardStats } from "@/lib/db/stats";
 
 interface StatsCardsProps {
@@ -9,7 +9,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
   const cells = [
     { label: "Total Items", value: stats.totalItems, icon: Package },
     { label: "Collections", value: stats.totalCollections, icon: FolderOpen },
-    { label: "Favorite Items", value: stats.favoriteItems, icon: Heart },
+    { label: "Favorite Items", value: stats.favoriteItems, icon: Star },
     { label: "Favorite Collections", value: stats.favoriteCollections, icon: Star },
   ];
 

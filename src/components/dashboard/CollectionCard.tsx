@@ -29,7 +29,13 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
     collection.isFavorite,
     (next) => toggleCollectionFavorite(collection.id, next),
     "Failed to update favorite",
-    (next) => toast.success(next ? "Collection favorited" : "Collection unfavorited")
+    (next) => {
+      toast.success(next ? "Collection favorited" : "Collection unfavorited");
+      // Refresh so the dashboard stats strip and the sidebar's favorite-collections
+      // list reflect the change immediately (ui-reviewer finding — was stale until
+      // the next navigation).
+      router.refresh();
+    }
   );
   const clickableCard = useClickableCard(() => router.push(`/collections/${collection.id}`));
   const alphaSuffix = useSoftTintAlpha();
@@ -45,6 +51,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
         style={{ borderLeftColor: collection.borderColor }}
         role="button"
         tabIndex={0}
+        aria-label={`Collection: ${collection.name}`}
         {...clickableCard}
       >
         <div className="flex items-start justify-between gap-2">
@@ -81,7 +88,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
             </DropdownMenu>
           </div>
         </div>
-        <p className="line-clamp-2 flex-1 text-xs leading-relaxed text-ink-body">
+        <p className="line-clamp-2 flex-1 text-xs leading-relaxed text-ink-body" aria-hidden>
           {collection.description}
         </p>
         <div className="flex items-center justify-between border-t border-dotted border-border pt-2.5">

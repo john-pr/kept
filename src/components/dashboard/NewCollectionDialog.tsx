@@ -60,7 +60,7 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={trigger}>{children}</DialogTrigger>
-      <DialogContent className="gap-5 rounded-none border border-border ring-0 sm:max-w-md">
+      <DialogContent className="max-h-[90vh] gap-5 overflow-y-auto rounded-none border border-border ring-0 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-base font-medium tracking-[0.12em] uppercase">
             New collection
