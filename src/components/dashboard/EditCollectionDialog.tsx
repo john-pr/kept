@@ -61,9 +61,13 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      {/* Chrome kept in step with NewCollectionDialog — this dialog was missed by the
+          2026-08-25 create-dialog redesign pass (it only shared the form fields). */}
+      <DialogContent className="max-h-[90vh] gap-5 overflow-y-auto rounded-none border border-border ring-0 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit collection</DialogTitle>
+          <DialogTitle className="text-base font-medium tracking-[0.12em] uppercase">
+            Edit collection
+          </DialogTitle>
           <DialogDescription>Update the name and description of this collection.</DialogDescription>
         </DialogHeader>
 
@@ -75,8 +79,12 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
           onDescriptionChange={(description) => setForm({ ...form, description })}
         />
 
-        <DialogFooter>
-          <Button onClick={handleSave} disabled={form.name.trim() === "" || isSaving}>
+        <DialogFooter className="-mx-4 -mb-4 rounded-none border-t border-border bg-muted/40 p-4">
+          <Button
+            onClick={handleSave}
+            disabled={form.name.trim() === "" || isSaving}
+            className="tracking-[0.14em] uppercase"
+          >
             {isSaving ? "Saving..." : "Save"}
           </Button>
         </DialogFooter>

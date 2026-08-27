@@ -76,9 +76,13 @@ export function ItemDrawerEditForm({
         fileName={item.fileName}
       />
 
-      <div className="flex flex-col gap-2">
-        <h4 className="text-sm font-medium text-foreground">Type</h4>
-        <p className="text-sm text-muted-foreground">{item.itemType.name}</p>
+      <div className="flex flex-col gap-1.5">
+        {/* Match the LABEL_CLASS used by the ItemFormFields / CollectionMultiSelect
+            labels flanking this one — the rest of ItemDrawerEditForm is still
+            known-unstyled, but an orphaned bold Title Case label next to uppercase
+            tracked siblings reads as a bug (ui-reviewer finding). */}
+        <h4 className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">Type</h4>
+        <p className="text-[13px] text-foreground">{item.itemType.name}</p>
       </div>
 
       <CollectionMultiSelect

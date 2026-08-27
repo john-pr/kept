@@ -74,7 +74,7 @@ export function CollectionMultiSelect({ options, selectedIds, onChange }: Collec
         </PopoverTrigger>
         <PopoverContent className="w-(--anchor-width) p-0">
           <Command>
-            <CommandInput placeholder="Search collections..." />
+            <CommandInput placeholder="Search collections..." aria-label="Search collections" />
             <CommandList>
               <CommandEmpty>No collections found.</CommandEmpty>
               <CommandGroup>

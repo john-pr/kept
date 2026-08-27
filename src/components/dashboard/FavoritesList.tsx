@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FolderOpen, Star } from "lucide-react";
 import { iconMap } from "@/lib/icon-map";
+import { formatDate } from "@/lib/format-date";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
 import {
@@ -143,7 +144,7 @@ function FavoriteItemRow({ item }: { item: FavoriteItem }) {
         {item.typeName}
       </span>
       <span className="w-24 shrink-0 text-right text-xs text-muted-foreground">
-        {new Date(item.updatedAt).toLocaleDateString()}
+        {formatDate(item.updatedAt)}
       </span>
     </div>
   );
@@ -171,7 +172,7 @@ function FavoriteCollectionRow({
         {collection.itemCount} {collection.itemCount === 1 ? "item" : "items"}
       </span>
       <span className="w-24 shrink-0 text-right text-xs text-muted-foreground">
-        {new Date(collection.updatedAt).toLocaleDateString()}
+        {formatDate(collection.updatedAt)}
       </span>
     </div>
   );
