@@ -56,6 +56,8 @@ interface NewItemDialogProps {
   children: ReactNode;
   /** Preselect and lock the type picker to this item type id (e.g. from a type-specific page). */
   defaultItemTypeId?: string;
+  /** Preselect (but don't lock) these collections, e.g. when opened from a collection page. */
+  defaultCollectionIds?: string[];
   /** Shows the AI "Suggest Tags" button. Pro-only feature — omit/false hides it. */
   isPro?: boolean;
 }
@@ -77,6 +79,7 @@ export function NewItemDialog({
   trigger,
   children,
   defaultItemTypeId,
+  defaultCollectionIds,
   isPro = false,
 }: NewItemDialogProps) {
   const router = useRouter();
@@ -86,10 +89,16 @@ export function NewItemDialog({
     defaultItemTypeId && selectableTypes.some((type) => type.id === defaultItemTypeId),
   );
   const initialTypeId = isTypeLocked ? defaultItemTypeId! : selectableTypes[0]?.id ?? "";
+  const initialForm = {
+    ...EMPTY_FORM,
+    collectionIds: (defaultCollectionIds ?? []).filter((id) =>
+      collectionOptions.some((option) => option.id === id),
+    ),
+  };
 
   const [open, setOpen] = useState(false);
   const [itemTypeId, setItemTypeId] = useState(initialTypeId);
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm] = useState(initialForm);
   const [isSaving, setIsSaving] = useState(false);
 
   const selectedType = selectableTypes.find((type) => type.id === itemTypeId);
@@ -105,7 +114,7 @@ export function NewItemDialog({
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) {
-      setForm(EMPTY_FORM);
+      setForm(initialForm);
       setItemTypeId(initialTypeId);
     }
   }
