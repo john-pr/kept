@@ -2,15 +2,21 @@
 
 ## Status
 
-None in progress.
+In progress — Portfolio Prep 1: Repo Hygiene & Secret Scan (`chore/repo-hygiene`).
 
 ## Goals
 
-[//]: # (bullet points of what success looks like)
+- Full git-history secret scan (gitleaks) reports zero findings — the safety gate before going public in spec 7.
+- Close `.gitignore` gaps: `.idea/`, `/playwright-report/`, `/test-results/`.
+- Stop tracking `.idea/` (records local session/tab state); files stay in old history (paths only, no secrets).
+- Remove stale `context/screenshots/*` (pre-ledger-redesign) and drop the two `@context/screenshots/...` lines from `context/project-overview.md` §10.
+- Confirm `.env*` / `.mcp.json` never tracked; `.env.production` stays local-only.
+- No app behavior changes.
 
 ## Notes
 
-[//]: # (additional context, constraints, or details from spec)
+- gitleaks 8.30.1 installed via `scoop install gitleaks`; `gitleaks detect --source . --log-opts="--all"` → 219 commits scanned, no leaks found.
+- Advisory grep findings (out of scope for this spec, not fixed): `prototypes/redesign/*.html` mockups contain the real name "Jan Przybysz" and email `janprzybysz2@gmail.com`; leftover "DevStash" strings remain in `.claude/agents/*`, `docs/*`, `prototypes/*` (rebrand of those is spec 2's scope). Neon MCP `devstash` project id in `CLAUDE.md` left as-is per spec (external identifier).
 
 ## History
 [//]: # (keep this updated. earliest to latest)
