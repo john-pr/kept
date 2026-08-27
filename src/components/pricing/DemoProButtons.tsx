@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ interface DemoProButtonProps {
  */
 export function ActivateDemoProButton({ className }: DemoProButtonProps) {
   const router = useRouter();
+  const t = useTranslations("demoPro");
+  const tc = useTranslations("common");
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleClick() {
@@ -25,24 +28,26 @@ export function ActivateDemoProButton({ className }: DemoProButtonProps) {
     setIsLoading(false);
 
     if (!result.success) {
-      toast.error(result.error ?? "Something went wrong");
+      toast.error(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
-    toast.success("Demo Pro activated — no payment needed.");
+    toast.success(t("activated"));
     router.refresh();
   }
 
   return (
     <Button variant="ghost" size="sm" className={className} disabled={isLoading} onClick={handleClick}>
       {isLoading && <Loader2 className="size-4 animate-spin" />}
-      Try Pro instantly (demo, no payment)
+      {t("tryInstantly")}
     </Button>
   );
 }
 
 export function DeactivateDemoProButton({ className }: DemoProButtonProps) {
   const router = useRouter();
+  const t = useTranslations("demoPro");
+  const tc = useTranslations("common");
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleClick() {
@@ -51,18 +56,18 @@ export function DeactivateDemoProButton({ className }: DemoProButtonProps) {
     setIsLoading(false);
 
     if (!result.success) {
-      toast.error(result.error ?? "Something went wrong");
+      toast.error(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
-    toast.success("Reverted to Free.");
+    toast.success(t("reverted"));
     router.refresh();
   }
 
   return (
     <Button variant="outline" size="sm" className={className} disabled={isLoading} onClick={handleClick}>
       {isLoading && <Loader2 className="size-4 animate-spin" />}
-      Revert to Free (demo)
+      {t("revert")}
     </Button>
   );
 }

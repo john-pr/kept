@@ -1,10 +1,12 @@
 import type { DefaultSession } from "next-auth";
+import type { Locale } from "@/lib/i18n";
 
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
       isPro: boolean;
+      locale: Locale | null;
     } & DefaultSession["user"];
   }
 }
@@ -17,5 +19,6 @@ declare module "next-auth" {
 declare module "@auth/core/jwt" {
   interface JWT {
     isPro?: boolean;
+    locale?: Locale | null;
   }
 }

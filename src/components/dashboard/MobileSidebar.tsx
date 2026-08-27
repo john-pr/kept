@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { FolderPlus, Menu, Sparkles, Star, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,12 +48,13 @@ export function MobileSidebar({
   user,
 }: MobileSidebarProps) {
   const { open, setOpen } = useMobileNav();
+  const t = useTranslations("appChrome");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
-          <Button variant="ghost" size="icon-lg" aria-label="Open sidebar" />
+          <Button variant="ghost" size="icon-lg" aria-label={t("openSidebar")} />
         }
       >
         <Menu />
@@ -60,31 +62,31 @@ export function MobileSidebar({
       <SheetContent side="left" className="flex flex-col p-0" showCloseButton={false}>
         <SheetHeader className="flex-row items-center justify-between border-b border-border px-2 py-3">
           <SheetTitle className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-            Navigation
+            {t("navigation")}
           </SheetTitle>
           {/* Custom, larger close button — `SheetContent`'s built-in one is size-7 (28px),
               under the project's touch-target guideline. Overridden at the call site rather
               than in `sheet.tsx`, which is shared by every dialog/sheet in the app. */}
-          <SheetClose render={<Button variant="ghost" size="icon-lg" aria-label="Close" />}>
+          <SheetClose render={<Button variant="ghost" size="icon-lg" aria-label={t("close")} />}>
             <X />
           </SheetClose>
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-2 py-4">
           <nav className="mb-6 flex flex-col gap-0.5">
-            <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>Quick Actions</h3>
+            <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>{t("quickActions")}</h3>
             <Link
               href="/favorites"
               onClick={() => setOpen(false)}
               className={QUICK_ACTION_ROW_CLASS}
             >
               <Star className="size-4 shrink-0 text-muted-foreground" />
-              Favorites
+              {t("favorites")}
             </Link>
             <NewCollectionDialog
               trigger={<Button variant="ghost" className={QUICK_ACTION_ROW_CLASS} />}
             >
               <FolderPlus className="size-4 shrink-0 text-muted-foreground" />
-              New Collection
+              {t("newCollection")}
             </NewCollectionDialog>
             {!user.isPro && (
               <Link
@@ -93,7 +95,7 @@ export function MobileSidebar({
                 className={QUICK_ACTION_ROW_CLASS}
               >
                 <Sparkles className="size-4 shrink-0 text-muted-foreground" />
-                Upgrade
+                {t("upgrade")}
               </Link>
             )}
           </nav>

@@ -1,0 +1,542 @@
+{
+  "metadata": {
+    "title": "Kept",
+    "description": "Fragmenty kodu, prompty, polecenia, notatki, linki, pliki i obrazy — zebrane w jednym szybkim, przeszukiwalnym centrum wspieranym przez AI."
+  },
+  "common": {
+    "appName": "Kept",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "saving": "Zapisywanie...",
+    "create": "Utwórz",
+    "creating": "Tworzenie...",
+    "delete": "Usuń",
+    "deleting": "Usuwanie...",
+    "edit": "Edytuj",
+    "close": "Zamknij",
+    "or": "lub",
+    "comingSoon": "Wkrótce",
+    "somethingWentWrong": "Coś poszło nie tak",
+    "invalidInput": "Nieprawidłowe dane",
+    "itemCount": "{count, plural, one {# element} few {# elementy} many {# elementów} other {# elementu}}",
+    "recordCount": "{count} wpisów"
+  },
+  "toasts": {
+    "success": "Sukces",
+    "error": "Błąd"
+  },
+  "relativeTime": {
+    "justNow": "przed chwilą",
+    "minutes": "{count} min temu",
+    "hours": "{count} godz. temu",
+    "days": "{count} dni temu",
+    "months": "{count} mies. temu"
+  },
+  "nav": {
+    "features": "Funkcje",
+    "pricing": "Cennik",
+    "signIn": "Zaloguj się",
+    "signUp": "Zarejestruj się",
+    "getStarted": "Rozpocznij",
+    "switchToLight": "Przełącz na jasny motyw",
+    "switchToDark": "Przełącz na ciemny motyw",
+    "language": "Język"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Stworzone dla programistów",
+      "titleLine1": "Zachowaj wszystko.",
+      "titleLine2": "Znajdź cokolwiek.",
+      "subtitle": "Fragmenty kodu, prompty, polecenia, notatki, linki i pliki — zebrane w jednym szybkim, przeszukiwalnym centrum wspieranym przez AI, zamiast rozproszone w kilkunastu różnych narzędziach.",
+      "getStartedFree": "Zacznij za darmo",
+      "seeFeatures": "Zobacz funkcje"
+    },
+    "chaos": {
+      "before": "Rozrzucone wszędzie...",
+      "after": "...zebrane w jednym miejscu.",
+      "browserTabs": "Karty przeglądarki",
+      "terminal": "Terminal",
+      "textFile": "Plik tekstowy",
+      "bookmark": "Zakładka"
+    },
+    "features": {
+      "eyebrow": "Funkcje",
+      "heading": "Wszystko zachowane",
+      "subtitle": "Fragmenty kodu, prompty, polecenia, notatki, linki i pliki — uporządkowane tak, jak naprawdę myślisz, a nie tak, jak zmusza Cię kilkanaście różnych narzędzi.",
+      "codeSnippets": {
+        "title": "Fragmenty kodu",
+        "description": "Zapisuj kod wielokrotnego użytku z podświetlaniem składni i oznaczaniem języka."
+      },
+      "aiPrompts": {
+        "title": "Prompty AI",
+        "description": "Trzymaj najlepsze prompty uporządkowane, wersjonowane i gotowe do ponownego użycia."
+      },
+      "instantSearch": {
+        "title": "Błyskawiczne wyszukiwanie",
+        "description": "Pełnotekstowe wyszukiwanie w treści, tagach, tytułach i typach — natychmiast."
+      },
+      "commands": {
+        "title": "Polecenia",
+        "description": "Nigdy więcej nie zapomnij tej jednej flagi CLI — zapisuj i wyszukuj swoje polecenia."
+      },
+      "filesDocs": {
+        "title": "Pliki i dokumenty",
+        "description": "Dołączaj pliki i obrazy obok wszystkiego, do czego należą."
+      },
+      "collections": {
+        "title": "Kolekcje",
+        "description": "Grupuj cokolwiek, dowolnego typu, w kolekcje dopasowane do Twojego sposobu pracy."
+      }
+    },
+    "ai": {
+      "badge": "Funkcja Pro",
+      "heading": "Niech AI zajmie się żmudną pracą",
+      "subtitle": "Kept Pro wykorzystuje AI, aby wszystko było uporządkowane bez ręcznego wysiłku.",
+      "autoTag": "Sugestie automatycznych tagów",
+      "summaries": "Inteligentne podsumowania treści",
+      "explain": "„Wyjaśnij ten kod” na żądanie",
+      "optimizer": "Optymalizator promptów",
+      "aiGeneratedTags": "Tagi wygenerowane przez AI"
+    },
+    "pricing": {
+      "eyebrow": "Cennik",
+      "heading": "Prosty, uczciwy cennik",
+      "subtitle": "Zacznij za darmo. Przejdź na wyższy plan, gdy przestanie Ci wystarczać.",
+      "mostPopular": "[Najpopularniejszy]",
+      "getStarted": "Rozpocznij",
+      "goPro": "Przejdź na Pro"
+    },
+    "finalCta": {
+      "heading": "Gotów, aby zachować wszystko w jednym miejscu?",
+      "subtitle": "Przestań tracić fragmenty kodu, prompty, polecenia i notatki w kilkunastu rozproszonych narzędziach.",
+      "cta": "Zacznij za darmo"
+    },
+    "footer": {
+      "tagline": "Wszystko, co chciałeś zachować, w jednym miejscu.",
+      "product": "Produkt",
+      "company": "Firma",
+      "legal": "Informacje prawne",
+      "features": "Funkcje",
+      "pricing": "Cennik",
+      "about": "O nas",
+      "contact": "Kontakt",
+      "privacy": "Prywatność",
+      "terms": "Warunki",
+      "comingSoon": "Wkrótce",
+      "rights": "© {year} Kept. Wszelkie prawa zastrzeżone."
+    }
+  },
+  "pricing": {
+    "monthly": "Miesięcznie",
+    "yearly": "Rocznie",
+    "save25": "Oszczędź 25%",
+    "save25Compact": "(−25%)",
+    "toggleYearly": "Przełącz cennik roczny",
+    "free": "Darmowy",
+    "pro": "Pro",
+    "perMonth": "/mies.",
+    "perYear": "/rok",
+    "itemsTotal": "{count, plural, one {# element łącznie} few {# elementy łącznie} many {# elementów łącznie} other {# elementu łącznie}}",
+    "collectionsCount": "{count, plural, one {# kolekcja} few {# kolekcje} many {# kolekcji} other {# kolekcji}}",
+    "allTextTypes": "Wszystkie typy tekstowe",
+    "basicSearch": "Podstawowe wyszukiwanie",
+    "unlimitedItems": "Nieograniczona liczba elementów",
+    "unlimitedCollections": "Nieograniczona liczba kolekcji",
+    "fileUploads": "Przesyłanie plików i obrazów",
+    "aiAutoTagging": "Tagowanie i podsumowania AI",
+    "dataExport": "Eksport danych (JSON/ZIP)"
+  },
+  "auth": {
+    "signIn": {
+      "crumb": "Logowanie",
+      "title": "Logowanie",
+      "description": "Wprowadź adres e-mail i hasło, aby kontynuować.",
+      "submit": "Zaloguj się",
+      "noAccount": "Nie masz jeszcze konta?",
+      "registerLink": "Zarejestruj się"
+    },
+    "register": {
+      "crumb": "Rejestracja",
+      "title": "Utwórz konto",
+      "description": "Zacznij z Kept — jedno miejsce na linki, fragmenty kodu i polecenia.",
+      "submit": "Utwórz konto",
+      "alreadyRegistered": "Masz już konto?",
+      "signInLink": "Zaloguj się"
+    },
+    "forgotPassword": {
+      "title": "Nie pamiętasz hasła?",
+      "description": "Wprowadź adres e-mail, a wyślemy Ci link do resetowania",
+      "submit": "Wyślij link resetujący",
+      "sentHeading": "Link resetujący wysłany",
+      "sentBody": "Jeśli konto dla {email} istnieje, wysłaliśmy link do zresetowania hasła.",
+      "resend": "Wyślij link resetujący ponownie",
+      "resendCountdown": "Wyślij link resetujący ponownie ({seconds} s)",
+      "resendToast": "Link resetujący wysłany",
+      "resendToastDescription": "Sprawdź {email}, aby znaleźć link."
+    },
+    "resetPassword": {
+      "title": "Zresetuj hasło",
+      "description": "Wybierz nowe hasło do swojego konta",
+      "submit": "Zresetuj hasło",
+      "newPassword": "Nowe hasło",
+      "confirmNewPassword": "Potwierdź nowe hasło",
+      "invalidMissingToken": "Ten link resetujący jest nieprawidłowy lub brakuje w nim tokenu.",
+      "invalidRequestNew": "Ten link resetujący jest nieprawidłowy. Poproś o nowy.",
+      "requestNewLink": "Poproś o nowy link",
+      "successToast": "Hasło zresetowane",
+      "successToastDescription": "Możesz się teraz zalogować przy użyciu nowego hasła."
+    },
+    "checkEmail": {
+      "title": "Sprawdź swoją skrzynkę e-mail",
+      "description": "Wysłaliśmy link weryfikacyjny na Twój adres e-mail. Kliknij go, aby aktywować konto.",
+      "sentTo": "Wysłano do {email}"
+    },
+    "fields": {
+      "email": "E-mail",
+      "password": "Hasło",
+      "name": "Imię",
+      "confirmPassword": "Potwierdź hasło"
+    },
+    "forgotLink": "Nie pamiętasz?",
+    "continueWithGithub": "Kontynuuj z GitHub",
+    "backToSignIn": "Powrót do logowania",
+    "resendVerification": "Wyślij e-mail weryfikacyjny ponownie",
+    "resendVerificationCountdown": "Wyślij e-mail weryfikacyjny ponownie ({seconds} s)",
+    "verificationEmailSent": "E-mail weryfikacyjny wysłany",
+    "verificationEmailSentDescription": "Sprawdź {email}, aby znaleźć link.",
+    "accountCreated": "Konto utworzone. Możesz się teraz zalogować.",
+    "errors": {
+      "verifyEmailFirst": "Zweryfikuj swój adres e-mail przed zalogowaniem.",
+      "tooManyAttempts": "Zbyt wiele prób. Spróbuj ponownie później.",
+      "invalidCredentials": "Nieprawidłowy e-mail lub hasło",
+      "nameRequired": "Imię jest wymagane",
+      "validEmail": "Wprowadź prawidłowy adres e-mail",
+      "passwordMin": "Hasło musi mieć co najmniej 8 znaków",
+      "passwordsNoMatch": "Hasła nie są zgodne",
+      "currentPasswordRequired": "Bieżące hasło jest wymagane"
+    },
+    "toasts": {
+      "emailVerified": "E-mail zweryfikowany",
+      "emailVerifiedDescription": "Możesz się teraz zalogować.",
+      "verificationLinkExpired": "Link weryfikacyjny wygasł",
+      "verificationLinkExpiredDescription": "Zaloguj się i użyj opcji ponownego wysłania, aby otrzymać nowy link.",
+      "invalidVerificationLink": "Nieprawidłowy link weryfikacyjny"
+    }
+  },
+  "appChrome": {
+    "search": "Szukaj",
+    "searchPlaceholder": "Szukaj elementów, kolekcji, tagów...",
+    "favorites": "Ulubione",
+    "upgrade": "Przejdź na Pro",
+    "newCollection": "Nowa kolekcja",
+    "newItem": "Nowy element",
+    "navigation": "Nawigacja",
+    "quickActions": "Szybkie akcje",
+    "itemTypes": "Typy elementów",
+    "favoriteCollections": "Ulubione kolekcje",
+    "recentCollections": "Ostatnie kolekcje",
+    "viewAllCollections": "Zobacz wszystkie kolekcje",
+    "expandSidebar": "Rozwiń pasek boczny",
+    "collapseSidebar": "Zwiń pasek boczny",
+    "openSidebar": "Otwórz pasek boczny",
+    "close": "Zamknij",
+    "userMenu": "Menu użytkownika",
+    "account": "Konto",
+    "profile": "Profil",
+    "settings": "Ustawienia",
+    "appearance": "Wygląd",
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "language": "Język",
+    "signOut": "Wyloguj się",
+    "pro": "PRO",
+    "tabDash": "Pulpit",
+    "tabItems": "Elementy",
+    "tabColls": "Kolekcje",
+    "tabYou": "Ty"
+  },
+  "search": {
+    "placeholder": "Szukaj elementów, kolekcji, tagów...",
+    "title": "Szukaj",
+    "description": "Szukaj elementów i kolekcji",
+    "noResults": "Brak wyników.",
+    "items": "Elementy",
+    "collections": "Kolekcje",
+    "navigate": "Nawiguj",
+    "select": "Wybierz",
+    "close": "Zamknij"
+  },
+  "dashboard": {
+    "title": "Pulpit",
+    "ledgerRecords": "Rejestr / {count} wpisów",
+    "totalItems": "Wszystkie elementy",
+    "collections": "Kolekcje",
+    "favoriteItems": "Ulubione elementy",
+    "favoriteCollections": "Ulubione kolekcje",
+    "recentCollections": "Ostatnie kolekcje",
+    "pinnedItems": "Przypięte elementy",
+    "recentItems": "Ostatnie elementy",
+    "records": "{count} wpisów"
+  },
+  "cards": {
+    "copyToClipboard": "Kopiuj do schowka",
+    "copiedToClipboard": "Skopiowano do schowka",
+    "collectionActions": "Akcje kolekcji",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "addToFavorites": "Dodaj do ulubionych",
+    "removeFromFavorites": "Usuń z ulubionych",
+    "favorite": "Dodaj do ulubionych",
+    "unfavorite": "Usuń z ulubionych",
+    "noPreview": "Brak podglądu",
+    "ariaItem": "{type}: {title}",
+    "ariaCollection": "Kolekcja: {title}"
+  },
+  "itemsPage": {
+    "addType": "Dodaj: {type}",
+    "noItems": "Brak elementów.",
+    "proFeatureHeading": "{type} to funkcja Pro",
+    "proFeatureBody": "Przejdź na Pro, aby przesyłać i przechowywać: {slug}.",
+    "upgradeToPro": "Przejdź na Pro"
+  },
+  "collectionsPage": {
+    "title": "Kolekcje",
+    "noCollections": "Brak kolekcji.",
+    "detailNoItems": "Brak elementów w tej kolekcji.",
+    "sectionItems": "Elementy",
+    "sectionImages": "Obrazy",
+    "sectionFiles": "Pliki",
+    "editCollection": "Edytuj kolekcję",
+    "deleteCollection": "Usuń kolekcję"
+  },
+  "favoritesPage": {
+    "title": "Ulubione",
+    "empty": "Brak ulubionych. Oznacz element lub kolekcję gwiazdką, aby zobaczyć je tutaj.",
+    "items": "Elementy",
+    "collections": "Kolekcje",
+    "sectionHeading": "{heading} ({count})",
+    "sortNewest": "Najnowsze",
+    "sortOldest": "Najstarsze",
+    "sortNameAsc": "Nazwa A-Z",
+    "sortNameDesc": "Nazwa Z-A",
+    "sortType": "Typ elementu"
+  },
+  "drawer": {
+    "download": "Pobierz",
+    "copy": "Kopiuj",
+    "editItem": "Edytuj element",
+    "deleteItem": "Usuń element",
+    "favorite": "Dodaj do ulubionych",
+    "unfavorite": "Usuń z ulubionych",
+    "pin": "Przypnij",
+    "unpin": "Odepnij",
+    "noPermissionEdit": "Nie masz uprawnień do edycji tego elementu",
+    "noPermissionDelete": "Nie masz uprawnień do usunięcia tego elementu",
+    "sectionDescription": "Opis",
+    "sectionContent": "Treść",
+    "sectionPreview": "Podgląd",
+    "sectionFile": "Plik",
+    "sectionTags": "Tagi",
+    "sectionCollections": "Kolekcje",
+    "sectionType": "Typ",
+    "created": "Utworzono {date}",
+    "deleteTitle": "Usuń element",
+    "deleteBody": "Spowoduje to trwałe usunięcie „{title}”. Tej operacji nie można cofnąć.",
+    "save": "Zapisz",
+    "saving": "Zapisywanie...",
+    "cancel": "Anuluj",
+    "toasts": {
+      "itemUpdated": "Element zaktualizowany",
+      "failedUpdateItem": "Nie udało się zaktualizować elementu",
+      "itemFavorited": "Element dodany do ulubionych",
+      "itemUnfavorited": "Element usunięty z ulubionych",
+      "failedFavorite": "Nie udało się zaktualizować ulubionych",
+      "itemPinned": "Element przypięty",
+      "itemUnpinned": "Element odpięty",
+      "failedPin": "Nie udało się zaktualizować przypięcia",
+      "promptUpdated": "Prompt zaktualizowany",
+      "failedUpdatePrompt": "Nie udało się zaktualizować promptu",
+      "itemDeleted": "Element usunięty",
+      "failedDeleteItem": "Nie udało się usunąć elementu",
+      "failedLoadItem": "Nie udało się wczytać elementu"
+    }
+  },
+  "itemForm": {
+    "newItem": "Nowy element",
+    "newItemDescription": "Utwórz nowy fragment kodu, prompt, polecenie, notatkę, link, plik lub obraz.",
+    "newCollection": "Nowa kolekcja",
+    "newCollectionDescription": "Zgrupuj elementy w nowej kolekcji.",
+    "editCollection": "Edytuj kolekcję",
+    "editCollectionDescription": "Zaktualizuj nazwę i opis tej kolekcji.",
+    "type": "Typ",
+    "selectType": "Wybierz typ",
+    "title": "Tytuł",
+    "description": "Opis",
+    "language": "Język",
+    "selectLanguage": "Wybierz język",
+    "content": "Treść",
+    "url": "Adres URL",
+    "tags": "Tagi",
+    "name": "Nazwa*",
+    "collections": "Kolekcje",
+    "file": "Plik",
+    "image": "Obraz",
+    "create": "Utwórz",
+    "creating": "Tworzenie...",
+    "save": "Zapisz",
+    "saving": "Zapisywanie...",
+    "placeholderTitle": "np. Hook debounce",
+    "placeholderDescription": "Krótkie podsumowanie tego elementu",
+    "placeholderCollectionName": "np. Wzorce React",
+    "placeholderCollectionDescription": "Krótkie podsumowanie tej kolekcji",
+    "placeholderCode": "Wklej tutaj swój kod",
+    "placeholderContent": "Wpisz tutaj treść",
+    "placeholderUrl": "https://przyklad.com",
+    "placeholderTags": "tagi, oddzielone, przecinkami",
+    "selectCollections": "Wybierz kolekcje...",
+    "noCollectionsYet": "Brak kolekcji",
+    "noCollectionsFound": "Nie znaleziono kolekcji.",
+    "searchCollections": "Szukaj kolekcji...",
+    "collectionsSelected": "Wybrano kolekcje: {count}",
+    "toasts": {
+      "itemCreated": "Element utworzony",
+      "failedCreateItem": "Nie udało się utworzyć elementu",
+      "collectionCreated": "Kolekcja utworzona",
+      "failedCreateCollection": "Nie udało się utworzyć kolekcji",
+      "collectionUpdated": "Kolekcja zaktualizowana",
+      "failedUpdateCollection": "Nie udało się zaktualizować kolekcji",
+      "collectionDeleted": "Kolekcja usunięta",
+      "failedDeleteCollection": "Nie udało się usunąć kolekcji"
+    },
+    "deleteCollectionTitle": "Usuń kolekcję",
+    "deleteCollectionBody": "Spowoduje to usunięcie „{name}”. Elementy w tej kolekcji nie zostaną usunięte — po prostu przestaną do niej należeć. Tej operacji nie można cofnąć."
+  },
+  "editor": {
+    "code": "Kod",
+    "explanation": "Wyjaśnienie",
+    "explainThisCode": "Wyjaśnij ten kod",
+    "aiRequiresPro": "Funkcje AI wymagają subskrypcji Pro",
+    "copyCode": "Kopiuj kod",
+    "write": "Pisz",
+    "preview": "Podgląd",
+    "original": "Oryginał",
+    "optimized": "Zoptymalizowany",
+    "nothingToPreview": "Brak treści do podglądu",
+    "optimizeThisPrompt": "Zoptymalizuj ten prompt",
+    "keepOriginal": "Zachowaj oryginał",
+    "useThisVersion": "Użyj tej wersji",
+    "copiedToClipboard": "Skopiowano do schowka",
+    "failedExplain": "Nie udało się wygenerować wyjaśnienia",
+    "failedOptimize": "Nie udało się zoptymalizować promptu"
+  },
+  "fileUpload": {
+    "invalidFile": "Nieprawidłowy plik",
+    "uploadFailed": "Przesyłanie nie powiodło się",
+    "uploading": "Przesyłanie... {progress}%",
+    "dragDropFile": "Przeciągnij i upuść plik tutaj lub",
+    "dragDropImage": "Przeciągnij i upuść obraz tutaj lub",
+    "browseFiles": "Przeglądaj pliki",
+    "removeFile": "Usuń plik"
+  },
+  "aiButtons": {
+    "suggestTags": "Zaproponuj tagi",
+    "suggestDescription": "Zaproponuj opis",
+    "addTitleFirstTags": "Dodaj tytuł przed proponowaniem tagów",
+    "addTitleFirstDescription": "Dodaj tytuł przed proponowaniem opisu",
+    "failedTags": "Nie udało się wygenerować propozycji tagów",
+    "failedDescription": "Nie udało się wygenerować opisu",
+    "acceptTag": "Zaakceptuj tag {tag}",
+    "rejectTag": "Odrzuć tag {tag}"
+  },
+  "settingsPage": {
+    "title": "Ustawienia",
+    "billing": "Rozliczenia",
+    "billingProDescription": "Zarządzaj swoją subskrypcją Kept Pro.",
+    "billingFreeDescription": "Przejdź na Pro, aby korzystać z nieograniczonej liczby elementów i kolekcji.",
+    "editorPreferences": "Preferencje edytora",
+    "editorPreferencesDescription": "Dostosuj wygląd i zachowanie edytora kodu. Zmiany są zapisywane automatycznie.",
+    "security": "Bezpieczeństwo",
+    "securityHasPassword": "Zmień hasło używane do logowania.",
+    "securityGithub": "Logujesz się przez GitHub, więc nie ma hasła do zarządzania.",
+    "dangerZone": "Strefa niebezpieczna",
+    "dangerZoneDescription": "Trwale usuń swoje konto oraz wszystkie elementy i kolekcje."
+  },
+  "billing": {
+    "nowOnPro": "Masz teraz plan Pro! Może minąć chwila, zanim to się pojawi.",
+    "checkoutCanceled": "Płatność anulowana",
+    "demoPro": "Pro demo",
+    "demoProNote": "aktywowano natychmiast, bez płatności",
+    "proCancelsOn": "kończy się {date}",
+    "proRenewsOn": "odnawia się {date}",
+    "manageSubscription": "Zarządzaj subskrypcją",
+    "items": "Elementy",
+    "collections": "Kolekcje",
+    "upgradeToProPrice": "Przejdź na Pro — {price}",
+    "editorPreferencesSaved": "Preferencje edytora zapisane",
+    "failedSaveEditorPreferences": "Nie udało się zapisać preferencji edytora"
+  },
+  "editorPreferences": {
+    "fontSize": "Rozmiar czcionki",
+    "tabSize": "Rozmiar tabulacji",
+    "theme": "Motyw",
+    "spaces": "{count} spacje",
+    "px": "{size} px",
+    "wordWrap": "Zawijanie wierszy",
+    "wordWrapDescription": "Zawijaj długie wiersze zamiast przewijać w poziomie.",
+    "minimap": "Minimapa",
+    "minimapDescription": "Pokaż miniaturowy podgląd kodu przy prawej krawędzi edytora.",
+    "themeVsDark": "VS Dark",
+    "themeMonokai": "Monokai",
+    "themeGithubDark": "GitHub Dark"
+  },
+  "changePassword": {
+    "open": "Zmień hasło",
+    "currentPassword": "Bieżące hasło",
+    "newPassword": "Nowe hasło",
+    "confirmNewPassword": "Potwierdź nowe hasło",
+    "submit": "Zmień hasło",
+    "cancel": "Anuluj",
+    "passwordChanged": "Hasło zmienione"
+  },
+  "deleteAccount": {
+    "open": "Usuń konto",
+    "title": "Usuń konto",
+    "body": "Spowoduje to trwałe usunięcie Twojego konta oraz wszystkich elementów i kolekcji. Tej operacji nie można cofnąć.",
+    "confirmPrompt": "Wpisz <b>delete</b>, aby potwierdzić",
+    "confirm": "Usuń konto"
+  },
+  "demoPro": {
+    "tryInstantly": "Wypróbuj Pro od razu (demo, bez płatności)",
+    "revert": "Wróć do planu Darmowego (demo)",
+    "activated": "Pro demo aktywowane — płatność nie jest wymagana.",
+    "reverted": "Przywrócono plan Darmowy."
+  },
+  "upgradePage": {
+    "title": "Przejdź na Pro",
+    "subtitle": "Odblokuj nieograniczoną liczbę elementów, kolekcji oraz przesyłanie plików.",
+    "currentPlan": "Bieżący plan",
+    "mostPopular": "Najpopularniejszy",
+    "justCheckingDemo": "Tylko sprawdzasz demo?",
+    "upgradeToProPrice": "Przejdź na Pro — {price}"
+  },
+  "profilePage": {
+    "title": "Profil",
+    "pro": "Pro",
+    "free": "Darmowy",
+    "memberSince": "Członek od {date}",
+    "usage": "Wykorzystanie",
+    "totalItems": "Wszystkie elementy",
+    "collections": "Kolekcje",
+    "byType": "Według typu"
+  },
+  "pagination": {
+    "previous": "Poprzednia",
+    "next": "Następna"
+  },
+  "notFound": {
+    "eyebrow": "Błąd / 404",
+    "title": "Nie znaleziono strony",
+    "body": "Strona, której szukasz, nie istnieje lub mogła zostać przeniesiona.",
+    "backToDashboard": "Powrót do pulpitu"
+  }
+}

@@ -27,9 +27,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { isPro: true },
+          select: { isPro: true, locale: true },
         });
         token.isPro = dbUser?.isPro ?? false;
+        token.locale = (dbUser?.locale ?? null) as typeof token.locale;
       }
       return token;
     },
@@ -37,6 +38,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.isPro = token.isPro ?? false;
+        session.user.locale = token.locale ?? null;
       }
       return session;
     },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "@/lib/toast";
@@ -9,10 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BackToSignInLink } from "@/components/auth/BackToSignInLink";
 import { useResendCooldown } from "@/hooks/useResendCooldown";
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email("Enter a valid email address"),
-});
 
 async function sendResetLink(email: string) {
   const response = await fetch("/api/auth/forgot-password", {
@@ -24,6 +21,8 @@ async function sendResetLink(email: string) {
 }
 
 export function ForgotPasswordForm() {
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,13 +30,17 @@ export function ForgotPasswordForm() {
   const [isResending, setIsResending] = useState(false);
   const { secondsLeft, startCooldown } = useResendCooldown();
 
+  const forgotPasswordSchema = z.object({
+    email: z.string().email(t("errors.validEmail")),
+  });
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
     const parsed = forgotPasswordSchema.safeParse({ email });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Invalid input");
+      setError(parsed.error.issues[0]?.message ?? tc("invalidInput"));
       return;
     }
 
@@ -46,7 +49,7 @@ export function ForgotPasswordForm() {
     setIsSubmitting(false);
 
     if (!result.success) {
-      setError(result.error ?? "Something went wrong");
+      setError(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
@@ -60,13 +63,13 @@ export function ForgotPasswordForm() {
     setIsResending(false);
 
     if (!result.success) {
-      toast.error(result.error ?? "Something went wrong");
+      toast.error(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
     startCooldown();
-    toast.success("Reset link sent", {
-      description: `Check ${email} for the link.`,
+    toast.success(t("forgotPassword.resendToast"), {
+      description: t("forgotPassword.resendToastDescription", { email }),
     });
   }
 
@@ -75,9 +78,9 @@ export function ForgotPasswordForm() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col items-center gap-2 py-2 text-center">
           <CheckCircle2 className="size-8 text-emerald-500" />
-          <p className="font-medium text-foreground">Reset link sent</p>
+          <p className="font-medium text-foreground">{t("forgotPassword.sentHeading")}</p>
           <p className="text-sm text-muted-foreground">
-            If an account exists for {email}, we&apos;ve sent a link to reset your password.
+            {t("forgotPassword.sentBody", { email })}
           </p>
         </div>
         <Button
@@ -87,7 +90,9 @@ export function ForgotPasswordForm() {
           onClick={handleResend}
         >
           {isResending && <Loader2 className="size-4 animate-spin" />}
-          {secondsLeft > 0 ? `Resend reset link (${secondsLeft}s)` : "Resend reset link"}
+          {secondsLeft > 0
+            ? t("forgotPassword.resendCountdown", { seconds: secondsLeft })
+            : t("forgotPassword.resend")}
         </Button>
         <BackToSignInLink />
       </div>
@@ -98,7 +103,7 @@ export function ForgotPasswordForm() {
     <div className="flex flex-col gap-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("fields.email")}</Label>
           <Input
             id="email"
             type="email"
@@ -111,7 +116,7 @@ export function ForgotPasswordForm() {
         </div>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-          Send reset link
+          {t("forgotPassword.submit")}
         </Button>
       </form>
       <BackToSignInLink />

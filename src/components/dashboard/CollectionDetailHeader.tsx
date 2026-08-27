@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Pencil, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CollectionDialogs } from "@/components/dashboard/CollectionDialogs";
@@ -16,6 +17,8 @@ export function CollectionDetailHeader({ collection }: CollectionDetailHeaderPro
   const router = useRouter();
   const { editOpen, setEditOpen, deleteOpen, setDeleteOpen } = useCollectionDialogs();
   const [isFavorite, toggleFavorite] = useCollectionFavoriteToggle(collection);
+  const t = useTranslations("cards");
+  const tcol = useTranslations("collectionsPage");
 
   return (
     <div className="flex items-start justify-between gap-4">
@@ -31,7 +34,7 @@ export function CollectionDetailHeader({ collection }: CollectionDetailHeaderPro
           variant="outline"
           size="icon-sm"
           onClick={toggleFavorite}
-          title={isFavorite ? "Unfavorite" : "Favorite"}
+          title={isFavorite ? t("unfavorite") : t("favorite")}
         >
           <Star className={isFavorite ? "size-4 fill-yellow-400 text-yellow-400" : "size-4"} />
         </Button>
@@ -39,7 +42,7 @@ export function CollectionDetailHeader({ collection }: CollectionDetailHeaderPro
           variant="outline"
           size="icon-sm"
           onClick={() => setEditOpen(true)}
-          title="Edit collection"
+          title={tcol("editCollection")}
         >
           <Pencil className="size-4" />
         </Button>
@@ -48,7 +51,7 @@ export function CollectionDetailHeader({ collection }: CollectionDetailHeaderPro
           size="icon-sm"
           className="text-destructive"
           onClick={() => setDeleteOpen(true)}
-          title="Delete collection"
+          title={tcol("deleteCollection")}
         >
           <Trash2 className="size-4" />
         </Button>

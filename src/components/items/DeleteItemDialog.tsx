@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
@@ -22,6 +23,9 @@ interface DeleteItemDialogProps {
 }
 
 export function DeleteItemDialog({ itemTitle, canDelete, isDeleting, onDelete }: DeleteItemDialogProps) {
+  const t = useTranslations("drawer");
+  const tc = useTranslations("common");
+
   return (
     <AlertDialog>
       <AlertDialogTrigger
@@ -31,8 +35,8 @@ export function DeleteItemDialog({ itemTitle, canDelete, isDeleting, onDelete }:
             size="icon-sm"
             className="ml-auto text-destructive"
             disabled={!canDelete}
-            aria-label="Delete item"
-            title={canDelete ? undefined : "You don't have permission to delete this item"}
+            aria-label={t("deleteItem")}
+            title={canDelete ? undefined : t("noPermissionDelete")}
           />
         }
       >
@@ -40,15 +44,15 @@ export function DeleteItemDialog({ itemTitle, canDelete, isDeleting, onDelete }:
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete item</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently delete &quot;{itemTitle}&quot;. This action cannot be undone.
+            {t("deleteBody", { title: itemTitle })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>{tc("cancel")}</AlertDialogCancel>
           <AlertDialogAction variant="destructive" disabled={isDeleting} onClick={onDelete}>
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? tc("deleting") : tc("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

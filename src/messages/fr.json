@@ -1,0 +1,542 @@
+{
+  "metadata": {
+    "title": "Kept",
+    "description": "Extraits de code, prompts, commandes, notes, liens, fichiers et images — réunis dans un hub unique, rapide, consultable et enrichi par l'IA."
+  },
+  "common": {
+    "appName": "Kept",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "create": "Créer",
+    "creating": "Création...",
+    "delete": "Supprimer",
+    "deleting": "Suppression...",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "or": "ou",
+    "comingSoon": "Bientôt disponible",
+    "somethingWentWrong": "Une erreur est survenue",
+    "invalidInput": "Saisie invalide",
+    "itemCount": "{count, plural, one {# élément} other {# éléments}}",
+    "recordCount": "{count} entrées"
+  },
+  "toasts": {
+    "success": "Succès",
+    "error": "Erreur"
+  },
+  "relativeTime": {
+    "justNow": "à l'instant",
+    "minutes": "il y a {count} min",
+    "hours": "il y a {count} h",
+    "days": "il y a {count} j",
+    "months": "il y a {count} mois"
+  },
+  "nav": {
+    "features": "Fonctionnalités",
+    "pricing": "Tarifs",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "getStarted": "Commencer",
+    "switchToLight": "Passer au thème clair",
+    "switchToDark": "Passer au thème sombre",
+    "language": "Langue"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Conçu pour les développeurs",
+      "titleLine1": "Gardez tout.",
+      "titleLine2": "Retrouvez tout.",
+      "subtitle": "Extraits de code, prompts, commandes, notes, liens et fichiers — réunis dans un hub unique, rapide, consultable et enrichi par l'IA, au lieu d'être éparpillés dans une dizaine d'outils différents.",
+      "getStartedFree": "Commencer gratuitement",
+      "seeFeatures": "Voir les fonctionnalités"
+    },
+    "chaos": {
+      "before": "Éparpillé partout...",
+      "after": "...réuni au même endroit.",
+      "browserTabs": "Onglets du navigateur",
+      "terminal": "Terminal",
+      "textFile": "Fichier texte",
+      "bookmark": "Favori"
+    },
+    "features": {
+      "eyebrow": "Fonctionnalités",
+      "heading": "Tout, gardé",
+      "subtitle": "Extraits de code, prompts, commandes, notes, liens et fichiers — organisés comme vous pensez vraiment, pas comme une dizaine d'outils vous y obligent.",
+      "codeSnippets": {
+        "title": "Extraits de code",
+        "description": "Enregistrez du code réutilisable avec coloration syntaxique et étiquetage du langage."
+      },
+      "aiPrompts": {
+        "title": "Prompts IA",
+        "description": "Gardez vos meilleurs prompts organisés, versionnés et prêts à être réutilisés."
+      },
+      "instantSearch": {
+        "title": "Recherche instantanée",
+        "description": "Recherche plein texte dans le contenu, les tags, les titres et les types — instantanément."
+      },
+      "commands": {
+        "title": "Commandes",
+        "description": "N'oubliez plus jamais ce fameux paramètre CLI — enregistrez et retrouvez vos commandes."
+      },
+      "filesDocs": {
+        "title": "Fichiers & documents",
+        "description": "Joignez fichiers et images à côté de tout ce à quoi ils se rapportent."
+      },
+      "collections": {
+        "title": "Collections",
+        "description": "Regroupez n'importe quoi, de n'importe quel type, dans des collections adaptées à votre flux de travail."
+      }
+    },
+    "ai": {
+      "badge": "Fonctionnalité Pro",
+      "heading": "Laissez l'IA faire le travail fastidieux",
+      "subtitle": "Kept Pro utilise l'IA pour tout garder organisé sans effort manuel.",
+      "autoTag": "Suggestions de tags automatiques",
+      "summaries": "Résumés de contenu intelligents",
+      "explain": "« Explique ce code » à la demande",
+      "optimizer": "Optimiseur de prompts",
+      "aiGeneratedTags": "Tags générés par l'IA"
+    },
+    "pricing": {
+      "eyebrow": "Tarifs",
+      "heading": "Une tarification simple et honnête",
+      "subtitle": "Commencez gratuitement. Passez à la version supérieure quand vous en aurez besoin.",
+      "mostPopular": "[Le plus populaire]",
+      "getStarted": "Commencer",
+      "goPro": "Passer à Pro"
+    },
+    "finalCta": {
+      "heading": "Prêt à tout garder au même endroit ?",
+      "subtitle": "Arrêtez de perdre extraits de code, prompts, commandes et notes dans une dizaine d'outils dispersés.",
+      "cta": "Commencer gratuitement"
+    },
+    "footer": {
+      "tagline": "Tout ce que vous vouliez garder, au même endroit.",
+      "product": "Produit",
+      "company": "Entreprise",
+      "legal": "Mentions légales",
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "about": "À propos",
+      "contact": "Contact",
+      "privacy": "Confidentialité",
+      "terms": "Conditions",
+      "comingSoon": "Bientôt disponible",
+      "rights": "© {year} Kept. Tous droits réservés."
+    }
+  },
+  "pricing": {
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "save25": "Économisez 25 %",
+    "save25Compact": "(−25 %)",
+    "toggleYearly": "Basculer la tarification annuelle",
+    "free": "Gratuit",
+    "pro": "Pro",
+    "perMonth": "/mois",
+    "perYear": "/an",
+    "itemsTotal": "{count, plural, one {# élément au total} other {# éléments au total}}",
+    "collectionsCount": "{count, plural, one {# collection} other {# collections}}",
+    "allTextTypes": "Tous les types textuels",
+    "basicSearch": "Recherche de base",
+    "unlimitedItems": "Éléments illimités",
+    "unlimitedCollections": "Collections illimitées",
+    "fileUploads": "Téléversement de fichiers et d'images",
+    "aiAutoTagging": "Étiquetage et résumés par IA",
+    "dataExport": "Export des données (JSON/ZIP)"
+  },
+  "auth": {
+    "signIn": {
+      "crumb": "Connexion",
+      "title": "Connexion",
+      "description": "Saisissez votre e-mail et votre mot de passe pour continuer.",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "registerLink": "S'inscrire"
+    },
+    "register": {
+      "crumb": "Inscription",
+      "title": "Créer un compte",
+      "description": "Démarrez avec Kept — un seul endroit pour vos liens, extraits de code et commandes.",
+      "submit": "Créer un compte",
+      "alreadyRegistered": "Déjà inscrit ?",
+      "signInLink": "Se connecter"
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié ?",
+      "description": "Saisissez votre e-mail et nous vous enverrons un lien de réinitialisation",
+      "submit": "Envoyer le lien de réinitialisation",
+      "sentHeading": "Lien de réinitialisation envoyé",
+      "sentBody": "Si un compte existe pour {email}, nous avons envoyé un lien pour réinitialiser votre mot de passe.",
+      "resend": "Renvoyer le lien de réinitialisation",
+      "resendCountdown": "Renvoyer le lien de réinitialisation ({seconds} s)",
+      "resendToast": "Lien de réinitialisation envoyé",
+      "resendToastDescription": "Consultez {email} pour le lien."
+    },
+    "resetPassword": {
+      "title": "Réinitialiser votre mot de passe",
+      "description": "Choisissez un nouveau mot de passe pour votre compte",
+      "submit": "Réinitialiser le mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmNewPassword": "Confirmer le nouveau mot de passe",
+      "invalidMissingToken": "Ce lien de réinitialisation est invalide ou son jeton est manquant.",
+      "invalidRequestNew": "Ce lien de réinitialisation est invalide. Demandez-en un nouveau.",
+      "requestNewLink": "Demander un nouveau lien",
+      "successToast": "Mot de passe réinitialisé",
+      "successToastDescription": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe."
+    },
+    "checkEmail": {
+      "title": "Vérifiez votre e-mail",
+      "description": "Nous avons envoyé un lien de vérification à votre adresse e-mail. Cliquez dessus pour activer votre compte.",
+      "sentTo": "Envoyé à {email}"
+    },
+    "fields": {
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "name": "Nom",
+      "confirmPassword": "Confirmer le mot de passe"
+    },
+    "forgotLink": "Oublié ?",
+    "continueWithGithub": "Continuer avec GitHub",
+    "backToSignIn": "Retour à la connexion",
+    "resendVerification": "Renvoyer l'e-mail de vérification",
+    "resendVerificationCountdown": "Renvoyer l'e-mail de vérification ({seconds} s)",
+    "verificationEmailSent": "E-mail de vérification envoyé",
+    "verificationEmailSentDescription": "Consultez {email} pour le lien.",
+    "accountCreated": "Compte créé. Vous pouvez maintenant vous connecter.",
+    "errors": {
+      "verifyEmailFirst": "Veuillez vérifier votre e-mail avant de vous connecter.",
+      "tooManyAttempts": "Trop de tentatives. Veuillez réessayer plus tard.",
+      "invalidCredentials": "E-mail ou mot de passe invalide",
+      "nameRequired": "Le nom est requis",
+      "validEmail": "Saisissez une adresse e-mail valide",
+      "passwordMin": "Le mot de passe doit comporter au moins 8 caractères",
+      "passwordsNoMatch": "Les mots de passe ne correspondent pas",
+      "currentPasswordRequired": "Le mot de passe actuel est requis"
+    },
+    "toasts": {
+      "emailVerified": "E-mail vérifié",
+      "emailVerifiedDescription": "Vous pouvez maintenant vous connecter.",
+      "verificationLinkExpired": "Lien de vérification expiré",
+      "verificationLinkExpiredDescription": "Connectez-vous et utilisez l'option de renvoi pour obtenir un nouveau lien.",
+      "invalidVerificationLink": "Lien de vérification invalide"
+    }
+  },
+  "appChrome": {
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher éléments, collections, tags...",
+    "favorites": "Favoris",
+    "upgrade": "Passer à Pro",
+    "newCollection": "Nouvelle collection",
+    "newItem": "Nouvel élément",
+    "navigation": "Navigation",
+    "quickActions": "Actions rapides",
+    "itemTypes": "Types d'éléments",
+    "favoriteCollections": "Collections favorites",
+    "recentCollections": "Collections récentes",
+    "viewAllCollections": "Voir toutes les collections",
+    "expandSidebar": "Déployer la barre latérale",
+    "collapseSidebar": "Réduire la barre latérale",
+    "openSidebar": "Ouvrir la barre latérale",
+    "close": "Fermer",
+    "userMenu": "Menu utilisateur",
+    "account": "Compte",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "appearance": "Apparence",
+    "light": "Clair",
+    "dark": "Sombre",
+    "language": "Langue",
+    "signOut": "Se déconnecter",
+    "pro": "PRO",
+    "tabDash": "Accueil",
+    "tabItems": "Éléments",
+    "tabColls": "Collect.",
+    "tabYou": "Vous"
+  },
+  "search": {
+    "placeholder": "Rechercher éléments, collections, tags...",
+    "title": "Rechercher",
+    "description": "Rechercher des éléments et des collections",
+    "noResults": "Aucun résultat.",
+    "items": "Éléments",
+    "collections": "Collections",
+    "navigate": "Naviguer",
+    "select": "Sélectionner",
+    "close": "Fermer"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "ledgerRecords": "Registre / {count} entrées",
+    "totalItems": "Total des éléments",
+    "collections": "Collections",
+    "favoriteItems": "Éléments favoris",
+    "favoriteCollections": "Collections favorites",
+    "recentCollections": "Collections récentes",
+    "pinnedItems": "Éléments épinglés",
+    "recentItems": "Éléments récents",
+    "records": "{count} entrées"
+  },
+  "cards": {
+    "copyToClipboard": "Copier dans le presse-papiers",
+    "copiedToClipboard": "Copié dans le presse-papiers",
+    "collectionActions": "Actions de la collection",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "addToFavorites": "Ajouter aux favoris",
+    "removeFromFavorites": "Retirer des favoris",
+    "favorite": "Favori",
+    "unfavorite": "Retirer des favoris",
+    "noPreview": "Aucun aperçu",
+    "ariaItem": "{type} : {title}",
+    "ariaCollection": "Collection : {title}"
+  },
+  "itemsPage": {
+    "addType": "Ajouter {type}",
+    "noItems": "Aucun élément pour l'instant.",
+    "proFeatureHeading": "{type} est une fonctionnalité Pro",
+    "proFeatureBody": "Passez à Pro pour téléverser et stocker {slug}.",
+    "upgradeToPro": "Passer à Pro"
+  },
+  "collectionsPage": {
+    "title": "Collections",
+    "noCollections": "Aucune collection pour l'instant.",
+    "detailNoItems": "Aucun élément dans cette collection pour l'instant.",
+    "sectionItems": "Éléments",
+    "sectionImages": "Images",
+    "sectionFiles": "Fichiers",
+    "editCollection": "Modifier la collection",
+    "deleteCollection": "Supprimer la collection"
+  },
+  "favoritesPage": {
+    "title": "Favoris",
+    "empty": "Aucun favori pour l'instant. Ajoutez une étoile à un élément ou une collection pour le retrouver ici.",
+    "items": "Éléments",
+    "collections": "Collections",
+    "sectionHeading": "{heading} ({count})",
+    "sortNewest": "Plus récents",
+    "sortOldest": "Plus anciens",
+    "sortNameAsc": "Nom A-Z",
+    "sortNameDesc": "Nom Z-A",
+    "sortType": "Type d'élément"
+  },
+  "drawer": {
+    "download": "Télécharger",
+    "copy": "Copier",
+    "editItem": "Modifier l'élément",
+    "deleteItem": "Supprimer l'élément",
+    "favorite": "Favori",
+    "unfavorite": "Retirer des favoris",
+    "pin": "Épingler",
+    "unpin": "Désépingler",
+    "noPermissionEdit": "Vous n'êtes pas autorisé à modifier cet élément",
+    "noPermissionDelete": "Vous n'êtes pas autorisé à supprimer cet élément",
+    "sectionDescription": "Description",
+    "sectionContent": "Contenu",
+    "sectionPreview": "Aperçu",
+    "sectionFile": "Fichier",
+    "sectionTags": "Tags",
+    "sectionCollections": "Collections",
+    "sectionType": "Type",
+    "created": "Créé le {date}",
+    "deleteTitle": "Supprimer l'élément",
+    "deleteBody": "Cela supprimera définitivement « {title} ». Cette action est irréversible.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "toasts": {
+      "itemUpdated": "Élément mis à jour",
+      "failedUpdateItem": "Échec de la mise à jour de l'élément",
+      "itemFavorited": "Élément ajouté aux favoris",
+      "itemUnfavorited": "Élément retiré des favoris",
+      "failedFavorite": "Échec de la mise à jour du favori",
+      "itemPinned": "Élément épinglé",
+      "itemUnpinned": "Élément désépinglé",
+      "failedPin": "Échec de la mise à jour de l'épingle",
+      "promptUpdated": "Prompt mis à jour",
+      "failedUpdatePrompt": "Échec de la mise à jour du prompt",
+      "itemDeleted": "Élément supprimé",
+      "failedDeleteItem": "Échec de la suppression de l'élément",
+      "failedLoadItem": "Échec du chargement de l'élément"
+    }
+  },
+  "itemForm": {
+    "newItem": "Nouvel élément",
+    "newItemDescription": "Créer un nouvel extrait de code, prompt, commande, note, lien, fichier ou image.",
+    "newCollection": "Nouvelle collection",
+    "newCollectionDescription": "Regroupez des éléments au sein d'une nouvelle collection.",
+    "editCollection": "Modifier la collection",
+    "editCollectionDescription": "Modifiez le nom et la description de cette collection.",
+    "type": "Type",
+    "selectType": "Sélectionner un type",
+    "title": "Titre",
+    "description": "Description",
+    "language": "Langage",
+    "selectLanguage": "Sélectionner un langage",
+    "content": "Contenu",
+    "url": "URL",
+    "tags": "Tags",
+    "name": "Nom*",
+    "collections": "Collections",
+    "file": "Fichier",
+    "image": "Image",
+    "create": "Créer",
+    "creating": "Création...",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "placeholderTitle": "ex. Hook de debounce",
+    "placeholderDescription": "Un bref résumé de cet élément",
+    "placeholderCollectionName": "ex. Patterns React",
+    "placeholderCollectionDescription": "Un bref résumé de cette collection",
+    "placeholderCode": "Collez votre code ici",
+    "placeholderContent": "Rédigez le contenu ici",
+    "placeholderUrl": "https://exemple.com",
+    "placeholderTags": "tags, séparés, par, des, virgules",
+    "selectCollections": "Sélectionner des collections...",
+    "noCollectionsYet": "Aucune collection pour l'instant",
+    "noCollectionsFound": "Aucune collection trouvée.",
+    "searchCollections": "Rechercher des collections...",
+    "collectionsSelected": "{count} collections sélectionnées",
+    "toasts": {
+      "itemCreated": "Élément créé",
+      "failedCreateItem": "Échec de la création de l'élément",
+      "collectionCreated": "Collection créée",
+      "failedCreateCollection": "Échec de la création de la collection",
+      "collectionUpdated": "Collection mise à jour",
+      "failedUpdateCollection": "Échec de la mise à jour de la collection",
+      "collectionDeleted": "Collection supprimée",
+      "failedDeleteCollection": "Échec de la suppression de la collection"
+    },
+    "deleteCollectionTitle": "Supprimer la collection",
+    "deleteCollectionBody": "Cela supprimera « {name} ». Les éléments de cette collection ne seront pas supprimés — ils n'y appartiendront simplement plus. Cette action est irréversible."
+  },
+  "editor": {
+    "code": "Code",
+    "explanation": "Explication",
+    "explainThisCode": "Expliquer ce code",
+    "aiRequiresPro": "Les fonctionnalités IA nécessitent un abonnement Pro",
+    "copyCode": "Copier le code",
+    "write": "Rédiger",
+    "preview": "Aperçu",
+    "original": "Original",
+    "optimized": "Optimisé",
+    "nothingToPreview": "Rien à prévisualiser",
+    "optimizeThisPrompt": "Optimiser ce prompt",
+    "keepOriginal": "Garder l'original",
+    "useThisVersion": "Utiliser cette version",
+    "copiedToClipboard": "Copié dans le presse-papiers",
+    "failedExplain": "Échec de la génération de l'explication",
+    "failedOptimize": "Échec de l'optimisation du prompt"
+  },
+  "fileUpload": {
+    "invalidFile": "Fichier invalide",
+    "uploadFailed": "Échec du téléversement",
+    "uploading": "Téléversement... {progress} %",
+    "dragDropFile": "Glissez-déposez un fichier ici, ou",
+    "dragDropImage": "Glissez-déposez une image ici, ou",
+    "browseFiles": "Parcourir les fichiers",
+    "removeFile": "Retirer le fichier"
+  },
+  "aiButtons": {
+    "suggestTags": "Suggérer des tags",
+    "suggestDescription": "Suggérer une description",
+    "addTitleFirstTags": "Ajoutez un titre avant de suggérer des tags",
+    "addTitleFirstDescription": "Ajoutez un titre avant de suggérer une description",
+    "failedTags": "Échec de la génération des suggestions de tags",
+    "failedDescription": "Échec de la génération d'une description",
+    "acceptTag": "Accepter le tag {tag}",
+    "rejectTag": "Rejeter le tag {tag}"
+  },
+  "settingsPage": {
+    "title": "Paramètres",
+    "billing": "Facturation",
+    "billingProDescription": "Gérez votre abonnement Kept Pro.",
+    "billingFreeDescription": "Passez à Pro pour des éléments et collections illimités.",
+    "editorPreferences": "Préférences de l'éditeur",
+    "editorPreferencesDescription": "Personnalisez l'apparence et le comportement de l'éditeur de code. Les modifications sont enregistrées automatiquement.",
+    "security": "Sécurité",
+    "securityHasPassword": "Modifiez le mot de passe utilisé pour vous connecter.",
+    "securityGithub": "Vous vous connectez avec GitHub, il n'y a donc pas de mot de passe à gérer.",
+    "dangerZone": "Zone dangereuse",
+    "dangerZoneDescription": "Supprimez définitivement votre compte ainsi que tous vos éléments et collections."
+  },
+  "billing": {
+    "nowOnPro": "Vous êtes maintenant sur Pro ! Cela peut prendre un moment à s'afficher.",
+    "checkoutCanceled": "Paiement annulé",
+    "demoPro": "Pro démo",
+    "demoProNote": "activé instantanément, aucun paiement effectué",
+    "proCancelsOn": "prend fin le {date}",
+    "proRenewsOn": "se renouvelle le {date}",
+    "manageSubscription": "Gérer l'abonnement",
+    "items": "Éléments",
+    "collections": "Collections",
+    "upgradeToProPrice": "Passer à Pro — {price}",
+    "editorPreferencesSaved": "Préférences de l'éditeur enregistrées",
+    "failedSaveEditorPreferences": "Échec de l'enregistrement des préférences de l'éditeur"
+  },
+  "editorPreferences": {
+    "fontSize": "Taille de police",
+    "tabSize": "Taille de tabulation",
+    "theme": "Thème",
+    "spaces": "{count} espaces",
+    "px": "{size} px",
+    "wordWrap": "Retour à la ligne",
+    "wordWrapDescription": "Renvoyer les longues lignes à la ligne au lieu de faire défiler horizontalement.",
+    "minimap": "Minimap",
+    "minimapDescription": "Afficher un aperçu miniature du code sur le bord droit de l'éditeur.",
+    "themeVsDark": "VS Dark",
+    "themeMonokai": "Monokai",
+    "themeGithubDark": "GitHub Dark"
+  },
+  "changePassword": {
+    "open": "Changer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "submit": "Changer le mot de passe",
+    "cancel": "Annuler",
+    "passwordChanged": "Mot de passe modifié"
+  },
+  "deleteAccount": {
+    "open": "Supprimer le compte",
+    "title": "Supprimer le compte",
+    "body": "Cela supprimera définitivement votre compte ainsi que tous vos éléments et collections. Cette action est irréversible.",
+    "confirmPrompt": "Saisissez <b>delete</b> pour confirmer",
+    "confirm": "Supprimer le compte"
+  },
+  "demoPro": {
+    "tryInstantly": "Essayer Pro instantanément (démo, sans paiement)",
+    "revert": "Revenir à Gratuit (démo)",
+    "activated": "Pro démo activé — aucun paiement nécessaire.",
+    "reverted": "Retour à Gratuit."
+  },
+  "upgradePage": {
+    "title": "Passer à Pro",
+    "subtitle": "Débloquez des éléments illimités, des collections illimitées et le téléversement de fichiers.",
+    "currentPlan": "Forfait actuel",
+    "mostPopular": "Le plus populaire",
+    "justCheckingDemo": "Vous découvrez simplement la démo ?",
+    "upgradeToProPrice": "Passer à Pro — {price}"
+  },
+  "profilePage": {
+    "title": "Profil",
+    "pro": "Pro",
+    "free": "Gratuit",
+    "memberSince": "Membre depuis {date}",
+    "usage": "Utilisation",
+    "totalItems": "Total des éléments",
+    "collections": "Collections",
+    "byType": "Par type"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "notFound": {
+    "eyebrow": "Erreur / 404",
+    "title": "Page introuvable",
+    "body": "La page que vous recherchez n'existe pas ou a peut-être été déplacée.",
+    "backToDashboard": "Retour au tableau de bord"
+  }
+}

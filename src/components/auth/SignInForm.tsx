@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,8 @@ export function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,15 +35,15 @@ export function SignInForm() {
 
   useEffect(() => {
     if (searchParams.get("verified") === "1") {
-      toast.success("Email verified", {
-        description: "You can now sign in.",
+      toast.success(t("toasts.emailVerified"), {
+        description: t("toasts.emailVerifiedDescription"),
       });
     } else if (searchParams.get("verifyError") === "expired-token") {
-      toast.error("Verification link expired", {
-        description: "Sign in and use the resend option to get a new link.",
+      toast.error(t("toasts.verificationLinkExpired"), {
+        description: t("toasts.verificationLinkExpiredDescription"),
       });
     } else if (searchParams.get("verifyError") === "missing-token") {
-      toast.error("Invalid verification link");
+      toast.error(t("toasts.invalidVerificationLink"));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -62,11 +65,11 @@ export function SignInForm() {
     if (result?.error) {
       if (result.code === "unverified-email") {
         setIsUnverified(true);
-        setError("Please verify your email before signing in.");
+        setError(t("errors.verifyEmailFirst"));
       } else if (result.code === "rate-limited") {
-        setError("Too many attempts. Please try again later.");
+        setError(t("errors.tooManyAttempts"));
       } else {
-        setError("Invalid email or password");
+        setError(t("errors.invalidCredentials"));
       }
       return;
     }
@@ -87,13 +90,13 @@ export function SignInForm() {
     setIsResending(false);
 
     if (!result.success) {
-      toast.error(result.error ?? "Something went wrong");
+      toast.error(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
     startCooldown();
-    toast.success("Verification email sent", {
-      description: `Check ${email} for the link.`,
+    toast.success(t("verificationEmailSent"), {
+      description: t("verificationEmailSentDescription", { email }),
     });
   }
 
@@ -112,7 +115,9 @@ export function SignInForm() {
                 onClick={handleResend}
               >
                 {isResending && <Loader2 className="size-4 animate-spin" />}
-                {secondsLeft > 0 ? `Resend verification email (${secondsLeft}s)` : "Resend verification email"}
+                {secondsLeft > 0
+                  ? t("resendVerificationCountdown", { seconds: secondsLeft })
+                  : t("resendVerification")}
               </Button>
             )}
           </AlertDescription>
@@ -122,7 +127,7 @@ export function SignInForm() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="email" className={LABEL_CLASS}>
-            Email
+            {t("fields.email")}
           </Label>
           <Input
             id="email"
@@ -137,13 +142,13 @@ export function SignInForm() {
         <div className="flex flex-col gap-1.5">
           <div className="flex items-baseline justify-between gap-3">
             <Label htmlFor="password" className={LABEL_CLASS}>
-              Password
+              {t("fields.password")}
             </Label>
             <Link
               href="/forgot-password"
               className="text-[10px] tracking-[0.12em] text-muted-foreground uppercase underline underline-offset-4 hover:text-foreground"
             >
-              Forgot?
+              {t("forgotLink")}
             </Link>
           </div>
           <Input
@@ -162,13 +167,13 @@ export function SignInForm() {
           className="h-10 tracking-[0.16em] uppercase"
         >
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-          Sign in
+          {t("signIn.submit")}
         </Button>
       </form>
 
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         <span className="h-px bg-border" />
-        <span className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase">or</span>
+        <span className="text-[10px] tracking-[0.16em] text-muted-foreground uppercase">{tc("or")}</span>
         <span className="h-px bg-border" />
       </div>
 
@@ -187,7 +192,7 @@ export function SignInForm() {
         ) : (
           <GitHubIcon className="size-4" />
         )}
-        Continue with GitHub
+        {t("continueWithGithub")}
       </Button>
     </div>
   );

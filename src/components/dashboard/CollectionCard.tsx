@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { type MouseEvent } from "react";
+import { useTranslations } from "next-intl";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,8 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
   const [isFavorite, toggleFavorite] = useCollectionFavoriteToggle(collection);
   const clickableCard = useClickableCard(() => router.push(`/collections/${collection.id}`));
   const alphaSuffix = useSoftTintAlpha();
+  const t = useTranslations("cards");
+  const tc = useTranslations("common");
 
   function stopPropagation(event: MouseEvent) {
     event.stopPropagation();
@@ -38,7 +41,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
         style={{ borderLeftColor: collection.borderColor }}
         role="button"
         tabIndex={0}
-        aria-label={`Collection: ${collection.name}`}
+        aria-label={t("ariaCollection", { title: collection.name })}
         {...clickableCard}
       >
         <div className="flex items-start justify-between gap-2">
@@ -56,7 +59,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
                     variant="ghost"
                     size="icon-sm"
                     className="text-muted-foreground hover:text-foreground"
-                    aria-label="Collection actions"
+                    aria-label={t("collectionActions")}
                   />
                 }
               >
@@ -65,11 +68,11 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setEditOpen(true)}>
                   <Pencil className="size-4" />
-                  Edit
+                  {t("edit")}
                 </DropdownMenuItem>
                 <DropdownMenuItem variant="destructive" onClick={() => setDeleteOpen(true)}>
                   <Trash2 className="size-4" />
-                  Delete
+                  {t("delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -95,7 +98,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
             })}
           </div>
           <span className="text-[11px] tracking-[0.1em] text-muted-foreground uppercase tabular-nums">
-            {collection.itemCount} {collection.itemCount === 1 ? "item" : "items"}
+            {tc("itemCount", { count: collection.itemCount })}
           </span>
         </div>
       </div>

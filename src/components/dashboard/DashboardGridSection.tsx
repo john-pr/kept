@@ -1,4 +1,5 @@
 import { Children, type ReactNode } from "react";
+import { getTranslations } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import { GridFillerCells } from "@/components/dashboard/GridFillerCells";
 
@@ -15,18 +16,19 @@ interface DashboardGridSectionProps {
 }
 
 /** Shared "titled grid" shape used by the dashboard's pinned/recent items and recent collections sections. */
-export function DashboardGridSection({
+export async function DashboardGridSection({
   title,
   count,
   children,
   mobileScroll = false,
 }: DashboardGridSectionProps) {
+  const t = await getTranslations("dashboard");
   return (
     <section className="flex flex-col gap-px">
       <div className="flex items-baseline justify-between border-b border-rule-strong pb-2.5">
         <span className="text-xs tracking-[0.14em] text-muted-foreground uppercase">{title}</span>
         <span className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase tabular-nums">
-          {String(count).padStart(2, "0")} records
+          {t("records", { count: String(count).padStart(2, "0") })}
         </span>
       </div>
       <div

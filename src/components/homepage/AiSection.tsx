@@ -1,31 +1,28 @@
 import { Check } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { ScrollFadeIn } from "./ScrollFadeIn";
 import { ScrollableCodeBlock } from "./ScrollableCodeBlock";
 
-const AI_CHECKLIST = [
-  "Auto-tag suggestions",
-  "Smart content summaries",
-  '"Explain this code" on demand',
-  "Prompt optimizer",
-];
+export async function AiSection() {
+  const t = await getTranslations("home.ai");
+  const checklist = [t("autoTag"), t("summaries"), t("explain"), t("optimizer")];
 
-export function AiSection() {
   return (
     <section className="border-y border-border bg-gradient-to-b from-transparent via-primary/[0.04] to-transparent px-6 py-24">
       <div className="mx-auto grid max-w-5xl grid-cols-1 items-center gap-14 lg:grid-cols-2">
         <ScrollFadeIn>
           <Badge variant="outline" className="mb-4 text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-            Pro Feature
+            {t("badge")}
           </Badge>
           <h2 className="mb-3.5 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Let AI do the busywork
+            {t("heading")}
           </h2>
           <p className="mb-6 text-muted-foreground">
-            Kept Pro uses AI to keep everything organized without the manual effort.
+            {t("subtitle")}
           </p>
           <ul className="flex flex-col gap-3">
-            {AI_CHECKLIST.map((item) => (
+            {checklist.map((item) => (
               <li key={item} className="flex items-center gap-2.5 text-sm">
                 <Check className="size-4.5 shrink-0 text-primary" strokeWidth={2.5} />
                 {item}
@@ -63,7 +60,7 @@ export function AiSection() {
             </ScrollableCodeBlock>
             <div className="flex flex-wrap items-center gap-2 border-t border-dashed border-border px-5 py-4">
               <span className="mr-1 text-[0.78rem] font-semibold text-amber-500">
-                ✨ AI Generated Tags
+                ✨ {t("aiGeneratedTags")}
               </span>
               {["react", "hooks", "typescript", "debounce"].map((tag) => (
                 <span

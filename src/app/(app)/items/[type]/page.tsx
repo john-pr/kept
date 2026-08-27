@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { Plus, Sparkles } from "lucide-react";
 import { ItemCardGrid } from "@/components/dashboard/ItemCardGrid";
 import { ImageThumbnailGrid } from "@/components/dashboard/ImageThumbnailGrid";
@@ -51,6 +52,7 @@ export default async function ItemsByTypePage({ params, searchParams }: ItemsByT
   const totalPages = getPageCount(totalCount, ITEMS_PER_PAGE);
   const isImageGallery = typeSummary.slug === "images";
   const isFileList = typeSummary.slug === "files";
+  const t = await getTranslations("itemsPage");
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
@@ -67,7 +69,7 @@ export default async function ItemsByTypePage({ params, searchParams }: ItemsByT
             trigger={<Button />}
           >
             <Plus />
-            Add {singularize(typeSummary.name)}
+            {t("addType", { type: singularize(typeSummary.name) })}
           </NewItemDialog>
         )}
       </div>
@@ -75,17 +77,17 @@ export default async function ItemsByTypePage({ params, searchParams }: ItemsByT
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border py-16 text-center">
           <Sparkles className="size-8 text-muted-foreground" />
           <p className="text-sm font-medium text-foreground">
-            {typeSummary.name} is a Pro feature
+            {t("proFeatureHeading", { type: typeSummary.name })}
           </p>
           <p className="max-w-sm text-sm text-muted-foreground">
-            Upgrade to Pro to upload and store {typeSummary.slug}.
+            {t("proFeatureBody", { slug: typeSummary.slug })}
           </p>
           <Button render={<Link href="/settings" />} nativeButton={false}>
-            Upgrade to Pro
+            {t("upgradeToPro")}
           </Button>
         </div>
       ) : items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No items yet.</p>
+        <p className="text-sm text-muted-foreground">{t("noItems")}</p>
       ) : isImageGallery ? (
         <ImageThumbnailGrid items={items} />
       ) : isFileList ? (

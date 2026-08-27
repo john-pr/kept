@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarNav } from "@/components/dashboard/SidebarNav";
@@ -19,6 +20,7 @@ interface SidebarProps {
 
 export function Sidebar({ itemTypes, favoriteCollections, recentCollections, user }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const t = useTranslations("appChrome");
 
   return (
     <aside
@@ -35,14 +37,14 @@ export function Sidebar({ itemTypes, favoriteCollections, recentCollections, use
       >
         {!collapsed && (
           <span className="px-2 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-            Navigation
+            {t("navigation")}
           </span>
         )}
         <Button
           variant="ghost"
           size="icon-sm"
           onClick={() => setCollapsed((prev) => !prev)}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}
         >
           {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
         </Button>

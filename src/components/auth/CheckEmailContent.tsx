@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { useResendCooldown } from "@/hooks/useResendCooldown";
 export function CheckEmailContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
+  const t = useTranslations("auth");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { secondsLeft, startCooldown } = useResendCooldown();
 
@@ -26,14 +28,16 @@ export function CheckEmailContent() {
 
     setIsSubmitting(false);
     startCooldown();
-    toast.success("Verification email sent", {
-      description: `Check ${email} for the link.`,
+    toast.success(t("verificationEmailSent"), {
+      description: t("verificationEmailSentDescription", { email }),
     });
   }
 
   return (
     <div className="flex flex-col gap-4">
-      {email && <p className="text-sm text-muted-foreground">Sent to {email}</p>}
+      {email && (
+        <p className="text-sm text-muted-foreground">{t("checkEmail.sentTo", { email })}</p>
+      )}
       <Button
         type="button"
         variant="outline"
@@ -41,11 +45,13 @@ export function CheckEmailContent() {
         onClick={handleResend}
       >
         {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-        {secondsLeft > 0 ? `Resend verification email (${secondsLeft}s)` : "Resend verification email"}
+        {secondsLeft > 0
+          ? t("resendVerificationCountdown", { seconds: secondsLeft })
+          : t("resendVerification")}
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         <Link href="/sign-in" className="text-foreground underline underline-offset-4">
-          Back to sign in
+          {t("backToSignIn")}
         </Link>
       </p>
     </div>

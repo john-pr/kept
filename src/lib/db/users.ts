@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import { parseEditorPreferences, type EditorPreferences } from "@/lib/editor-preferences";
+import { isLocale, type Locale } from "@/lib/i18n";
 
 export interface CurrentUser {
   id: string;
@@ -9,6 +10,7 @@ export interface CurrentUser {
   email: string;
   image: string | null;
   isPro: boolean;
+  locale: Locale | null;
   createdAt: Date;
   hasPassword: boolean;
   stripeCustomerId: string | null;
@@ -32,6 +34,7 @@ export async function getCurrentUser(): Promise<CurrentUser> {
     email: user.email,
     image: user.image,
     isPro: user.isPro,
+    locale: isLocale(user.locale) ? user.locale : null,
     createdAt: user.createdAt,
     hasPassword: user.password !== null,
     stripeCustomerId: user.stripeCustomerId,

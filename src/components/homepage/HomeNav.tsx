@@ -2,20 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
-
-const NAV_LINKS = [
-  { href: "/#features", label: "Features" },
-  { href: "/#pricing", label: "Pricing" },
-];
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 
 export function HomeNav() {
   const pathname = usePathname();
+  const t = useTranslations("nav");
   const isSignIn = pathname === "/sign-in";
   const isRegister = pathname === "/register";
+
+  const navLinks = [
+    { href: "/#features", label: t("features") },
+    { href: "/#pricing", label: t("pricing") },
+  ];
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background">
@@ -23,7 +26,7 @@ export function HomeNav() {
         <Logo size="lg" />
 
         <nav className="ml-auto hidden gap-7 md:flex">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -35,6 +38,7 @@ export function HomeNav() {
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
+          <LanguageSwitcher />
           <ThemeToggle />
           <Button
             variant="ghost"
@@ -48,7 +52,7 @@ export function HomeNav() {
                 isSignIn && "underline underline-offset-4"
               )}
             >
-              Sign In
+              {t("signIn")}
             </span>
           </Button>
           <Button
@@ -62,8 +66,8 @@ export function HomeNav() {
                 isRegister && "underline underline-offset-4"
               )}
             >
-              <span className="md:hidden">Sign Up</span>
-              <span className="hidden md:inline">Get Started</span>
+              <span className="md:hidden">{t("signUp")}</span>
+              <span className="hidden md:inline">{t("getStarted")}</span>
             </span>
           </Button>
         </div>

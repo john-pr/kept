@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import {
   Notebook,
   MessagesSquare,
@@ -21,15 +22,17 @@ interface ChaosTool {
   color: string;
 }
 
-const CHAOS_TOOLS: ChaosTool[] = [
+// `labelKey` (when present) resolves against the `home.chaos` namespace; brand names
+// stay literal. The label is only used as a hover tooltip + React key.
+const CHAOS_TOOLS: (ChaosTool & { labelKey?: string })[] = [
   { label: "Notion", icon: Notebook, bg: "#2a2a2a", color: "#ffffff" },
   { label: "GitHub", icon: GitHubIcon, bg: "#24292e", color: "#ffffff" },
   { label: "Slack", icon: MessagesSquare, bg: "#4a154b", color: "#ffffff" },
   { label: "VS Code", icon: Code2, bg: "#0066b8", color: "#ffffff" },
-  { label: "Browser Tabs", icon: AppWindow, bg: "#334155", color: "#e2e8f0" },
-  { label: "Terminal", icon: Terminal, bg: "#0f172a", color: "#22c55e" },
-  { label: "Text File", icon: FileText, bg: "#1e293b", color: "#94a3b8" },
-  { label: "Bookmark", icon: Bookmark, bg: "#1e293b", color: "#fbbf24" },
+  { label: "Browser Tabs", labelKey: "browserTabs", icon: AppWindow, bg: "#334155", color: "#e2e8f0" },
+  { label: "Terminal", labelKey: "terminal", icon: Terminal, bg: "#0f172a", color: "#22c55e" },
+  { label: "Text File", labelKey: "textFile", icon: FileText, bg: "#1e293b", color: "#94a3b8" },
+  { label: "Bookmark", labelKey: "bookmark", icon: Bookmark, bg: "#1e293b", color: "#fbbf24" },
 ];
 
 const SIDEBAR_ITEMS = [
@@ -78,6 +81,7 @@ interface IconState {
 export function ChaosToOrder() {
   const fieldRef = useRef<HTMLDivElement>(null);
   const iconRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const t = useTranslations("home.chaos");
 
   useEffect(() => {
     const field = fieldRef.current;
@@ -235,7 +239,7 @@ export function ChaosToOrder() {
       {/* Chaos */}
       <div className="rounded-2xl border border-border bg-card/60 p-5">
         <span className="mb-3.5 block text-center text-[0.82rem] font-semibold text-muted-foreground">
-          Scattered everywhere...
+          {t("before")}
         </span>
         <div
           ref={fieldRef}
@@ -250,7 +254,7 @@ export function ChaosToOrder() {
                   iconRefs.current[i] = el;
                 }}
                 className="absolute top-0 left-0 will-change-transform"
-                title={tool.label}
+                title={tool.labelKey ? t(tool.labelKey) : tool.label}
               >
                 <div
                   className="flex size-[42px] items-center justify-center rounded-none shadow-lg ring-1 ring-white/5"
@@ -272,7 +276,7 @@ export function ChaosToOrder() {
       {/* Dashboard */}
       <div className="rounded-2xl border border-border bg-card/60 p-5">
         <span className="mb-3.5 block text-center text-[0.82rem] font-semibold text-muted-foreground">
-          ...kept in one place.
+          {t("after")}
         </span>
         <div className="grid h-65 grid-cols-[76px_1fr] gap-3 rounded-lg border border-border/70 bg-background p-3 sm:grid-cols-[100px_1fr]">
           <div className="flex flex-col gap-1.5">

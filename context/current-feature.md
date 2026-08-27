@@ -1,21 +1,187 @@
-# Current Feature
+# Current Feature: i18n Support (EN / FR / PL)
 
 ## Status
 
-Done — Homepage theme toggle (see History).
+Implemented — pending review / commit. `npm run build`, `npm run lint` (src clean; 2
+pre-existing errors in `prototypes/redesign/support.js` only), and `npm run test`
+(273 pass, incl. 26 new) all green.
+
+### What shipped
+
+- `next-intl@4` wired cookie-only (no URL locale): `next.config.ts` plugin,
+  `src/i18n/request.ts` (`getRequestConfig` — cookie → `Accept-Language` →
+  `en`), `src/lib/i18n.ts` (`resolveLocale`/`matchAcceptLanguage`/`isLocale`,
+  `SUPPORTED_LOCALES`, `LOCALE_COOKIE`).
+- Root `layout.tsx` → async, `<html lang={locale}>`, `NextIntlClientProvider`,
+  localized `generateMetadata`.
+- `src/messages/{en,fr,pl}.json` — ~40 namespaces; `en` is source, `fr`/`pl`
+  machine-quality drafts. `messages-parity.test.ts` asserts identical key sets.
+- Persistence: `User.locale String?` (migration `add_user_locale` on the
+  `development` branch), `setLocale` server action (cookie + DB), `auth.ts`
+  exposes `session.user.locale`, `LocaleSync` reconciles cookie vs. account
+  preference once on `(app)` mount.
+- `LanguageSwitcher` (`select` variant in `HomeNav`; `segmented` EN|FR|PL in
+  `UserFooter` beside the theme control).
+- `src/lib/toast.ts` status words ("Success"/"Error") localized via
+  `ToastI18nProvider` (plain module → bridged by a render-phase setter).
+- `format-date.ts` gained a `locale` arg (deterministic, UTC-pinned);
+  `relative-time.ts` gained `relativeTimeParts()` for i18n callers (old
+  `formatRelativeTime` kept for its existing test).
+- Every user-facing component/page swept: homepage, all auth, app chrome
+  (topbar/sidebar/footer/tabbar/search), dashboard, item/collection/favorites
+  lists + cards, item drawer + all forms/editors/upload/AI buttons, settings,
+  profile, upgrade, 404.
+
+### Deliberately out of scope this pass (flag if wanted)
+
+- System item-type names (`ItemType.name`: "Snippet"/"Prompt"/…) stay English
+  per the `AskUserQuestion` decision — they drive routes/slugs. Appears in the
+  sidebar, drawer header, "By Type" breakdown, favorites row badge, etc.
+- Server-action / API-route `result.error` strings stay English; only their
+  client-side fallbacks (`?? t(...)`) and all happy-path toasts are localized.
+- `src/lib/file-constraints.ts` validation messages (lib) — English.
+- `src/components/ui/*` internals (`pagination.tsx` sr-only "More pages" /
+  "Go to previous page" aria) — off-limits per design-system rules; visible
+  "Previous"/"Next" IS localized via the `text` prop.
+- Emails (`src/lib/email.ts`) not localized.
+- `ChaosToOrder` brand names + its dashboard-mock type labels stay English
+  (decorative). PL plural grammar on a few count strings is approximate.
 
 ## Goals
 
-Add a Light/Dark theme toggle to the marketing nav (`HomeNav`, also rendered on
-`/sign-in` and `/register`) so signed-out visitors can switch themes — currently the only
-theme control lives in the authenticated app's `UserFooter` dropdown.
+- Add internationalization for three locales: English (`en`, default), French (`fr`),
+  Polish (`pl`).
+- Detect the visitor's preferred language from the browser (`Accept-Language`) on first
+  visit; fall back to `en` when nothing matches.
+- Persist an explicit choice: a `locale` cookie for everyone, plus a `User.locale` column
+  for signed-in users so the choice follows them across devices.
+- Translate **all user-facing free-form text** in one pass — marketing homepage, every
+  auth page, app chrome (nav / sidebar / topbar / user menu), every screen, all
+  dialogs/drawers, and server-action error + toast strings.
+- Provide a language switcher in the marketing nav (`HomeNav`) and in the authenticated
+  app's `UserFooter` dropdown.
 
 ## Notes
 
-- Style chosen via `AskUserQuestion`: compact Sun/Moon icon button (not `UserFooter`'s
-  segmented Light | Dark control), sitting beside Sign In / Get Started.
-- Reuses the existing `next-themes` provider (`layout.tsx`) and `useHasMounted` hydration
-  guard — no new dependency, no provider changes.
+### Decisions (via `AskUserQuestion`, 2026-08-27)
+
+1. **Library: `next-intl`, cookie-based, NO locale in the URL.** Locale is stored in a
+   cookie (and `User.locale` for authed users), not a path segment. Keeps every existing
+   route group, hardcoded `redirect()`, `Link`, and `proxy.ts` matcher untouched — a
+   `[locale]` segment would ripple through all of them for little gain on a portfolio app.
+   Uses next-intl's official "App Router without i18n routing" mode.
+2. **Scope: everything user-facing in one pass** (no phased deferral).
+3. **System / seeded labels stay in English.** `ItemType.name` ("Snippet", "Prompt",
+   "Command", …) is left as-is — it drives routes/slugs and is canonical English. Only
+   free-form UI text is translated. Accepted visible inconsistency: type names render in
+   English in all three languages.
+4. **Translations: Claude drafts all three catalogs.** `en.json` is the source of truth;
+   `fr.json` / `pl.json` are machine-quality drafts for the user to review. A parity test
+   guards against missing/extra keys.
+
+### Non-obvious constraints from the codebase
+
+- `src/app/layout.tsx` currently hardcodes `<html lang="en">` and is a sync component —
+  it must become `async` to read the active locale.
+- `src/lib/format-date.ts` deliberately pins locale + `timeZone: 'UTC'` to dodge
+  server/client hydration mismatches. Locale-aware dates must go through a deterministic
+  formatter (next-intl's `getFormatter()` / `useFormatter()` is SSR-stable given a fixed
+  locale) — do NOT reintroduce bare `toLocaleDateString()`.
+- Toasts already funnel through `src/lib/toast.ts` (generic "Success"/"Error" title +
+  caller message as description). Callers pass raw strings today; each call site needs a
+  `t()` key, and the two title words move into the catalog.
+- Server actions run with request context, so `getTranslations()` works there for Zod /
+  error messages.
+- `next-themes` + `useHasMounted` is the established pattern for a client control that
+  must not cause a hydration mismatch — the language switcher follows it.
+
+## Implementation Plan
+
+### 1. Setup
+
+- Branch `feature/i18n`.
+- `npm i next-intl`.
+- `next.config.ts`: wrap export with `createNextIntlPlugin('./src/i18n/request.ts')`.
+
+### 2. Locale core
+
+- `src/lib/i18n.ts` (in `src/lib/` so vitest picks it up): `SUPPORTED_LOCALES =
+  ['en','fr','pl']`, `DEFAULT_LOCALE = 'en'`, `Locale` type, `isLocale()` guard, and a
+  pure `resolveLocale({ cookieValue, acceptLanguage })` — cookie wins, else best
+  `Accept-Language` match, else default. Fully unit-testable.
+- `src/i18n/request.ts`: `getRequestConfig` — read the `locale` cookie via
+  `next/headers`; if absent, read `Accept-Language` via `headers()` and run
+  `resolveLocale`. Load the matching `src/messages/{locale}.json`.
+
+### 3. Provider + metadata
+
+- `src/app/layout.tsx` → `async`; `const locale = await getLocale()`, set
+  `<html lang={locale}>`, wrap children in `NextIntlClientProvider`
+  (`messages={await getMessages()}`).
+- Localize `generateMetadata` `title` / `description`.
+
+### 4. Message catalogs
+
+- `src/messages/en.json` (source), `fr.json`, `pl.json`.
+- Namespaces: `common`, `nav`, `auth`, `dashboard`, `items`, `collections`, `favorites`,
+  `settings`, `profile`, `upgrade`, `search`, `drawer`, `toasts`, `errors`, `homepage`.
+
+### 5. String extraction (bulk of the work)
+
+- Sweep ~100 components in `src/components/**` + 16 route files + server-action
+  strings in `src/actions/**`.
+- Server components / pages / actions: `getTranslations()`.
+- Client components: `useTranslations()`.
+- `src/lib/toast.ts` call sites: swap literals for `t()` keys; move "Success"/"Error"
+  titles into `toasts` namespace.
+- Do NOT touch DB-derived content (item titles, collection names) or `ItemType.name`.
+
+### 6. Language switcher
+
+- `src/components/i18n/LanguageSwitcher.tsx` (client): a small `Select` (EN / FR / PL),
+  `useHasMounted`-guarded, calls the `setLocale` action then `router.refresh()`.
+- Placements: `HomeNav` (beside the theme toggle) and `UserFooter` dropdown (new
+  "Language" row under the existing "Appearance" section). Style/placement details
+  confirmed via `AskUserQuestion` at implementation time, matching prior nav-control work.
+
+### 7. Persistence
+
+- `prisma/schema.prisma`: add `locale String?` to `User`;
+  `prisma migrate dev --name add_user_locale` on the **development** branch.
+- `src/actions/i18n.ts`: `setLocale(locale)` — validate against `SUPPORTED_LOCALES`,
+  `cookies().set('locale', …)`, and if there's a session user, `prisma.user.update`.
+  Returns `ActionResult`.
+- `src/auth.ts`: load `user.locale` into the token/session; expose `session.user.locale`.
+- Sign-in reconciliation (the fiddly bit): after sign-in the cookie may disagree with
+  `User.locale`. Handle with a tiny client effect that calls `setLocale(session.user.locale)`
+  when `cookie !== session.user.locale`, so the cookie stays the single request-time
+  source for `getRequestConfig`.
+
+### 8. Dates / numbers
+
+- Route locale-aware formatting through next-intl's formatter; update
+  `src/lib/format-date.ts` consumers. Keep it deterministic (no bare `toLocale*`).
+
+### 9. Tests (per policy: `src/lib` + `src/actions` only)
+
+- `src/lib/i18n.test.ts`: `resolveLocale` — cookie wins, header fallback, unsupported →
+  default, malformed input.
+- `src/lib/messages-parity.test.ts`: `fr.json` / `pl.json` key sets match `en.json`.
+- `src/actions/i18n.test.ts`: `setLocale` — valid, invalid rejected, DB write when
+  authed, cookie-only when anonymous (DB mocked at the boundary).
+
+### 10. Verify
+
+- `npm run build && npm run lint && npm run test`.
+- Manual: switch each language and reload (persists); sign out / sign in (follows the
+  account); fresh browser with `Accept-Language: fr` → loads in French with no cookie.
+
+### Deferred / out of scope
+
+- URL-based locale routing (`/fr/...`) and its SEO/`hreflang` benefits.
+- Translating `ItemType.name` and other seeded/system strings.
+- RTL languages (none of en/fr/pl need it).
+- Localizing emails (`src/lib/email.ts`) — flag as a follow-up if wanted.
 
 ## History
 [//]: # (keep this updated. earliest to latest)

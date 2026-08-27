@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,20 +14,22 @@ import { toast } from "@/lib/toast";
 const LABEL_CLASS = "text-[10px] tracking-[0.14em] text-muted-foreground uppercase";
 const FIELD_CLASS = "h-[38px] border-border bg-muted text-[13px]";
 
-const registerSchema = z
-  .object({
-    name: z.string().min(1, "Name is required"),
-    email: z.string().email("Enter a valid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
 export function RegisterForm() {
   const router = useRouter();
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
+
+  const registerSchema = z
+    .object({
+      name: z.string().min(1, t("errors.nameRequired")),
+      email: z.string().email(t("errors.validEmail")),
+      password: z.string().min(8, t("errors.passwordMin")),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("errors.passwordsNoMatch"),
+      path: ["confirmPassword"],
+    });
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -41,7 +44,7 @@ export function RegisterForm() {
 
     const parsed = registerSchema.safeParse({ name, email, password, confirmPassword });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Invalid input");
+      setError(parsed.error.issues[0]?.message ?? tc("invalidInput"));
       return;
     }
 
@@ -57,12 +60,12 @@ export function RegisterForm() {
     setIsSubmitting(false);
 
     if (!result.success) {
-      setError(result.error ?? "Something went wrong");
+      setError(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
     if (result.data?.requiresVerification === false) {
-      toast.success("Account created. You can now sign in.");
+      toast.success(t("accountCreated"));
       router.push("/sign-in");
       return;
     }
@@ -81,7 +84,7 @@ export function RegisterForm() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="name" className={LABEL_CLASS}>
-            Name
+            {t("fields.name")}
           </Label>
           <Input
             id="name"
@@ -94,7 +97,7 @@ export function RegisterForm() {
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="email" className={LABEL_CLASS}>
-            Email
+            {t("fields.email")}
           </Label>
           <Input
             id="email"
@@ -108,7 +111,7 @@ export function RegisterForm() {
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="password" className={LABEL_CLASS}>
-            Password
+            {t("fields.password")}
           </Label>
           <Input
             id="password"
@@ -121,11 +124,8 @@ export function RegisterForm() {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label
-            htmlFor="confirmPassword"
-            className={LABEL_CLASS}
-          >
-            Confirm password
+          <Label htmlFor="confirmPassword" className={LABEL_CLASS}>
+            {t("fields.confirmPassword")}
           </Label>
           <Input
             id="confirmPassword"
@@ -143,7 +143,7 @@ export function RegisterForm() {
           className="h-10 tracking-[0.16em] uppercase"
         >
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-          Create account
+          {t("register.submit")}
         </Button>
       </form>
     </div>

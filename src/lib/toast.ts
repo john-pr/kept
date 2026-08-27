@@ -1,6 +1,21 @@
 import { toast as sonnerToast, type ExternalToast } from "sonner";
 
 /**
+ * The status words used as every toast's title ("Success"/"Error"). Localized:
+ * `ToastI18nProvider` (mounted in the root layout, inside `NextIntlClientProvider`)
+ * pushes the translated strings here on the client. `toast` is a plain module —
+ * not a React component — so it can't call `useTranslations()` itself; this small
+ * mutable holder bridges the two. Defaults to English for the first server render
+ * and any pre-hydration call.
+ */
+const statusLabels = { success: "Success", error: "Error" };
+
+export function setToastStatusLabels(labels: { success: string; error: string }) {
+  statusLabels.success = labels.success;
+  statusLabels.error = labels.error;
+}
+
+/**
  * Wraps sonner's `toast` so success/error toasts follow the "Ledger" design system
  * convention: the toast's title is always the generic status word ("Success"/"Error"),
  * and the caller's message becomes the description below it — e.g.
@@ -26,7 +41,7 @@ function withMessage(message: string, options?: ExternalToast): ExternalToast {
 export const toast = {
   ...sonnerToast,
   success: (message: string, options?: ExternalToast) =>
-    sonnerToast.success("Success", withMessage(message, options)),
+    sonnerToast.success(statusLabels.success, withMessage(message, options)),
   error: (message: string, options?: ExternalToast) =>
-    sonnerToast.error("Error", withMessage(message, options)),
+    sonnerToast.error(statusLabels.error, withMessage(message, options)),
 };

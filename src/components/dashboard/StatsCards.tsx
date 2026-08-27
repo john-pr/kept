@@ -1,16 +1,19 @@
 import { Package, FolderOpen, Star } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import type { DashboardStats } from "@/lib/db/stats";
 
 interface StatsCardsProps {
   stats: DashboardStats;
 }
 
-export function StatsCards({ stats }: StatsCardsProps) {
+export async function StatsCards({ stats }: StatsCardsProps) {
+  const t = await getTranslations("dashboard");
+
   const cells = [
-    { label: "Total Items", value: stats.totalItems, icon: Package },
-    { label: "Collections", value: stats.totalCollections, icon: FolderOpen },
-    { label: "Favorite Items", value: stats.favoriteItems, icon: Star },
-    { label: "Favorite Collections", value: stats.favoriteCollections, icon: Star },
+    { label: t("totalItems"), value: stats.totalItems, icon: Package },
+    { label: t("collections"), value: stats.totalCollections, icon: FolderOpen },
+    { label: t("favoriteItems"), value: stats.favoriteItems, icon: Star },
+    { label: t("favoriteCollections"), value: stats.favoriteCollections, icon: Star },
   ];
 
   return (

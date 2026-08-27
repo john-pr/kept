@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,23 +10,27 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/lib/toast";
 
-const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
 interface ChangePasswordFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
 export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormProps) {
+  const t = useTranslations("changePassword");
+  const ta = useTranslations("auth.errors");
+  const tc = useTranslations("common");
+
+  const changePasswordSchema = z
+    .object({
+      currentPassword: z.string().min(1, ta("currentPasswordRequired")),
+      newPassword: z.string().min(8, ta("passwordMin")),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: ta("passwordsNoMatch"),
+      path: ["confirmPassword"],
+    });
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -38,7 +43,7 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
 
     const parsed = changePasswordSchema.safeParse({ currentPassword, newPassword, confirmPassword });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Invalid input");
+      setError(parsed.error.issues[0]?.message ?? tc("invalidInput"));
       return;
     }
 
@@ -54,14 +59,14 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
     setIsSubmitting(false);
 
     if (!result.success) {
-      setError(result.error ?? "Something went wrong");
+      setError(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    toast.success("Password changed");
+    toast.success(t("passwordChanged"));
     onSuccess?.();
   }
 
@@ -73,7 +78,7 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
         </Alert>
       )}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="currentPassword">Current password</Label>
+        <Label htmlFor="currentPassword">{t("currentPassword")}</Label>
         <Input
           id="currentPassword"
           type="password"
@@ -84,7 +89,7 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="newPassword">New password</Label>
+        <Label htmlFor="newPassword">{t("newPassword")}</Label>
         <Input
           id="newPassword"
           type="password"
@@ -95,7 +100,7 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="confirmPassword">Confirm new password</Label>
+        <Label htmlFor="confirmPassword">{t("confirmNewPassword")}</Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -108,11 +113,11 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
       <div className="flex gap-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-          Change password
+          {t("submit")}
         </Button>
         {onCancel && (
           <Button type="button" variant="outline" disabled={isSubmitting} onClick={onCancel}>
-            Cancel
+            {t("cancel")}
           </Button>
         )}
       </div>

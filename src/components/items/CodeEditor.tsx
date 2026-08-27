@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import Editor, { type BeforeMount, type OnMount } from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useTranslations } from "next-intl";
 import { Copy, Crown, Loader2, Sparkles } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,7 @@ export function CodeEditor({
   showExplain = false,
 }: CodeEditorProps) {
   const { preferences } = useEditorPreferences();
+  const t = useTranslations("editor");
   const [height, setHeight] = useState(MIN_HEIGHT);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const [tab, setTab] = useState<"code" | "explain">("code");
@@ -111,7 +113,7 @@ export function CodeEditor({
 
   function handleCopy() {
     navigator.clipboard.writeText(value);
-    toast.success("Copied to clipboard");
+    toast.success(t("copiedToClipboard"));
   }
 
   async function handleExplain() {
@@ -125,7 +127,7 @@ export function CodeEditor({
       setExplanation(result.data);
       setTab("explain");
     } else {
-      toast.error(result.error ?? "Failed to generate explanation");
+      toast.error(result.error ?? t("failedExplain"));
     }
   }
 
@@ -146,8 +148,8 @@ export function CodeEditor({
           {explanation ? (
             <Tabs value={tab} onValueChange={(value) => value && setTab(value as "code" | "explain")}>
               <TabsList variant="line">
-                <TabsTrigger value="code">Code</TabsTrigger>
-                <TabsTrigger value="explain">Explanation</TabsTrigger>
+                <TabsTrigger value="code">{t("code")}</TabsTrigger>
+                <TabsTrigger value="explain">{t("explanation")}</TabsTrigger>
               </TabsList>
             </Tabs>
           ) : (
@@ -162,7 +164,7 @@ export function CodeEditor({
                 className="text-neutral-400 hover:text-neutral-100"
                 onClick={handleExplain}
                 disabled={isExplaining}
-                title="Explain this code"
+                title={t("explainThisCode")}
               >
                 {isExplaining ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -171,7 +173,7 @@ export function CodeEditor({
                 )}
               </Button>
             ) : (
-              <span title="AI features require Pro subscription">
+              <span title={t("aiRequiresPro")}>
                 <Crown className="size-3.5 text-neutral-500" />
               </span>
             ))}
@@ -181,8 +183,8 @@ export function CodeEditor({
             size="icon-sm"
             className="text-neutral-400 hover:text-neutral-100"
             onClick={handleCopy}
-            aria-label="Copy code"
-            title="Copy code"
+            aria-label={t("copyCode")}
+            title={t("copyCode")}
           >
             <Copy className="size-3.5" />
           </Button>

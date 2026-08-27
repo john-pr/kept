@@ -18,3 +18,23 @@ export function formatRelativeTime(date: Date, now: Date = new Date()): string {
 
   return `${Math.floor(diffMs / MONTH)}mo ago`;
 }
+
+export type RelativeTimeUnit = "justNow" | "minutes" | "hours" | "days" | "months";
+
+/**
+ * Locale-agnostic split of {@link formatRelativeTime}: returns the bucket + the
+ * numeric value, leaving the wording to a caller with an i18n `t()` in scope
+ * (see `ItemCard`). `justNow` carries `count: 0`.
+ */
+export function relativeTimeParts(
+  date: Date,
+  now: Date = new Date(),
+): { unit: RelativeTimeUnit; count: number } {
+  const diffMs = Math.max(0, now.getTime() - date.getTime());
+
+  if (diffMs < MINUTE) return { unit: "justNow", count: 0 };
+  if (diffMs < HOUR) return { unit: "minutes", count: Math.floor(diffMs / MINUTE) };
+  if (diffMs < DAY) return { unit: "hours", count: Math.floor(diffMs / HOUR) };
+  if (diffMs < MONTH) return { unit: "days", count: Math.floor(diffMs / DAY) };
+  return { unit: "months", count: Math.floor(diffMs / MONTH) };
+}

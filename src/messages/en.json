@@ -1,0 +1,542 @@
+{
+  "metadata": {
+    "title": "Kept",
+    "description": "Snippets, prompts, commands, notes, links, files, and images — kept in one fast, searchable, AI-enhanced hub."
+  },
+  "common": {
+    "appName": "Kept",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "create": "Create",
+    "creating": "Creating...",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "edit": "Edit",
+    "close": "Close",
+    "or": "or",
+    "comingSoon": "Coming soon",
+    "somethingWentWrong": "Something went wrong",
+    "invalidInput": "Invalid input",
+    "itemCount": "{count, plural, one {# item} other {# items}}",
+    "recordCount": "{count} records"
+  },
+  "toasts": {
+    "success": "Success",
+    "error": "Error"
+  },
+  "relativeTime": {
+    "justNow": "just now",
+    "minutes": "{count}m ago",
+    "hours": "{count}h ago",
+    "days": "{count}d ago",
+    "months": "{count}mo ago"
+  },
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "getStarted": "Get Started",
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme",
+    "language": "Language"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Built for developers",
+      "titleLine1": "Keep Everything.",
+      "titleLine2": "Find Anything.",
+      "subtitle": "Snippets, prompts, commands, notes, links, and files — kept in one fast, searchable, AI-enhanced hub instead of scattered across a dozen different tools.",
+      "getStartedFree": "Get Started Free",
+      "seeFeatures": "See Features"
+    },
+    "chaos": {
+      "before": "Scattered everywhere...",
+      "after": "...kept in one place.",
+      "browserTabs": "Browser Tabs",
+      "terminal": "Terminal",
+      "textFile": "Text File",
+      "bookmark": "Bookmark"
+    },
+    "features": {
+      "eyebrow": "Features",
+      "heading": "Everything, Kept",
+      "subtitle": "Snippets, prompts, commands, notes, links, and files — organized the way you actually think, not the way a dozen different tools force you to.",
+      "codeSnippets": {
+        "title": "Code Snippets",
+        "description": "Save reusable code with syntax highlighting and language tagging."
+      },
+      "aiPrompts": {
+        "title": "AI Prompts",
+        "description": "Keep your best prompts organized, versioned, and ready to reuse."
+      },
+      "instantSearch": {
+        "title": "Instant Search",
+        "description": "Full-text search across content, tags, titles, and types — instantly."
+      },
+      "commands": {
+        "title": "Commands",
+        "description": "Never forget that one CLI flag again — save and search your commands."
+      },
+      "filesDocs": {
+        "title": "Files & Docs",
+        "description": "Attach files and images alongside everything else they belong with."
+      },
+      "collections": {
+        "title": "Collections",
+        "description": "Group anything, of any type, into collections that match your workflow."
+      }
+    },
+    "ai": {
+      "badge": "Pro Feature",
+      "heading": "Let AI do the busywork",
+      "subtitle": "Kept Pro uses AI to keep everything organized without the manual effort.",
+      "autoTag": "Auto-tag suggestions",
+      "summaries": "Smart content summaries",
+      "explain": "\"Explain this code\" on demand",
+      "optimizer": "Prompt optimizer",
+      "aiGeneratedTags": "AI Generated Tags"
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "heading": "Simple, honest pricing",
+      "subtitle": "Start free. Upgrade when you outgrow it.",
+      "mostPopular": "[Most Popular]",
+      "getStarted": "Get Started",
+      "goPro": "Go Pro"
+    },
+    "finalCta": {
+      "heading": "Ready to Keep Everything in One Place?",
+      "subtitle": "Stop losing snippets, prompts, commands, and notes to a dozen scattered tools.",
+      "cta": "Get Started Free"
+    },
+    "footer": {
+      "tagline": "Everything you meant to keep, in one place.",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "comingSoon": "Coming soon",
+      "rights": "© {year} Kept. All rights reserved."
+    }
+  },
+  "pricing": {
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save25": "Save 25%",
+    "save25Compact": "(save 25%)",
+    "toggleYearly": "Toggle yearly pricing",
+    "free": "Free",
+    "pro": "Pro",
+    "perMonth": "/mo",
+    "perYear": "/yr",
+    "itemsTotal": "{count, plural, one {# item total} other {# items total}}",
+    "collectionsCount": "{count, plural, one {# collection} other {# collections}}",
+    "allTextTypes": "All text-based types",
+    "basicSearch": "Basic search",
+    "unlimitedItems": "Unlimited items",
+    "unlimitedCollections": "Unlimited collections",
+    "fileUploads": "File & image uploads",
+    "aiAutoTagging": "AI auto-tagging & summaries",
+    "dataExport": "Data export (JSON/ZIP)"
+  },
+  "auth": {
+    "signIn": {
+      "crumb": "Sign in",
+      "title": "Sign in",
+      "description": "Enter your email and password to continue.",
+      "submit": "Sign in",
+      "noAccount": "No account yet?",
+      "registerLink": "Register"
+    },
+    "register": {
+      "crumb": "Sign up",
+      "title": "Create account",
+      "description": "Get started with Kept — one place for links, snippets and commands.",
+      "submit": "Create account",
+      "alreadyRegistered": "Already registered?",
+      "signInLink": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "description": "Enter your email and we'll send you a reset link",
+      "submit": "Send reset link",
+      "sentHeading": "Reset link sent",
+      "sentBody": "If an account exists for {email}, we've sent a link to reset your password.",
+      "resend": "Resend reset link",
+      "resendCountdown": "Resend reset link ({seconds}s)",
+      "resendToast": "Reset link sent",
+      "resendToastDescription": "Check {email} for the link."
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "description": "Choose a new password for your account",
+      "submit": "Reset password",
+      "newPassword": "New password",
+      "confirmNewPassword": "Confirm new password",
+      "invalidMissingToken": "This reset link is invalid or missing a token.",
+      "invalidRequestNew": "This reset link is invalid. Request a new one.",
+      "requestNewLink": "Request a new link",
+      "successToast": "Password reset",
+      "successToastDescription": "You can now sign in with your new password."
+    },
+    "checkEmail": {
+      "title": "Check your email",
+      "description": "We sent a verification link to your email address. Click it to activate your account.",
+      "sentTo": "Sent to {email}"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "name": "Name",
+      "confirmPassword": "Confirm password"
+    },
+    "forgotLink": "Forgot?",
+    "continueWithGithub": "Continue with GitHub",
+    "backToSignIn": "Back to sign in",
+    "resendVerification": "Resend verification email",
+    "resendVerificationCountdown": "Resend verification email ({seconds}s)",
+    "verificationEmailSent": "Verification email sent",
+    "verificationEmailSentDescription": "Check {email} for the link.",
+    "accountCreated": "Account created. You can now sign in.",
+    "errors": {
+      "verifyEmailFirst": "Please verify your email before signing in.",
+      "tooManyAttempts": "Too many attempts. Please try again later.",
+      "invalidCredentials": "Invalid email or password",
+      "nameRequired": "Name is required",
+      "validEmail": "Enter a valid email address",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordsNoMatch": "Passwords do not match",
+      "currentPasswordRequired": "Current password is required"
+    },
+    "toasts": {
+      "emailVerified": "Email verified",
+      "emailVerifiedDescription": "You can now sign in.",
+      "verificationLinkExpired": "Verification link expired",
+      "verificationLinkExpiredDescription": "Sign in and use the resend option to get a new link.",
+      "invalidVerificationLink": "Invalid verification link"
+    }
+  },
+  "appChrome": {
+    "search": "Search",
+    "searchPlaceholder": "Search items, collections, tags...",
+    "favorites": "Favorites",
+    "upgrade": "Upgrade",
+    "newCollection": "New Collection",
+    "newItem": "New Item",
+    "navigation": "Navigation",
+    "quickActions": "Quick Actions",
+    "itemTypes": "Item Types",
+    "favoriteCollections": "Favorite Collections",
+    "recentCollections": "Recent Collections",
+    "viewAllCollections": "View all collections",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "openSidebar": "Open sidebar",
+    "close": "Close",
+    "userMenu": "User menu",
+    "account": "Account",
+    "profile": "Profile",
+    "settings": "Settings",
+    "appearance": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "signOut": "Sign out",
+    "pro": "PRO",
+    "tabDash": "Dash",
+    "tabItems": "Items",
+    "tabColls": "Colls",
+    "tabYou": "You"
+  },
+  "search": {
+    "placeholder": "Search items, collections, tags...",
+    "title": "Search",
+    "description": "Search items and collections",
+    "noResults": "No results found.",
+    "items": "Items",
+    "collections": "Collections",
+    "navigate": "Navigate",
+    "select": "Select",
+    "close": "Close"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "ledgerRecords": "Ledger / {count} records",
+    "totalItems": "Total Items",
+    "collections": "Collections",
+    "favoriteItems": "Favorite Items",
+    "favoriteCollections": "Favorite Collections",
+    "recentCollections": "Recent Collections",
+    "pinnedItems": "Pinned Items",
+    "recentItems": "Recent Items",
+    "records": "{count} records"
+  },
+  "cards": {
+    "copyToClipboard": "Copy to clipboard",
+    "copiedToClipboard": "Copied to clipboard",
+    "collectionActions": "Collection actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "favorite": "Favorite",
+    "unfavorite": "Unfavorite",
+    "noPreview": "No preview",
+    "ariaItem": "{type}: {title}",
+    "ariaCollection": "Collection: {title}"
+  },
+  "itemsPage": {
+    "addType": "Add {type}",
+    "noItems": "No items yet.",
+    "proFeatureHeading": "{type} is a Pro feature",
+    "proFeatureBody": "Upgrade to Pro to upload and store {slug}.",
+    "upgradeToPro": "Upgrade to Pro"
+  },
+  "collectionsPage": {
+    "title": "Collections",
+    "noCollections": "No collections yet.",
+    "detailNoItems": "No items in this collection yet.",
+    "sectionItems": "Items",
+    "sectionImages": "Images",
+    "sectionFiles": "Files",
+    "editCollection": "Edit collection",
+    "deleteCollection": "Delete collection"
+  },
+  "favoritesPage": {
+    "title": "Favorites",
+    "empty": "No favorites yet. Star an item or collection to see it here.",
+    "items": "Items",
+    "collections": "Collections",
+    "sectionHeading": "{heading} ({count})",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "sortNameAsc": "Name A-Z",
+    "sortNameDesc": "Name Z-A",
+    "sortType": "Item Type"
+  },
+  "drawer": {
+    "download": "Download",
+    "copy": "Copy",
+    "editItem": "Edit item",
+    "deleteItem": "Delete item",
+    "favorite": "Favorite",
+    "unfavorite": "Unfavorite",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "noPermissionEdit": "You don't have permission to edit this item",
+    "noPermissionDelete": "You don't have permission to delete this item",
+    "sectionDescription": "Description",
+    "sectionContent": "Content",
+    "sectionPreview": "Preview",
+    "sectionFile": "File",
+    "sectionTags": "Tags",
+    "sectionCollections": "Collections",
+    "sectionType": "Type",
+    "created": "Created {date}",
+    "deleteTitle": "Delete item",
+    "deleteBody": "This will permanently delete \"{title}\". This action cannot be undone.",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "toasts": {
+      "itemUpdated": "Item updated",
+      "failedUpdateItem": "Failed to update item",
+      "itemFavorited": "Item favorited",
+      "itemUnfavorited": "Item unfavorited",
+      "failedFavorite": "Failed to update favorite",
+      "itemPinned": "Item pinned",
+      "itemUnpinned": "Item unpinned",
+      "failedPin": "Failed to update pin",
+      "promptUpdated": "Prompt updated",
+      "failedUpdatePrompt": "Failed to update prompt",
+      "itemDeleted": "Item deleted",
+      "failedDeleteItem": "Failed to delete item",
+      "failedLoadItem": "Failed to load item"
+    }
+  },
+  "itemForm": {
+    "newItem": "New item",
+    "newItemDescription": "Create a new snippet, prompt, command, note, link, file, or image.",
+    "newCollection": "New collection",
+    "newCollectionDescription": "Group items together under a new collection.",
+    "editCollection": "Edit collection",
+    "editCollectionDescription": "Update the name and description of this collection.",
+    "type": "Type",
+    "selectType": "Select a type",
+    "title": "Title",
+    "description": "Description",
+    "language": "Language",
+    "selectLanguage": "Select a language",
+    "content": "Content",
+    "url": "URL",
+    "tags": "Tags",
+    "name": "Name*",
+    "collections": "Collections",
+    "file": "File",
+    "image": "Image",
+    "create": "Create",
+    "creating": "Creating...",
+    "save": "Save",
+    "saving": "Saving...",
+    "placeholderTitle": "e.g. Debounce hook",
+    "placeholderDescription": "A short summary of this item",
+    "placeholderCollectionName": "e.g. React Patterns",
+    "placeholderCollectionDescription": "A short summary of this collection",
+    "placeholderCode": "Paste your code here",
+    "placeholderContent": "Write the content here",
+    "placeholderUrl": "https://example.com",
+    "placeholderTags": "comma, separated, tags",
+    "selectCollections": "Select collections...",
+    "noCollectionsYet": "No collections yet",
+    "noCollectionsFound": "No collections found.",
+    "searchCollections": "Search collections...",
+    "collectionsSelected": "{count} collections selected",
+    "toasts": {
+      "itemCreated": "Item created",
+      "failedCreateItem": "Failed to create item",
+      "collectionCreated": "Collection created",
+      "failedCreateCollection": "Failed to create collection",
+      "collectionUpdated": "Collection updated",
+      "failedUpdateCollection": "Failed to update collection",
+      "collectionDeleted": "Collection deleted",
+      "failedDeleteCollection": "Failed to delete collection"
+    },
+    "deleteCollectionTitle": "Delete collection",
+    "deleteCollectionBody": "This will delete \"{name}\". Items in this collection will not be deleted — they will just no longer belong to it. This action cannot be undone."
+  },
+  "editor": {
+    "code": "Code",
+    "explanation": "Explanation",
+    "explainThisCode": "Explain this code",
+    "aiRequiresPro": "AI features require Pro subscription",
+    "copyCode": "Copy code",
+    "write": "Write",
+    "preview": "Preview",
+    "original": "Original",
+    "optimized": "Optimized",
+    "nothingToPreview": "Nothing to preview",
+    "optimizeThisPrompt": "Optimize this prompt",
+    "keepOriginal": "Keep original",
+    "useThisVersion": "Use this version",
+    "copiedToClipboard": "Copied to clipboard",
+    "failedExplain": "Failed to generate explanation",
+    "failedOptimize": "Failed to optimize prompt"
+  },
+  "fileUpload": {
+    "invalidFile": "Invalid file",
+    "uploadFailed": "Upload failed",
+    "uploading": "Uploading... {progress}%",
+    "dragDropFile": "Drag and drop a file here, or",
+    "dragDropImage": "Drag and drop an image here, or",
+    "browseFiles": "Browse files",
+    "removeFile": "Remove file"
+  },
+  "aiButtons": {
+    "suggestTags": "Suggest Tags",
+    "suggestDescription": "Suggest Description",
+    "addTitleFirstTags": "Add a title before suggesting tags",
+    "addTitleFirstDescription": "Add a title before suggesting a description",
+    "failedTags": "Failed to generate tag suggestions",
+    "failedDescription": "Failed to generate a description",
+    "acceptTag": "Accept tag {tag}",
+    "rejectTag": "Reject tag {tag}"
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "billing": "Billing",
+    "billingProDescription": "Manage your Kept Pro subscription.",
+    "billingFreeDescription": "Upgrade to Pro for unlimited items and collections.",
+    "editorPreferences": "Editor Preferences",
+    "editorPreferencesDescription": "Customize how the code editor looks and behaves. Changes save automatically.",
+    "security": "Security",
+    "securityHasPassword": "Update the password used to sign in.",
+    "securityGithub": "You sign in with GitHub, so there's no password to manage.",
+    "dangerZone": "Danger Zone",
+    "dangerZoneDescription": "Permanently delete your account and all of your items and collections."
+  },
+  "billing": {
+    "nowOnPro": "You're now on Pro! It may take a moment to reflect.",
+    "checkoutCanceled": "Checkout canceled",
+    "demoPro": "Demo Pro",
+    "demoProNote": "activated instantly, no payment made",
+    "proCancelsOn": "cancels on {date}",
+    "proRenewsOn": "renews on {date}",
+    "manageSubscription": "Manage subscription",
+    "items": "Items",
+    "collections": "Collections",
+    "upgradeToProPrice": "Upgrade to Pro — {price}",
+    "editorPreferencesSaved": "Editor preferences saved",
+    "failedSaveEditorPreferences": "Failed to save editor preferences"
+  },
+  "editorPreferences": {
+    "fontSize": "Font size",
+    "tabSize": "Tab size",
+    "theme": "Theme",
+    "spaces": "{count} spaces",
+    "px": "{size}px",
+    "wordWrap": "Word wrap",
+    "wordWrapDescription": "Wrap long lines instead of scrolling horizontally.",
+    "minimap": "Minimap",
+    "minimapDescription": "Show a miniature code overview on the right edge of the editor.",
+    "themeVsDark": "VS Dark",
+    "themeMonokai": "Monokai",
+    "themeGithubDark": "GitHub Dark"
+  },
+  "changePassword": {
+    "open": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "submit": "Change password",
+    "cancel": "Cancel",
+    "passwordChanged": "Password changed"
+  },
+  "deleteAccount": {
+    "open": "Delete account",
+    "title": "Delete account",
+    "body": "This will permanently delete your account and all of your items and collections. This action cannot be undone.",
+    "confirmPrompt": "Type <b>delete</b> to confirm",
+    "confirm": "Delete account"
+  },
+  "demoPro": {
+    "tryInstantly": "Try Pro instantly (demo, no payment)",
+    "revert": "Revert to Free (demo)",
+    "activated": "Demo Pro activated — no payment needed.",
+    "reverted": "Reverted to Free."
+  },
+  "upgradePage": {
+    "title": "Upgrade to Pro",
+    "subtitle": "Unlock unlimited items, unlimited collections, and file uploads.",
+    "currentPlan": "Current Plan",
+    "mostPopular": "Most Popular",
+    "justCheckingDemo": "Just checking out the demo?",
+    "upgradeToProPrice": "Upgrade to Pro — {price}"
+  },
+  "profilePage": {
+    "title": "Profile",
+    "pro": "Pro",
+    "free": "Free",
+    "memberSince": "Member since {date}",
+    "usage": "Usage",
+    "totalItems": "Total Items",
+    "collections": "Collections",
+    "byType": "By Type"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "notFound": {
+    "eyebrow": "Error / 404",
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist or may have moved.",
+    "backToDashboard": "Back to dashboard"
+  }
+}

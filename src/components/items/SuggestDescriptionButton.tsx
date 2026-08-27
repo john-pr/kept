@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Loader2, Sparkles } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -26,11 +27,12 @@ export function SuggestDescriptionButton({
   fileName,
   onGenerate,
 }: SuggestDescriptionButtonProps) {
+  const t = useTranslations("aiButtons");
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSuggest() {
     if (title.trim() === "") {
-      toast.error("Add a title before suggesting a description");
+      toast.error(t("addTitleFirstDescription"));
       return;
     }
 
@@ -41,7 +43,7 @@ export function SuggestDescriptionButton({
     if (result.success && result.data) {
       onGenerate(result.data);
     } else {
-      toast.error(result.error ?? "Failed to generate a description");
+      toast.error(result.error ?? t("failedDescription"));
     }
   }
 
@@ -60,7 +62,7 @@ export function SuggestDescriptionButton({
         ) : (
           <Sparkles className="size-3.5" />
         )}
-        Suggest Description
+        {t("suggestDescription")}
       </span>
     </Button>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, Loader2, Sparkles, X } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -23,12 +24,13 @@ export function SuggestTagsButton({
   existingTags,
   onAcceptTag,
 }: SuggestTagsButtonProps) {
+  const t = useTranslations("aiButtons");
   const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   async function handleSuggest() {
     if (title.trim() === "") {
-      toast.error("Add a title before suggesting tags");
+      toast.error(t("addTitleFirstTags"));
       return;
     }
 
@@ -40,7 +42,7 @@ export function SuggestTagsButton({
       const existing = new Set(existingTags.map((tag) => tag.toLowerCase()));
       setSuggestions(result.data.filter((tag) => !existing.has(tag)));
     } else {
-      toast.error(result.error ?? "Failed to generate tag suggestions");
+      toast.error(result.error ?? t("failedTags"));
     }
   }
 
@@ -69,7 +71,7 @@ export function SuggestTagsButton({
           ) : (
             <Sparkles className="size-3.5" />
           )}
-          Suggest Tags
+          {t("suggestTags")}
         </span>
       </Button>
 
@@ -80,7 +82,7 @@ export function SuggestTagsButton({
               {tag}
               <button
                 type="button"
-                aria-label={`Accept tag ${tag}`}
+                aria-label={t("acceptTag", { tag })}
                 onClick={() => acceptTag(tag)}
                 className="cursor-pointer rounded p-0.5 hover:bg-muted"
               >
@@ -88,7 +90,7 @@ export function SuggestTagsButton({
               </button>
               <button
                 type="button"
-                aria-label={`Reject tag ${tag}`}
+                aria-label={t("rejectTag", { tag })}
                 onClick={() => rejectTag(tag)}
                 className="cursor-pointer rounded p-0.5 hover:bg-muted"
               >

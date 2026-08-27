@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useTranslations } from "next-intl";
 import { Copy, Crown, Loader2, Sparkles } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,7 @@ export function MarkdownEditor({
   showOptimize = false,
   onAcceptOptimized,
 }: MarkdownEditorProps) {
+  const t = useTranslations("editor");
   const [tab, setTab] = useState(readOnly ? "preview" : "write");
   const [view, setView] = useState<"original" | "optimized">("original");
   const [optimized, setOptimized] = useState<string | null>(null);
@@ -53,7 +55,7 @@ export function MarkdownEditor({
 
   function handleCopy() {
     navigator.clipboard.writeText(displayValue);
-    toast.success("Copied to clipboard");
+    toast.success(t("copiedToClipboard"));
   }
 
   async function handleOptimize() {
@@ -67,7 +69,7 @@ export function MarkdownEditor({
       setOptimized(result.data);
       setView("optimized");
     } else {
-      toast.error(result.error ?? "Failed to optimize prompt");
+      toast.error(result.error ?? t("failedOptimize"));
     }
   }
 
@@ -103,23 +105,23 @@ export function MarkdownEditor({
                     type="button"
                     onClick={() => setView(option)}
                     className={cn(
-                      "cursor-pointer rounded-md px-1.5 py-0.5 text-xs font-medium capitalize transition-colors",
+                      "cursor-pointer rounded-md px-1.5 py-0.5 text-xs font-medium transition-colors",
                       view === option
                         ? "bg-background text-foreground"
                         : "text-neutral-400 hover:text-neutral-100",
                     )}
                   >
-                    {option}
+                    {t(option)}
                   </button>
                 ))}
               </div>
             ) : (
-              <span className="text-xs font-medium text-neutral-400">Preview</span>
+              <span className="text-xs font-medium text-neutral-400">{t("preview")}</span>
             )
           ) : (
             <TabsList variant="line">
-              <TabsTrigger value="write">Write</TabsTrigger>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
+              <TabsTrigger value="write">{t("write")}</TabsTrigger>
+              <TabsTrigger value="preview">{t("preview")}</TabsTrigger>
             </TabsList>
           )}
           <div className="flex items-center gap-2">
@@ -132,7 +134,7 @@ export function MarkdownEditor({
                   className="text-neutral-400 hover:text-neutral-100"
                   onClick={handleOptimize}
                   disabled={isOptimizing}
-                  title="Optimize this prompt"
+                  title={t("optimizeThisPrompt")}
                 >
                   {isOptimizing ? (
                     <Loader2 className="size-3.5 animate-spin" />
@@ -141,7 +143,7 @@ export function MarkdownEditor({
                   )}
                 </Button>
               ) : (
-                <span title="AI features require Pro subscription">
+                <span title={t("aiRequiresPro")}>
                   <Crown className="size-3.5 text-neutral-500" />
                 </span>
               ))}
@@ -177,7 +179,7 @@ export function MarkdownEditor({
           className="m-0 max-h-[400px] min-h-[120px] overflow-auto p-3 [contain:layout]"
         >
           {displayValue.trim() === "" ? (
-            <p className="text-xs text-neutral-500">{placeholder || "Nothing to preview"}</p>
+            <p className="text-xs text-neutral-500">{placeholder || t("nothingToPreview")}</p>
           ) : (
             <div className="markdown-preview">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayValue}</ReactMarkdown>
@@ -189,11 +191,11 @@ export function MarkdownEditor({
       {readOnly && optimized && view === "optimized" && (
         <div className="flex items-center justify-end gap-2 border-t border-border/50 bg-[#2d2d2d] px-3 py-2">
           <Button type="button" variant="ghost" size="sm" onClick={handleDiscard} disabled={isAccepting}>
-            Keep original
+            {t("keepOriginal")}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={handleAccept} disabled={isAccepting}>
             {isAccepting && <Loader2 className="size-3.5 animate-spin" />}
-            Use this version
+            {t("useThisVersion")}
           </Button>
         </div>
       )}
