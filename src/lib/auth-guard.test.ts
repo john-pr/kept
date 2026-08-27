@@ -10,7 +10,7 @@ import { requireApiSessionUser, requireSessionUser } from "./auth-guard";
 
 describe("requireSessionUser", () => {
   it("returns null when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     expect(await requireSessionUser()).toBeNull();
   });
@@ -31,7 +31,7 @@ describe("requireSessionUser", () => {
 
 describe("requireApiSessionUser", () => {
   it("returns a 401 NextResponse when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await requireApiSessionUser();
 

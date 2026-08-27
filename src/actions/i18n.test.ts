@@ -44,7 +44,7 @@ describe("setLocale", () => {
   });
 
   it("sets the cookie only when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await setLocale("en");
 

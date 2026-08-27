@@ -50,7 +50,7 @@ describe("createCollection", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await createCollection(validPayload);
 
@@ -121,7 +121,7 @@ describe("updateCollection", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await updateCollection("collection-1", validPayload);
 
@@ -168,7 +168,7 @@ describe("deleteCollection", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await deleteCollection("collection-1");
 
@@ -214,7 +214,7 @@ describe("toggleCollectionFavorite", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await toggleCollectionFavorite("collection-1", true);
 

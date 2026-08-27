@@ -71,7 +71,7 @@ describe("updateItem", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await updateItem("item-1", validPayload);
 
@@ -163,7 +163,7 @@ describe("createItem", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await createItem(validCreatePayload);
 
@@ -307,7 +307,7 @@ describe("deleteItem", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await deleteItem("item-1");
 
@@ -369,7 +369,7 @@ describe("toggleItemFavorite", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await toggleItemFavorite("item-1", true);
 
@@ -414,7 +414,7 @@ describe("toggleItemPin", () => {
   });
 
   it("returns an error when there is no session", async () => {
-    vi.mocked(auth).mockResolvedValue(null);
+    vi.mocked(auth).mockResolvedValue(null as never);
 
     const result = await toggleItemPin("item-1", true);
 

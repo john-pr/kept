@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone HTML/JS prototypes and the vendored Claude Design canvas runtime —
+    // not application code, not linted.
+    "prototypes/**",
+    "src/generated/**",
   ]),
 ]);
 
