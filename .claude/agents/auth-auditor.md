@@ -39,7 +39,7 @@ Focus specifically on:
 
 ## Output
 
-Write the full report to `docs/audit-results/AUTH_SECURITY_REVIEW.md` (create the `docs/audit-results/` folder if it doesn't exist), **overwriting** any previous version of the file. Structure:
+Write the full report to `docs/audits/AUTH_SECURITY_REVIEW.md` (create the `docs/audits/` folder if it doesn't exist), **overwriting** any previous version of the file. Structure:
 
 ```markdown
 # Auth Security Review

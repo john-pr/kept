@@ -1,6 +1,18 @@
 # Auth Security Review
 
 **Last audited:** 2026-07-30
+**Status annotated:** 2026-08-27 (added before making the repo public)
+
+This report was produced by the `auth-auditor` subagent against the auth code as it stood on
+2026-07-30. It is kept as a record of the security-review process. Each finding below is
+prefixed with its **current status** — verified against the code on 2026-08-27.
+
+| # | Finding | Status |
+|---|---|---|
+| 1 | No rate limiting on auth endpoints | **Fixed** — sliding-window IP/account rate limiting added across every listed endpoint (`src/lib/rate-limit.ts`, `enforceRateLimit`) |
+| 2 | Timing side-channel on `forgot-password` / `resend-verification` | **Mitigated, not eliminated** — endpoints are now rate-limited to 3/hour per IP, which makes timing-based enumeration impractical; the micro-latency difference itself still exists. Accepted for now. |
+| 3 | Account deletion doesn't re-verify the password | **Open, accepted** — still session + rate-limit + client "type delete" gated, no server-side password re-check. Low severity; tracked. |
+| 4 | Register endpoint reveals whether an email exists (HTTP 409) | **Mitigated, accepted** — the 409 remains (deliberate UX tradeoff), now blunted by the Finding 1 rate limit. |
 
 ## Findings
 
