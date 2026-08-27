@@ -61,10 +61,15 @@ export function SidebarNav({
                   rowPadding,
                   collapsed && "justify-center",
                   isActive && "bg-muted font-medium",
-                  isEmpty && "opacity-60"
+                  // Zero-count types read as dimmed via a real muted color rather than
+                  // `opacity`, which drove the count text below the 4.5:1 contrast floor
+                  // (a11y pass). The icon chip keeps the softer look via opacity — it's
+                  // decorative, so contrast rules don't apply.
+                  isEmpty && !isActive && "text-muted-foreground [&_[data-type-chip]]:opacity-60"
                 )}
               >
                 <span
+                  data-type-chip
                   className="relative flex size-6 shrink-0 items-center justify-center"
                   style={{ backgroundColor: withAlpha(type.color, alphaSuffix) }}
                 >
@@ -84,7 +89,14 @@ export function SidebarNav({
                         {t("pro")}
                       </Badge>
                     )}
-                    <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
+                    <span
+                      className={cn(
+                        "ml-auto text-[11px] tabular-nums",
+                        // `text-muted-foreground` clears 4.5:1 on the page bg but not on the
+                        // active row's `bg-muted` — brighten it just there (a11y pass).
+                        isActive ? "text-foreground" : "text-muted-foreground"
+                      )}
+                    >
                       {String(type.itemCount).padStart(2, "0")}
                     </span>
                   </>

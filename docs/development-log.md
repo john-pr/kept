@@ -496,3 +496,19 @@ the full pattern reference live in `context/design-system.md`.
   failures are surfaced by racing `waitForURL` against the form's `[data-slot="alert"]` (a
   bare `role="alert"` also matches sonner toasts, including the register success toast that
   survives the redirect). All 7 specs green locally over repeated runs.
+- **2026-08-27 — Portfolio prep 6: Lighthouse & a11y pass.** `src/app/opengraph-image.tsx`
+  (`next/og` `ImageResponse`, 1200×630, ledger palette) — the OG image gap (favicon.ico /
+  icon.svg / apple-icon.png already existed, so the spec's "no favicon at all" premise was
+  stale). `generateMetadata` gained `metadataBase`, a title template, `openGraph`, and
+  `twitter` (`summary_large_image`). New `tests/e2e/a11y.spec.ts` (`@axe-core/playwright`,
+  WCAG 2.0/2.1 A+AA, fails on serious/critical) over `/`, `/dashboard`, `/items/snippets`.
+  It surfaced 10+10 `color-contrast` serious violations, all in the sidebar chrome from the
+  2026-08-26 zero-count dim: the row-level `opacity-60` pushed the muted count text to
+  2.71:1. Fixed in `SidebarNav.tsx` (dim via a real muted color on the label +
+  `opacity-60` on the decorative chip only; active row and its count stay
+  `text-foreground`) and `UserFooter.tsx` (square-avatar initials → `text-ink-body`); both
+  screen-owning components, no `ui/*` edits. `.lighthouserc.json` + non-blocking
+  `.github/workflows/lighthouse.yml` (dispatch + weekly, `@lhci/cli` against the deployed
+  `/`). `docs/quality.md` records the before/after and the Lighthouse plan (production
+  numbers captured at deploy in prep 7). All three axe checks clean; homepage and auth pages
+  had zero violations to begin with.
