@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { AuthSwitchLink } from "@/components/auth/AuthSwitchLink";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { HomeNav } from "@/components/homepage/HomeNav";
 
@@ -15,12 +15,7 @@ export default function RegisterPage() {
           crumb="Sign up"
         >
           <RegisterForm />
-          <p className="flex items-center justify-center gap-2 border-t border-dotted border-border pt-4 text-[11px] tracking-[0.08em] text-muted-foreground uppercase">
-            Already registered?
-            <Link href="/sign-in" className="text-primary underline underline-offset-4">
-              Sign in
-            </Link>
-          </p>
+          <AuthSwitchLink prompt="Already registered?" href="/sign-in" label="Sign in" />
         </AuthCard>
       </div>
     </div>

@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/lib/toast";
 
+const LABEL_CLASS = "text-[10px] tracking-[0.14em] text-muted-foreground uppercase";
+const FIELD_CLASS = "h-[38px] border-border bg-muted text-[13px]";
+
 const registerSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
@@ -77,7 +80,7 @@ export function RegisterForm() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="name" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+          <Label htmlFor="name" className={LABEL_CLASS}>
             Name
           </Label>
           <Input
@@ -86,11 +89,11 @@ export function RegisterForm() {
             required
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="h-[38px] border-border bg-muted text-[13px]"
+            className={FIELD_CLASS}
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="email" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+          <Label htmlFor="email" className={LABEL_CLASS}>
             Email
           </Label>
           <Input
@@ -100,11 +103,11 @@ export function RegisterForm() {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="h-[38px] border-border bg-muted text-[13px]"
+            className={FIELD_CLASS}
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="password" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+          <Label htmlFor="password" className={LABEL_CLASS}>
             Password
           </Label>
           <Input
@@ -114,13 +117,13 @@ export function RegisterForm() {
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="h-[38px] border-border bg-muted text-[13px]"
+            className={FIELD_CLASS}
           />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label
             htmlFor="confirmPassword"
-            className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
+            className={LABEL_CLASS}
           >
             Confirm password
           </Label>
@@ -131,7 +134,7 @@ export function RegisterForm() {
             required
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
-            className="h-[38px] border-border bg-muted text-[13px]"
+            className={FIELD_CLASS}
           />
         </div>
         <Button

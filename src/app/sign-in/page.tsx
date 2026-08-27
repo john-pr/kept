@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { AuthSwitchLink } from "@/components/auth/AuthSwitchLink";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { HomeNav } from "@/components/homepage/HomeNav";
 
@@ -18,12 +18,7 @@ export default function SignInPage() {
           <Suspense>
             <SignInForm />
           </Suspense>
-          <p className="flex items-center justify-center gap-2 border-t border-dotted border-border pt-4 text-[11px] tracking-[0.08em] text-muted-foreground uppercase">
-            No account yet?
-            <Link href="/register" className="text-primary underline underline-offset-4">
-              Register
-            </Link>
-          </p>
+          <AuthSwitchLink prompt="No account yet?" href="/register" label="Register" />
         </AuthCard>
       </div>
     </div>

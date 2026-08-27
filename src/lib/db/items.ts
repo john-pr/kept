@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import { toSearchPreview } from "@/lib/search-preview";
 import { DASHBOARD_RECENT_ITEMS_LIMIT } from "@/lib/constants";
+import { isProOnlyType } from "@/lib/plan-limits";
 
 export interface ItemTypeSummary {
   id: string;
@@ -12,8 +13,6 @@ export interface ItemTypeSummary {
   itemCount: number;
   isPro: boolean;
 }
-
-const PRO_TYPE_NAMES = new Set(["file", "image"]);
 
 export async function getItemTypes(userId: string): Promise<ItemTypeSummary[]> {
   const itemTypes = await prisma.itemType.findMany({
@@ -32,7 +31,7 @@ export async function getItemTypes(userId: string): Promise<ItemTypeSummary[]> {
         icon: type.icon,
         color: type.color,
         itemCount: type._count.items,
-        isPro: PRO_TYPE_NAMES.has(lowerName),
+        isPro: isProOnlyType(lowerName),
       };
     })
     .sort((a, b) => b.itemCount - a.itemCount);

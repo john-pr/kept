@@ -13,6 +13,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { GitHubIcon } from "@/components/auth/GitHubIcon";
 import { useResendCooldown } from "@/hooks/useResendCooldown";
 
+const LABEL_CLASS = "text-[10px] tracking-[0.14em] text-muted-foreground uppercase";
+const FIELD_CLASS = "h-[38px] border-border bg-muted text-[13px]";
+
 export function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -118,7 +121,7 @@ export function SignInForm() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="email" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+          <Label htmlFor="email" className={LABEL_CLASS}>
             Email
           </Label>
           <Input
@@ -128,12 +131,12 @@ export function SignInForm() {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="h-[38px] border-border bg-muted text-[13px]"
+            className={FIELD_CLASS}
           />
         </div>
         <div className="flex flex-col gap-1.5">
           <div className="flex items-baseline justify-between gap-3">
-            <Label htmlFor="password" className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+            <Label htmlFor="password" className={LABEL_CLASS}>
               Password
             </Label>
             <Link
@@ -150,7 +153,7 @@ export function SignInForm() {
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="h-[38px] border-border bg-muted text-[13px]"
+            className={FIELD_CLASS}
           />
         </div>
         <Button

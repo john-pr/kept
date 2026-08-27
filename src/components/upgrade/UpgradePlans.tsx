@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { FREE_FEATURES, PRO_FEATURES } from "@/lib/pricing-features";
-import { startProCheckout } from "@/lib/stripe-client";
+import { useProCheckout } from "@/hooks/useProCheckout";
 import { FeatureList } from "@/components/pricing/FeatureList";
 import { PricingIntervalToggle } from "@/components/pricing/PricingIntervalToggle";
 import { ActivateDemoProButton } from "@/components/pricing/DemoProButtons";
@@ -13,15 +12,10 @@ import { ActivateDemoProButton } from "@/components/pricing/DemoProButtons";
 /** Monthly/yearly toggle plus Free/Pro comparison cards; the Pro card starts Stripe Checkout. */
 export function UpgradePlans() {
   const [isYearly, setIsYearly] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const { isRedirecting, startCheckout } = useProCheckout();
 
-  async function handleUpgrade() {
-    setIsRedirecting(true);
-    const result = await startProCheckout(isYearly ? "yearly" : "monthly");
-    if (!result.success) {
-      setIsRedirecting(false);
-      toast.error(result.error);
-    }
+  function handleUpgrade() {
+    startCheckout(isYearly);
   }
 
   return (
