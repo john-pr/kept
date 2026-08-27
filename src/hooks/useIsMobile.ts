@@ -2,9 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 
-/** Matches the app's `md:` Tailwind breakpoint (768px) used throughout the mobile chrome
- * (MobileTabBar, TopBar, MobileSidebar). */
-const MOBILE_MEDIA_QUERY = "(max-width: 767px)";
+/** Matches the app's `lg:` Tailwind breakpoint (1024px) used throughout the mobile chrome
+ * (MobileTabBar, TopBar, MobileSidebar are all `lg:hidden` / `hidden lg:flex`). */
+const MOBILE_MEDIA_QUERY = "(max-width: 1023px)";
 
 function subscribe(callback: () => void) {
   const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);

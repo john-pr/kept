@@ -32,6 +32,12 @@ export default async function CollectionDetailPage({ params, searchParams }: Col
   const totalPages = getPageCount(totalCount, ITEMS_PER_PAGE);
   const { imageItems, fileItems, otherItems } = groupItemsByType(items);
 
+  const sections = [
+    { label: "Items", items: otherItems, Grid: ItemCardGrid },
+    { label: "Images", items: imageItems, Grid: ImageThumbnailGrid },
+    { label: "Files", items: fileItems, Grid: FileListGroup },
+  ];
+
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
       <CollectionDetailHeader collection={collection} />
@@ -39,23 +45,13 @@ export default async function CollectionDetailPage({ params, searchParams }: Col
         <p className="text-sm text-muted-foreground">No items in this collection yet.</p>
       ) : (
         <div className="space-y-8">
-          {otherItems.length > 0 && (
-            <section className="flex flex-col gap-3">
-              <h3 className="text-sm font-medium text-foreground">Items</h3>
-              <ItemCardGrid items={otherItems} />
-            </section>
-          )}
-          {imageItems.length > 0 && (
-            <section className="flex flex-col gap-3">
-              <h3 className="text-sm font-medium text-foreground">Images</h3>
-              <ImageThumbnailGrid items={imageItems} />
-            </section>
-          )}
-          {fileItems.length > 0 && (
-            <section className="flex flex-col gap-3">
-              <h3 className="text-sm font-medium text-foreground">Files</h3>
-              <FileListGroup items={fileItems} />
-            </section>
+          {sections.map(({ label, items: sectionItems, Grid }) =>
+            sectionItems.length > 0 ? (
+              <section key={label} className="flex flex-col gap-3">
+                <h3 className="text-sm font-medium text-foreground">{label}</h3>
+                <Grid items={sectionItems} />
+              </section>
+            ) : null
           )}
         </div>
       )}

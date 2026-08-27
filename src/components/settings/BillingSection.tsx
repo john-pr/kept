@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
-import { startProCheckout } from "@/lib/stripe-client";
+import { formatDate } from "@/lib/format-date";
+import { useProCheckout } from "@/hooks/useProCheckout";
 import { PricingIntervalToggle } from "@/components/pricing/PricingIntervalToggle";
 import { ActivateDemoProButton, DeactivateDemoProButton } from "@/components/pricing/DemoProButtons";
 
@@ -33,7 +34,8 @@ export function BillingSection({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isYearly, setIsYearly] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const { isRedirecting, startCheckout } = useProCheckout();
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
 
   useEffect(() => {
     const checkout = searchParams.get("checkout");
@@ -46,22 +48,17 @@ export function BillingSection({
     }
   }, [searchParams, router]);
 
-  async function handleUpgrade() {
-    setIsRedirecting(true);
-    const result = await startProCheckout(isYearly ? "yearly" : "monthly");
-    if (!result.success) {
-      setIsRedirecting(false);
-      toast.error(result.error);
-    }
+  function handleUpgrade() {
+    startCheckout(isYearly);
   }
 
   async function handleManageSubscription() {
-    setIsRedirecting(true);
+    setIsOpeningPortal(true);
     const response = await fetch("/api/stripe/create-portal-session", { method: "POST" });
     const result = await response.json();
 
     if (!result.success) {
-      setIsRedirecting(false);
+      setIsOpeningPortal(false);
       toast.error(result.error ?? "Something went wrong");
       return;
     }
@@ -72,13 +69,7 @@ export function BillingSection({
   if (isPro) {
     const isDemoPro = !stripeCustomerId;
     const isCanceling = stripeSubscriptionStatus === "canceled" && stripeCurrentPeriodEnd;
-    const periodEndLabel = stripeCurrentPeriodEnd
-      ? new Date(stripeCurrentPeriodEnd).toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })
-      : null;
+    const periodEndLabel = stripeCurrentPeriodEnd ? formatDate(stripeCurrentPeriodEnd) : null;
 
     return (
       <div className="flex flex-col gap-4">
@@ -102,8 +93,8 @@ export function BillingSection({
         {isDemoPro ? (
           <DeactivateDemoProButton className="w-fit" />
         ) : (
-          <Button variant="outline" className="w-fit" disabled={isRedirecting} onClick={handleManageSubscription}>
-            {isRedirecting && <Loader2 className="size-4 animate-spin" />}
+          <Button variant="outline" className="w-fit" disabled={isOpeningPortal} onClick={handleManageSubscription}>
+            {isOpeningPortal && <Loader2 className="size-4 animate-spin" />}
             Manage subscription
           </Button>
         )}

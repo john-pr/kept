@@ -5,10 +5,8 @@ import { Pencil, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CollectionDialogs } from "@/components/dashboard/CollectionDialogs";
 import type { CollectionDetail } from "@/lib/db/collections";
-import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { useCollectionDialogs } from "@/hooks/useCollectionDialogs";
-import { toggleCollectionFavorite } from "@/actions/collections";
-import { toast } from "@/lib/toast";
+import { useCollectionFavoriteToggle } from "@/hooks/useCollectionFavoriteToggle";
 
 interface CollectionDetailHeaderProps {
   collection: CollectionDetail;
@@ -17,17 +15,7 @@ interface CollectionDetailHeaderProps {
 export function CollectionDetailHeader({ collection }: CollectionDetailHeaderProps) {
   const router = useRouter();
   const { editOpen, setEditOpen, deleteOpen, setDeleteOpen } = useCollectionDialogs();
-  const [isFavorite, toggleFavorite] = useOptimisticToggle(
-    collection.isFavorite,
-    (next) => toggleCollectionFavorite(collection.id, next),
-    "Failed to update favorite",
-    (next) => {
-      toast.success(next ? "Collection favorited" : "Collection unfavorited");
-      // Keep the sidebar's favorite-collections list / dashboard counts in sync
-      // (ui-reviewer finding on stale favorite state after a card toggle).
-      router.refresh();
-    }
-  );
+  const [isFavorite, toggleFavorite] = useCollectionFavoriteToggle(collection);
 
   return (
     <div className="flex items-start justify-between gap-4">

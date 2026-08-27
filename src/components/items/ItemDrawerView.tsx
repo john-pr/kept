@@ -9,6 +9,11 @@ import { DeleteItemDialog } from "@/components/items/DeleteItemDialog";
 import { formatFileSize } from "@/lib/file-constraints";
 import type { ItemDetailResponse } from "@/components/items/ItemDrawer";
 
+// Dotted-divider section-label convention — this component is its canonical origin
+// (see context/design-system.md's "Typography conventions").
+const SECTION_HEADING_CLASS =
+  "border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase";
+
 interface ItemDrawerViewProps {
   item: ItemDetailResponse;
   showLanguage: boolean;
@@ -90,7 +95,7 @@ export function ItemDrawerView({
 
       {item.description && (
         <div className="flex flex-col gap-2.5">
-          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          <h4 className={SECTION_HEADING_CLASS}>
             Description
           </h4>
           <p className="text-sm text-ink-body">{item.description}</p>
@@ -99,7 +104,7 @@ export function ItemDrawerView({
 
       {(item.content || item.url) && (
         <div className="flex flex-col gap-2.5">
-          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          <h4 className={SECTION_HEADING_CLASS}>
             Content
           </h4>
           {showLanguage && item.content ? (
@@ -130,7 +135,7 @@ export function ItemDrawerView({
 
       {item.fileUrl && isImage && (
         <div className="flex flex-col gap-2.5">
-          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          <h4 className={SECTION_HEADING_CLASS}>
             Preview
           </h4>
           {/* Fixed-height muted box reserves space so a large image loading in
@@ -148,7 +153,7 @@ export function ItemDrawerView({
 
       {item.fileName && (
         <div className="flex flex-col gap-2.5">
-          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          <h4 className={SECTION_HEADING_CLASS}>
             File
           </h4>
           <p className="text-sm text-ink-body">
@@ -160,7 +165,7 @@ export function ItemDrawerView({
 
       {item.tags.length > 0 && (
         <div className="flex flex-col gap-2.5">
-          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          <h4 className={SECTION_HEADING_CLASS}>
             Tags
           </h4>
           <div className="flex flex-wrap gap-2">
@@ -175,7 +180,7 @@ export function ItemDrawerView({
 
       {item.collections.length > 0 && (
         <div className="flex flex-col gap-2.5">
-          <h4 className="border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          <h4 className={SECTION_HEADING_CLASS}>
             Collections
           </h4>
           <div className="flex flex-wrap gap-2">

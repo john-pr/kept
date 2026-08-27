@@ -16,27 +16,14 @@ import { iconMap } from "@/lib/icon-map";
 import { withAlpha } from "@/lib/color";
 import type { CollectionSummary } from "@/lib/db/collections";
 import { useClickableCard } from "@/hooks/useClickableCard";
-import { useOptimisticToggle } from "@/hooks/useOptimisticToggle";
 import { useCollectionDialogs } from "@/hooks/useCollectionDialogs";
+import { useCollectionFavoriteToggle } from "@/hooks/useCollectionFavoriteToggle";
 import { useSoftTintAlpha } from "@/hooks/useSoftTintAlpha";
-import { toggleCollectionFavorite } from "@/actions/collections";
-import { toast } from "@/lib/toast";
 
 export function CollectionCard({ collection }: { collection: CollectionSummary }) {
   const router = useRouter();
   const { editOpen, setEditOpen, deleteOpen, setDeleteOpen } = useCollectionDialogs();
-  const [isFavorite, toggleFavorite] = useOptimisticToggle(
-    collection.isFavorite,
-    (next) => toggleCollectionFavorite(collection.id, next),
-    "Failed to update favorite",
-    (next) => {
-      toast.success(next ? "Collection favorited" : "Collection unfavorited");
-      // Refresh so the dashboard stats strip and the sidebar's favorite-collections
-      // list reflect the change immediately (ui-reviewer finding — was stale until
-      // the next navigation).
-      router.refresh();
-    }
-  );
+  const [isFavorite, toggleFavorite] = useCollectionFavoriteToggle(collection);
   const clickableCard = useClickableCard(() => router.push(`/collections/${collection.id}`));
   const alphaSuffix = useSoftTintAlpha();
 
@@ -59,7 +46,7 @@ export function CollectionCard({ collection }: { collection: CollectionSummary }
           <div className="flex shrink-0 items-center gap-2" onClick={stopPropagation}>
             <FavoriteToggleButton
               isFavorite={isFavorite}
-              onToggle={() => toggleFavorite()}
+              onToggle={toggleFavorite}
               color="primary"
             />
             <DropdownMenu>

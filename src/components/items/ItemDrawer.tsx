@@ -134,6 +134,39 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     setForm(null);
   }
 
+  /**
+   * Folds an `updateItem` result back into `item`: rebuilds the `ItemDetailResponse`
+   * (serialize dates, carry over the response-only `canEdit`/`collectionOptions`/`isPro`
+   * fields the action doesn't return) and toasts + refreshes. Returns whether it succeeded.
+   */
+  function applyItemUpdateResult(
+    result: Awaited<ReturnType<typeof updateItem>>,
+    successMessage: string,
+    failMessage: string
+  ): boolean {
+    if (!result.success || !result.data) {
+      toast.error(result.error ?? failMessage);
+      return false;
+    }
+
+    const data = result.data;
+    setItem((current) =>
+      current
+        ? {
+            ...data,
+            createdAt: data.createdAt.toString(),
+            updatedAt: data.updatedAt.toString(),
+            canEdit: current.canEdit,
+            collectionOptions: current.collectionOptions,
+            isPro: current.isPro,
+          }
+        : current
+    );
+    toast.success(successMessage);
+    router.refresh();
+    return true;
+  }
+
   async function handleSave() {
     if (!item || !form) return;
 
@@ -149,21 +182,9 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     });
     setIsSaving(false);
 
-    if (result.success && result.data) {
-      setItem({
-        ...result.data,
-        createdAt: result.data.createdAt.toString(),
-        updatedAt: result.data.updatedAt.toString(),
-        canEdit: item.canEdit,
-        collectionOptions: item.collectionOptions,
-        isPro: item.isPro,
-      });
+    if (applyItemUpdateResult(result, "Item updated", "Failed to update item")) {
       setIsEditing(false);
       setForm(null);
-      toast.success("Item updated");
-      router.refresh();
-    } else {
-      toast.error(result.error ?? "Failed to update item");
     }
   }
 
@@ -206,20 +227,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       collectionIds: item.collections.map((collection) => collection.id),
     });
 
-    if (result.success && result.data) {
-      setItem({
-        ...result.data,
-        createdAt: result.data.createdAt.toString(),
-        updatedAt: result.data.updatedAt.toString(),
-        canEdit: item.canEdit,
-        collectionOptions: item.collectionOptions,
-        isPro: item.isPro,
-      });
-      toast.success("Prompt updated");
-      router.refresh();
-    } else {
-      toast.error(result.error ?? "Failed to update prompt");
-    }
+    applyItemUpdateResult(result, "Prompt updated", "Failed to update prompt");
   }
 
   async function handleDelete() {

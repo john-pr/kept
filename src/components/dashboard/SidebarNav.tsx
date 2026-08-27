@@ -24,7 +24,7 @@ interface SidebarNavProps {
 // Matches the dotted-divider section-label convention already established on
 // `ItemDrawerView.tsx` ("Content"/"Tags"/"Collections" headers) — see
 // context/design-system.md's "Typography conventions".
-const SECTION_LABEL_CLASS =
+export const SECTION_LABEL_CLASS =
   "border-b border-dotted border-border pb-1.5 text-[11px] tracking-[0.14em] text-muted-foreground uppercase";
 
 export function SidebarNav({

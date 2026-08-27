@@ -1,18 +1,15 @@
 import { NextResponse } from "next/server";
 import { APP_URL, getStripeClient } from "@/lib/stripe";
-import { prisma } from "@/lib/prisma";
+import { getUserStripeCustomerId } from "@/lib/db/users";
 import { requireApiSessionUser } from "@/lib/auth-guard";
 
 export async function POST() {
   const user = await requireApiSessionUser();
   if (user instanceof NextResponse) return user;
 
-  const dbUser = await prisma.user.findUnique({
-    where: { id: user.id },
-    select: { stripeCustomerId: true },
-  });
+  const stripeCustomerId = await getUserStripeCustomerId(user.id);
 
-  if (!dbUser?.stripeCustomerId) {
+  if (!stripeCustomerId) {
     return NextResponse.json(
       { success: false, error: "No active subscription found" },
       { status: 400 }
@@ -20,7 +17,7 @@ export async function POST() {
   }
 
   const portalSession = await getStripeClient().billingPortal.sessions.create({
-    customer: dbUser.stripeCustomerId,
+    customer: stripeCustomerId,
     return_url: `${APP_URL}/settings`,
   });
 

@@ -11,7 +11,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { SidebarNav } from "@/components/dashboard/SidebarNav";
+import { SidebarNav, SECTION_LABEL_CLASS } from "@/components/dashboard/SidebarNav";
+import { cn } from "@/lib/utils";
 import { UserFooter } from "@/components/dashboard/UserFooter";
 import { NewCollectionDialog } from "@/components/dashboard/NewCollectionDialog";
 import { useMobileNav } from "@/components/dashboard/MobileNavContext";
@@ -58,7 +59,7 @@ export function MobileSidebar({
       </SheetTrigger>
       <SheetContent side="left" className="flex flex-col p-0" showCloseButton={false}>
         <SheetHeader className="flex-row items-center justify-between border-b border-border px-2 py-3">
-          <SheetTitle className="text-xs font-medium tracking-wide text-muted-foreground">
+          <SheetTitle className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
             Navigation
           </SheetTitle>
           {/* Custom, larger close button — `SheetContent`'s built-in one is size-7 (28px),
@@ -70,9 +71,7 @@ export function MobileSidebar({
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-2 py-4">
           <nav className="mb-6 flex flex-col gap-0.5">
-            <h3 className="mb-2 px-2 text-xs font-medium tracking-wide text-muted-foreground">
-              Quick Actions
-            </h3>
+            <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>Quick Actions</h3>
             <Link
               href="/favorites"
               onClick={() => setOpen(false)}

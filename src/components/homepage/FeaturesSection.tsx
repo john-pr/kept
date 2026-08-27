@@ -1,4 +1,5 @@
 import { Code, Sparkles, Search, Terminal, File, Layers, type LucideIcon } from "lucide-react";
+import { withAlpha } from "@/lib/color";
 import { ScrollFadeIn } from "./ScrollFadeIn";
 import { SectionEyebrow } from "./SectionEyebrow";
 
@@ -71,7 +72,7 @@ export function FeaturesSection() {
             <div className="h-full bg-card p-6.5 transition-colors hover:bg-muted">
               <div
                 className="mb-4 flex size-11 items-center justify-center rounded-none"
-                style={{ color: feature.accent, backgroundColor: `${feature.accent}24` }}
+                style={{ color: feature.accent, backgroundColor: withAlpha(feature.accent, "24") }}
               >
                 <feature.icon className="size-5.5" />
               </div>
