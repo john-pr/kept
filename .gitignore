@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
 
 # next.js
 /.next/
@@ -50,3 +52,6 @@ next-env.d.ts
 
 # playwright mcp debug output
 .playwright-mcp/
+
+# jetbrains ide
+.idea/
