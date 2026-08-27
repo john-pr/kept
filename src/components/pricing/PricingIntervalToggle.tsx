@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface PricingIntervalToggleProps {
@@ -18,6 +19,7 @@ export function PricingIntervalToggle({
   className,
 }: PricingIntervalToggleProps) {
   const compact = size === "compact";
+  const t = useTranslations("pricing");
 
   return (
     <div className={cn("flex items-center gap-3.5", compact ? "gap-3" : "justify-center", className)}>
@@ -29,13 +31,13 @@ export function PricingIntervalToggle({
           !isYearly && (compact ? "font-medium text-foreground" : "text-foreground")
         )}
       >
-        Monthly
+        {t("monthly")}
       </span>
       <button
         type="button"
         role="switch"
         aria-checked={isYearly}
-        aria-label="Toggle yearly pricing"
+        aria-label={t("toggleYearly")}
         onClick={() => onChange(!isYearly)}
         className={cn(
           "relative cursor-pointer rounded-full border border-border bg-muted outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
@@ -59,12 +61,12 @@ export function PricingIntervalToggle({
           isYearly && (compact ? "font-medium text-foreground" : "text-foreground")
         )}
       >
-        Yearly{" "}
+        {t("yearly")}{" "}
         {compact ? (
-          <span className="text-xs text-emerald-500">(save 25%)</span>
+          <span className="text-xs text-emerald-500">{t("save25Compact")}</span>
         ) : (
           <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[0.68rem] font-bold text-emerald-500">
-            Save 25%
+            {t("save25")}
           </span>
         )}
       </span>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CollectionMultiSelect } from "@/components/items/CollectionMultiSelect";
@@ -37,6 +38,8 @@ export function ItemDrawerEditForm({
   onSave,
   onCancel,
 }: ItemDrawerEditFormProps) {
+  const t = useTranslations("itemForm");
+  const tc = useTranslations("common");
   function handleAcceptTag(tag: string) {
     setForm({ ...form, tags: appendTagToInput(form.tags, tag) });
   }
@@ -45,11 +48,11 @@ export function ItemDrawerEditForm({
       <div className="flex items-center gap-2">
         <Button size="sm" onClick={onSave} disabled={form.title.trim() === "" || isSaving}>
           <Save className="size-4" />
-          {isSaving ? "Saving..." : "Save"}
+          {isSaving ? t("saving") : t("save")}
         </Button>
         <Button variant="outline" size="sm" onClick={onCancel} disabled={isSaving}>
           <X className="size-4" />
-          Cancel
+          {tc("cancel")}
         </Button>
       </div>
 
@@ -81,7 +84,7 @@ export function ItemDrawerEditForm({
             labels flanking this one — the rest of ItemDrawerEditForm is still
             known-unstyled, but an orphaned bold Title Case label next to uppercase
             tracked siblings reads as a bug (ui-reviewer finding). */}
-        <h4 className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">Type</h4>
+        <h4 className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">{t("type")}</h4>
         <p className="text-[13px] text-foreground">{item.itemType.name}</p>
       </div>
 

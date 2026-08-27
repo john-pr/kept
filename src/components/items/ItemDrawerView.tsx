@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Copy, Download, Pencil, Pin, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -45,25 +46,26 @@ export function ItemDrawerView({
   onDelete,
   onAcceptOptimizedPrompt,
 }: ItemDrawerViewProps) {
+  const t = useTranslations("drawer");
   return (
     <>
       <div className="flex items-center gap-2">
         {item.fileUrl ? (
           <Button variant="outline" size="sm" onClick={onDownload}>
             <Download className="size-4" />
-            Download
+            {t("download")}
           </Button>
         ) : (
           <Button variant="outline" size="sm" onClick={onCopy}>
             <Copy className="size-4" />
-            Copy
+            {t("copy")}
           </Button>
         )}
         <Button
           variant="outline"
           size="icon-sm"
           onClick={onToggleFavorite}
-          aria-label={item.isFavorite ? "Unfavorite" : "Favorite"}
+          aria-label={item.isFavorite ? t("unfavorite") : t("favorite")}
         >
           <Star className={item.isFavorite ? "size-4 fill-yellow-400 text-yellow-400" : "size-4"} />
         </Button>
@@ -71,7 +73,7 @@ export function ItemDrawerView({
           variant="outline"
           size="icon-sm"
           onClick={onTogglePin}
-          aria-label={item.isPinned ? "Unpin" : "Pin"}
+          aria-label={item.isPinned ? t("unpin") : t("pin")}
         >
           <Pin className={item.isPinned ? "size-4 fill-current" : "size-4"} />
         </Button>
@@ -80,8 +82,8 @@ export function ItemDrawerView({
           size="icon-sm"
           onClick={onEdit}
           disabled={!item.canEdit}
-          aria-label="Edit item"
-          title={item.canEdit ? undefined : "You don't have permission to edit this item"}
+          aria-label={t("editItem")}
+          title={item.canEdit ? undefined : t("noPermissionEdit")}
         >
           <Pencil className="size-4" />
         </Button>
@@ -96,7 +98,7 @@ export function ItemDrawerView({
       {item.description && (
         <div className="flex flex-col gap-2.5">
           <h4 className={SECTION_HEADING_CLASS}>
-            Description
+            {t("sectionDescription")}
           </h4>
           <p className="text-sm text-ink-body">{item.description}</p>
         </div>
@@ -105,7 +107,7 @@ export function ItemDrawerView({
       {(item.content || item.url) && (
         <div className="flex flex-col gap-2.5">
           <h4 className={SECTION_HEADING_CLASS}>
-            Content
+            {t("sectionContent")}
           </h4>
           {showLanguage && item.content ? (
             <CodeEditor
@@ -136,7 +138,7 @@ export function ItemDrawerView({
       {item.fileUrl && isImage && (
         <div className="flex flex-col gap-2.5">
           <h4 className={SECTION_HEADING_CLASS}>
-            Preview
+            {t("sectionPreview")}
           </h4>
           {/* Fixed-height muted box reserves space so a large image loading in
               doesn't collapse then jump the drawer layout (ui-reviewer finding). */}
@@ -154,7 +156,7 @@ export function ItemDrawerView({
       {item.fileName && (
         <div className="flex flex-col gap-2.5">
           <h4 className={SECTION_HEADING_CLASS}>
-            File
+            {t("sectionFile")}
           </h4>
           <p className="text-sm text-ink-body">
             {item.fileName}
@@ -166,7 +168,7 @@ export function ItemDrawerView({
       {item.tags.length > 0 && (
         <div className="flex flex-col gap-2.5">
           <h4 className={SECTION_HEADING_CLASS}>
-            Tags
+            {t("sectionTags")}
           </h4>
           <div className="flex flex-wrap gap-2">
             {item.tags.map((tag) => (
@@ -181,7 +183,7 @@ export function ItemDrawerView({
       {item.collections.length > 0 && (
         <div className="flex flex-col gap-2.5">
           <h4 className={SECTION_HEADING_CLASS}>
-            Collections
+            {t("sectionCollections")}
           </h4>
           <div className="flex flex-wrap gap-2">
             {item.collections.map((collection) => (

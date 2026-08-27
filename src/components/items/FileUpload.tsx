@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type DragEvent } from "react";
+import { useTranslations } from "next-intl";
 import { File as FileIcon, Upload, X } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -26,13 +27,14 @@ interface FileUploadProps {
 
 export function FileUpload({ kind, value, onChange, disabled }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("fileUpload");
   const [isDragging, setIsDragging] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
 
   function upload(file: File) {
     const validation = validateFileConstraints(kind, file.name, file.type, file.size);
     if (!validation.valid) {
-      toast.error(validation.error ?? "Invalid file");
+      toast.error(validation.error ?? t("invalidFile"));
       return;
     }
 
@@ -55,20 +57,20 @@ export function FileUpload({ kind, value, onChange, disabled }: FileUploadProps)
       try {
         result = JSON.parse(xhr.responseText);
       } catch {
-        toast.error("Upload failed");
+        toast.error(t("uploadFailed"));
         return;
       }
 
       if (result.success && result.data) {
         onChange(result.data);
       } else {
-        toast.error(result.error ?? "Upload failed");
+        toast.error(result.error ?? t("uploadFailed"));
       }
     };
 
     xhr.onerror = () => {
       setProgress(null);
-      toast.error("Upload failed");
+      toast.error(t("uploadFailed"));
     };
 
     setProgress(0);
@@ -143,7 +145,7 @@ export function FileUpload({ kind, value, onChange, disabled }: FileUploadProps)
       />
       {isUploading ? (
         <div className="flex w-full flex-col gap-2">
-          <span className="text-sm text-muted-foreground">Uploading... {progress}%</span>
+          <span className="text-sm text-muted-foreground">{t("uploading", { progress: progress ?? 0 })}</span>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
             <div
               className="h-full rounded-full bg-primary transition-all"
@@ -155,7 +157,7 @@ export function FileUpload({ kind, value, onChange, disabled }: FileUploadProps)
         <>
           <Upload className="size-6 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            Drag and drop {kind === "image" ? "an image" : "a file"} here, or
+            {kind === "image" ? t("dragDropImage") : t("dragDropFile")}
           </p>
           <Button
             type="button"
@@ -164,7 +166,7 @@ export function FileUpload({ kind, value, onChange, disabled }: FileUploadProps)
             disabled={disabled}
             onClick={() => inputRef.current?.click()}
           >
-            Browse files
+            {t("browseFiles")}
           </Button>
           <p className="text-xs text-muted-foreground">
             {ALLOWED_EXTENSIONS[kind].join(", ")}

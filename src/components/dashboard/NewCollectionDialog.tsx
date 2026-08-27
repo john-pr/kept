@@ -2,6 +2,7 @@
 
 import { useState, type ReactElement, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import {
   Dialog,
@@ -28,6 +29,7 @@ const EMPTY_FORM = {
 
 export function NewCollectionDialog({ trigger, children }: NewCollectionDialogProps) {
   const router = useRouter();
+  const t = useTranslations("itemForm");
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -49,11 +51,11 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
     setIsSaving(false);
 
     if (result.success) {
-      toast.success("Collection created");
+      toast.success(t("toasts.collectionCreated"));
       handleOpenChange(false);
       router.refresh();
     } else {
-      toast.error(result.error ?? "Failed to create collection");
+      toast.error(result.error ?? t("toasts.failedCreateCollection"));
     }
   }
 
@@ -63,9 +65,9 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
       <DialogContent className="max-h-[90vh] gap-5 overflow-y-auto rounded-none border border-border ring-0 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-base font-medium tracking-[0.12em] uppercase">
-            New collection
+            {t("newCollection")}
           </DialogTitle>
-          <DialogDescription>Group items together under a new collection.</DialogDescription>
+          <DialogDescription>{t("newCollectionDescription")}</DialogDescription>
         </DialogHeader>
 
         <CollectionFormFields
@@ -82,7 +84,7 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
             disabled={form.name.trim() === "" || isSaving}
             className="tracking-[0.14em] uppercase"
           >
-            {isSaving ? "Creating..." : "Create"}
+            {isSaving ? t("creating") : t("create")}
           </Button>
         </DialogFooter>
       </DialogContent>

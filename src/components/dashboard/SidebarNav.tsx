@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { ItemTypeSummary } from "@/lib/db/items";
 import type { CollectionSummary } from "@/lib/db/collections";
 import { iconMap } from "@/lib/icon-map";
@@ -36,13 +37,14 @@ export function SidebarNav({
   comfortable = false,
 }: SidebarNavProps) {
   const pathname = usePathname();
+  const t = useTranslations("appChrome");
   const rowPadding = comfortable ? "py-3" : "py-1.5";
   const alphaSuffix = useSoftTintAlpha();
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        {!collapsed && <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>Item Types</h3>}
+        {!collapsed && <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>{t("itemTypes")}</h3>}
         <nav className="flex flex-col gap-0.5">
           {itemTypes.map((type) => {
             const Icon = iconMap[type.icon];
@@ -79,7 +81,7 @@ export function SidebarNav({
                         variant="outline"
                         className="text-[10px] tracking-wide text-muted-foreground"
                       >
-                        PRO
+                        {t("pro")}
                       </Badge>
                     )}
                     <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
@@ -96,7 +98,7 @@ export function SidebarNav({
       {favoriteCollections.length > 0 && (
         <div>
           {!collapsed && (
-            <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>Favorite Collections</h3>
+            <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>{t("favoriteCollections")}</h3>
           )}
           <nav className="flex flex-col gap-0.5">
             {favoriteCollections.map((collection) => (
@@ -121,7 +123,7 @@ export function SidebarNav({
 
       <div>
         {!collapsed && (
-          <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>Recent Collections</h3>
+          <h3 className={cn("mb-2 px-2", SECTION_LABEL_CLASS)}>{t("recentCollections")}</h3>
         )}
         <nav className="flex flex-col gap-0.5">
           {recentCollections.map((collection) => (
@@ -145,7 +147,7 @@ export function SidebarNav({
           ))}
           <Link
             href="/collections"
-            title={collapsed ? "View all collections" : undefined}
+            title={collapsed ? t("viewAllCollections") : undefined}
             className={cn(
               "flex items-center gap-2 rounded-md px-2 text-[11px] text-muted-foreground hover:bg-muted hover:text-foreground",
               rowPadding,
@@ -153,7 +155,7 @@ export function SidebarNav({
               pathname === "/collections" && "bg-muted font-medium text-foreground"
             )}
           >
-            {!collapsed && <span className="truncate">View all collections</span>}
+            {!collapsed && <span className="truncate">{t("viewAllCollections")}</span>}
             {collapsed && <span className="truncate">…</span>}
           </Link>
         </nav>

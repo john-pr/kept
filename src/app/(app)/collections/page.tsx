@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { CollectionCard } from "@/components/dashboard/CollectionCard";
 import { PaginationControls } from "@/components/dashboard/PaginationControls";
 import { getAllCollections } from "@/lib/db/collections";
@@ -21,12 +22,13 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
   );
 
   const totalPages = getPageCount(totalCount, COLLECTIONS_PER_PAGE);
+  const t = await getTranslations("collectionsPage");
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-semibold text-foreground">Collections</h1>
+      <h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
       {allCollections.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No collections yet.</p>
+        <p className="text-sm text-muted-foreground">{t("noCollections")}</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {allCollections.map((collection) => (

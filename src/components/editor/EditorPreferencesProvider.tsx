@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import { updateEditorPreferences } from "@/actions/editor-preferences";
 import { DEFAULT_EDITOR_PREFERENCES, type EditorPreferences } from "@/lib/editor-preferences";
@@ -29,6 +30,7 @@ export function useEditorPreferences() {
 }
 
 export function EditorPreferencesProvider({ children }: { children: ReactNode }) {
+  const t = useTranslations("billing");
   const [preferences, setPreferences] = useState<EditorPreferences>(DEFAULT_EDITOR_PREFERENCES);
 
   useEffect(() => {
@@ -61,14 +63,14 @@ export function EditorPreferencesProvider({ children }: { children: ReactNode })
 
       updateEditorPreferences(next).then((result) => {
         if (result.success) {
-          toast.success("Editor preferences saved");
+          toast.success(t("editorPreferencesSaved"));
         } else {
           setPreferences(previous);
-          toast.error(result.error ?? "Failed to save editor preferences");
+          toast.error(result.error ?? t("failedSaveEditorPreferences"));
         }
       });
     },
-    [preferences]
+    [preferences, t]
   );
 
   const value = useMemo(

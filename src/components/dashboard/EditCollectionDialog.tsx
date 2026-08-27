@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import {
   Dialog,
@@ -23,6 +24,7 @@ interface EditCollectionDialogProps {
 
 export function EditCollectionDialog({ collection, open, onOpenChange }: EditCollectionDialogProps) {
   const router = useRouter();
+  const t = useTranslations("itemForm");
 
   const [form, setForm] = useState({
     name: collection.name,
@@ -51,11 +53,11 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
     setIsSaving(false);
 
     if (result.success) {
-      toast.success("Collection updated");
+      toast.success(t("toasts.collectionUpdated"));
       onOpenChange(false);
       router.refresh();
     } else {
-      toast.error(result.error ?? "Failed to update collection");
+      toast.error(result.error ?? t("toasts.failedUpdateCollection"));
     }
   }
 
@@ -66,9 +68,9 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
       <DialogContent className="max-h-[90vh] gap-5 overflow-y-auto rounded-none border border-border ring-0 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-base font-medium tracking-[0.12em] uppercase">
-            Edit collection
+            {t("editCollection")}
           </DialogTitle>
-          <DialogDescription>Update the name and description of this collection.</DialogDescription>
+          <DialogDescription>{t("editCollectionDescription")}</DialogDescription>
         </DialogHeader>
 
         <CollectionFormFields
@@ -85,7 +87,7 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
             disabled={form.name.trim() === "" || isSaving}
             className="tracking-[0.14em] uppercase"
           >
-            {isSaving ? "Saving..." : "Save"}
+            {isSaving ? t("saving") : t("save")}
           </Button>
         </DialogFooter>
       </DialogContent>

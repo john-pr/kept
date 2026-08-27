@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { FolderOpen, FolderPlus, LayoutDashboard, Plus, Rows3, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NewItemDialog } from "@/components/dashboard/NewItemDialog";
@@ -39,6 +40,7 @@ const TAB_CLASS =
 export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabBarProps) {
   const pathname = usePathname();
   const { open, setOpen } = useMobileNav();
+  const t = useTranslations("appChrome");
   const isItemsActive = pathname.startsWith("/items/") || open;
 
   const isCollectionsList = pathname === "/collections";
@@ -57,7 +59,7 @@ export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabB
               <Button
                 size="icon-lg"
                 className="size-[52px] shadow-lg"
-                aria-label="New Collection"
+                aria-label={t("newCollection")}
               />
             }
           >
@@ -78,7 +80,7 @@ export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabB
               <Button
                 size="icon-lg"
                 className="size-[52px] shadow-lg"
-                aria-label="New Item"
+                aria-label={t("newItem")}
               />
             }
           >
@@ -98,7 +100,7 @@ export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabB
           )}
         >
           <LayoutDashboard className="size-[15px]" />
-          Dash
+          {t("tabDash")}
         </Link>
         <button
           type="button"
@@ -109,7 +111,7 @@ export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabB
           )}
         >
           <Rows3 className="size-[15px]" />
-          Items
+          {t("tabItems")}
         </button>
         <Link
           href="/collections"
@@ -121,7 +123,7 @@ export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabB
           )}
         >
           <FolderOpen className="size-[15px]" />
-          Colls
+          {t("tabColls")}
         </Link>
         <Link
           href="/profile"
@@ -131,7 +133,7 @@ export function MobileTabBar({ itemTypes, collectionOptions, isPro }: MobileTabB
           )}
         >
           <User className="size-[15px]" />
-          You
+          {t("tabYou")}
         </Link>
       </nav>
     </>

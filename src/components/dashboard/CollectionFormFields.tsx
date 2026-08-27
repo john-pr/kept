@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -24,15 +25,17 @@ export function CollectionFormFields({
   description,
   onDescriptionChange,
 }: CollectionFormFieldsProps) {
+  const t = useTranslations("itemForm");
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor={`${idPrefix}-name`} className={LABEL_CLASS}>
-          Name*
+          {t("name")}
         </Label>
         <Input
           id={`${idPrefix}-name`}
-          placeholder="e.g. React Patterns"
+          placeholder={t("placeholderCollectionName")}
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           className={`h-[38px] ${FIELD_CLASS}`}
@@ -41,11 +44,11 @@ export function CollectionFormFields({
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor={`${idPrefix}-description`} className={LABEL_CLASS}>
-          Description
+          {t("description")}
         </Label>
         <Textarea
           id={`${idPrefix}-description`}
-          placeholder="A short summary of this collection"
+          placeholder={t("placeholderCollectionDescription")}
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           className={FIELD_CLASS}

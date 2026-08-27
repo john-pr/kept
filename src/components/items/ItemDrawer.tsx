@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
+import type { Locale } from "@/lib/i18n";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { iconMap } from "@/lib/icon-map";
 import { withAlpha } from "@/lib/color";
@@ -65,6 +67,10 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const alphaSuffix = useSoftTintAlpha();
+  const t = useTranslations("drawer");
+  const tt = useTranslations("drawer.toasts");
+  const cardsT = useTranslations("cards");
+  const locale = useLocale() as Locale;
 
   useEffect(() => {
     if (!open || !itemId) return;
@@ -78,20 +84,20 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
         if (result.success) {
           setItem(result.data);
         } else {
-          toast.error(result.error ?? "Failed to load item");
+          toast.error(result.error ?? tt("failedLoadItem"));
           onOpenChange(false);
         }
       })
       .catch(() => {
         if (cancelled) return;
-        toast.error("Failed to load item");
+        toast.error(tt("failedLoadItem"));
         onOpenChange(false);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [itemId, open, onOpenChange]);
+  }, [itemId, open, onOpenChange, tt]);
 
   function handleOpenChange(nextOpen: boolean) {
     if (!nextOpen) {
@@ -120,7 +126,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     if (!item) return;
     const text = item.content ?? item.url ?? "";
     navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
+    toast.success(cardsT("copiedToClipboard"));
   }
 
   function handleEdit() {
@@ -182,7 +188,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     });
     setIsSaving(false);
 
-    if (applyItemUpdateResult(result, "Item updated", "Failed to update item")) {
+    if (applyItemUpdateResult(result, tt("itemUpdated"), tt("failedUpdateItem"))) {
       setIsEditing(false);
       setForm(null);
     }
@@ -195,8 +201,8 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       item.isFavorite,
       (next) => setItem((current) => (current ? { ...current, isFavorite: next } : current)),
       (next) => toggleItemFavorite(item.id, next),
-      "Failed to update favorite",
-      (next) => toast.success(next ? "Item favorited" : "Item unfavorited")
+      tt("failedFavorite"),
+      (next) => toast.success(next ? tt("itemFavorited") : tt("itemUnfavorited"))
     );
     router.refresh();
   }
@@ -208,8 +214,8 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       item.isPinned,
       (next) => setItem((current) => (current ? { ...current, isPinned: next } : current)),
       (next) => toggleItemPin(item.id, next),
-      "Failed to update pin",
-      (next) => toast.success(next ? "Item pinned" : "Item unpinned")
+      tt("failedPin"),
+      (next) => toast.success(next ? tt("itemPinned") : tt("itemUnpinned"))
     );
     router.refresh();
   }
@@ -227,7 +233,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
       collectionIds: item.collections.map((collection) => collection.id),
     });
 
-    applyItemUpdateResult(result, "Prompt updated", "Failed to update prompt");
+    applyItemUpdateResult(result, tt("promptUpdated"), tt("failedUpdatePrompt"));
   }
 
   async function handleDelete() {
@@ -238,11 +244,11 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     setIsDeleting(false);
 
     if (result.success) {
-      toast.success("Item deleted");
+      toast.success(tt("itemDeleted"));
       handleOpenChange(false);
       router.refresh();
     } else {
-      toast.error(result.error ?? "Failed to delete item");
+      toast.error(result.error ?? tt("failedDeleteItem"));
     }
   }
 
@@ -276,7 +282,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
                   <span className="flex items-center gap-2 text-[10px] tracking-[0.12em] text-muted-foreground uppercase tabular-nums">
                     <span>{item.itemType.name}</span>
                     <span className="size-[3px] bg-muted-foreground" />
-                    <span>Created {formatDate(item.createdAt)}</span>
+                    <span>{t("created", { date: formatDate(item.createdAt, locale) })}</span>
                   </span>
                 </div>
               </div>

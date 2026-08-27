@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronsUpDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ interface CollectionMultiSelectProps {
 
 export function CollectionMultiSelect({ options, selectedIds, onChange }: CollectionMultiSelectProps) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("itemForm");
 
   function toggle(id: string) {
     onChange(
@@ -43,14 +45,16 @@ export function CollectionMultiSelect({ options, selectedIds, onChange }: Collec
 
   const triggerLabel =
     selectedNames.length === 0
-      ? "Select collections..."
+      ? t("selectCollections")
       : selectedNames.length <= 2
         ? selectedNames.join(", ")
-        : `${selectedNames.length} collections selected`;
+        : t("collectionsSelected", { count: selectedNames.length });
 
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">Collections</Label>
+      <Label className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+        {t("collections")}
+      </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           render={
@@ -68,15 +72,18 @@ export function CollectionMultiSelect({ options, selectedIds, onChange }: Collec
               selectedNames.length > 0 ? "text-foreground" : "text-muted-foreground"
             }`}
           >
-            {options.length === 0 ? "No collections yet" : triggerLabel}
+            {options.length === 0 ? t("noCollectionsYet") : triggerLabel}
           </span>
           <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
         </PopoverTrigger>
         <PopoverContent className="w-(--anchor-width) p-0">
           <Command>
-            <CommandInput placeholder="Search collections..." aria-label="Search collections" />
+            <CommandInput
+              placeholder={t("searchCollections")}
+              aria-label={t("searchCollections")}
+            />
             <CommandList>
-              <CommandEmpty>No collections found.</CommandEmpty>
+              <CommandEmpty>{t("noCollectionsFound")}</CommandEmpty>
               <CommandGroup>
                 {options.map((option) => (
                   <CommandItem

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Search, FolderOpen, CornerDownLeft, ArrowUp, ArrowDown } from "lucide-react";
 import {
   Command,
@@ -35,6 +36,8 @@ export function GlobalSearch({ items, collections, open: openProp, onOpenChange 
   const setOpen = onOpenChange ?? setInternalOpen;
   const router = useRouter();
   const { openItem } = useItemDrawer();
+  const t = useTranslations("search");
+  const tc = useTranslations("common");
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -66,20 +69,20 @@ export function GlobalSearch({ items, collections, open: openProp, onOpenChange 
         className="flex h-9 w-full cursor-pointer items-center gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-sm text-muted-foreground shadow-xs transition-colors hover:bg-accent/50"
       >
         <Search className="size-4 shrink-0" />
-        <span className="flex-1 text-left">Search items, collections, tags...</span>
+        <span className="flex-1 text-left">{t("placeholder")}</span>
         <CommandShortcut className="hidden sm:inline">⌘K</CommandShortcut>
       </button>
 
-      <CommandDialog open={open} onOpenChange={setOpen} title="Search" description="Search items and collections">
+      <CommandDialog open={open} onOpenChange={setOpen} title={t("title")} description={t("description")}>
         <Command>
-          <CommandInput placeholder="Search items, collections, tags..." />
+          <CommandInput placeholder={t("placeholder")} />
           <CommandList className="max-h-96 px-1 pb-1">
             <CommandEmpty className="flex flex-col items-center gap-2 py-10 text-sm text-muted-foreground">
               <Search className="size-5 opacity-50" />
-              No results found.
+              {t("noResults")}
             </CommandEmpty>
             {items.length > 0 && (
-              <CommandGroup heading="Items">
+              <CommandGroup heading={t("items")}>
                 {items.map((item) => {
                   const Icon = iconMap[item.typeIcon];
                   return (
@@ -107,7 +110,7 @@ export function GlobalSearch({ items, collections, open: openProp, onOpenChange 
             )}
             {items.length > 0 && collections.length > 0 && <CommandSeparator className="my-1" />}
             {collections.length > 0 && (
-              <CommandGroup heading="Collections">
+              <CommandGroup heading={t("collections")}>
                 {collections.map((collection) => (
                   <CommandItem
                     key={collection.id}
@@ -123,7 +126,7 @@ export function GlobalSearch({ items, collections, open: openProp, onOpenChange 
                       data-slot="command-shortcut"
                       className="ml-auto shrink-0 text-xs text-muted-foreground"
                     >
-                      {collection.itemCount} {collection.itemCount === 1 ? "item" : "items"}
+                      {tc("itemCount", { count: collection.itemCount })}
                     </span>
                   </CommandItem>
                 ))}
@@ -138,17 +141,17 @@ export function GlobalSearch({ items, collections, open: openProp, onOpenChange 
               <kbd className="flex size-4 items-center justify-center rounded border border-border bg-muted">
                 <ArrowDown className="size-2.5" />
               </kbd>
-              Navigate
+              {t("navigate")}
             </span>
             <span className="flex items-center gap-1">
               <kbd className="flex size-4 items-center justify-center rounded border border-border bg-muted">
                 <CornerDownLeft className="size-2.5" />
               </kbd>
-              Select
+              {t("select")}
             </span>
             <span className="ml-auto flex items-center gap-1">
               <kbd className="rounded border border-border bg-muted px-1">esc</kbd>
-              Close
+              {t("close")}
             </span>
           </div>
         </Command>

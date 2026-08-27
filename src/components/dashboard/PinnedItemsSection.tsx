@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getPinnedItems } from "@/lib/db/items";
 import { ItemCard } from "@/components/dashboard/ItemCard";
 import { DashboardGridSection } from "@/components/dashboard/DashboardGridSection";
@@ -11,8 +12,10 @@ export async function PinnedItemsSection({ userId }: PinnedItemsSectionProps) {
 
   if (pinnedItems.length === 0) return null;
 
+  const t = await getTranslations("dashboard");
+
   return (
-    <DashboardGridSection title="Pinned Items" count={pinnedItems.length} mobileScroll>
+    <DashboardGridSection title={t("pinnedItems")} count={pinnedItems.length} mobileScroll>
       {pinnedItems.map((item) => (
         <ItemCard key={item.id} item={item} />
       ))}

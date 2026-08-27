@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,38 +13,40 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { BackToSignInLink } from "@/components/auth/BackToSignInLink";
 import { toast } from "@/lib/toast";
 
-const resetPasswordSchema = z
-  .object({
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
 export function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const t = useTranslations("auth");
+  const tc = useTranslations("common");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const resetPasswordSchema = z
+    .object({
+      password: z.string().min(8, t("errors.passwordMin")),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("errors.passwordsNoMatch"),
+      path: ["confirmPassword"],
+    });
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
     if (!token) {
-      setError("This reset link is invalid. Request a new one.");
+      setError(t("resetPassword.invalidRequestNew"));
       return;
     }
 
     const parsed = resetPasswordSchema.safeParse({ password, confirmPassword });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Invalid input");
+      setError(parsed.error.issues[0]?.message ?? tc("invalidInput"));
       return;
     }
 
@@ -59,12 +62,12 @@ export function ResetPasswordForm() {
     setIsSubmitting(false);
 
     if (!result.success) {
-      setError(result.error ?? "Something went wrong");
+      setError(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
-    toast.success("Password reset", {
-      description: "You can now sign in with your new password.",
+    toast.success(t("resetPassword.successToast"), {
+      description: t("resetPassword.successToastDescription"),
     });
     router.push("/sign-in");
   }
@@ -73,11 +76,11 @@ export function ResetPasswordForm() {
     return (
       <div className="flex flex-col gap-4">
         <Alert variant="destructive">
-          <AlertDescription>This reset link is invalid or missing a token.</AlertDescription>
+          <AlertDescription>{t("resetPassword.invalidMissingToken")}</AlertDescription>
         </Alert>
         <p className="text-center text-sm text-muted-foreground">
           <Link href="/forgot-password" className="text-foreground underline underline-offset-4">
-            Request a new link
+            {t("resetPassword.requestNewLink")}
           </Link>
         </p>
       </div>
@@ -94,7 +97,7 @@ export function ResetPasswordForm() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="password">New password</Label>
+          <Label htmlFor="password">{t("resetPassword.newPassword")}</Label>
           <Input
             id="password"
             type="password"
@@ -105,7 +108,7 @@ export function ResetPasswordForm() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="confirmPassword">Confirm new password</Label>
+          <Label htmlFor="confirmPassword">{t("resetPassword.confirmNewPassword")}</Label>
           <Input
             id="confirmPassword"
             type="password"
@@ -117,7 +120,7 @@ export function ResetPasswordForm() {
         </div>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-          Reset password
+          {t("resetPassword.submit")}
         </Button>
       </form>
       <BackToSignInLink />

@@ -11,6 +11,7 @@ import {
 } from "@/lib/db/collections";
 import { getCurrentUser } from "@/lib/db/users";
 import { getSessionUserId } from "@/lib/db/session";
+import { LocaleSync } from "@/components/i18n/LocaleSync";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const userId = await getSessionUserId();
@@ -27,6 +28,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <MobileNavProvider>
+      <LocaleSync userLocale={user.locale} />
       {/* h-dvh (not h-screen/100vh): on mobile browsers 100vh is the large viewport
           and ignores the address-bar chrome, making this shell taller than the visible
           area so the body itself scrolls (TopBar scrolls away, content slides under the

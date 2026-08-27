@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { ItemCardGrid } from "@/components/dashboard/ItemCardGrid";
 import { ImageThumbnailGrid } from "@/components/dashboard/ImageThumbnailGrid";
 import { FileListGroup } from "@/components/dashboard/FileListGroup";
@@ -31,18 +32,19 @@ export default async function CollectionDetailPage({ params, searchParams }: Col
 
   const totalPages = getPageCount(totalCount, ITEMS_PER_PAGE);
   const { imageItems, fileItems, otherItems } = groupItemsByType(items);
+  const t = await getTranslations("collectionsPage");
 
   const sections = [
-    { label: "Items", items: otherItems, Grid: ItemCardGrid },
-    { label: "Images", items: imageItems, Grid: ImageThumbnailGrid },
-    { label: "Files", items: fileItems, Grid: FileListGroup },
+    { label: t("sectionItems"), items: otherItems, Grid: ItemCardGrid },
+    { label: t("sectionImages"), items: imageItems, Grid: ImageThumbnailGrid },
+    { label: t("sectionFiles"), items: fileItems, Grid: FileListGroup },
   ];
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
       <CollectionDetailHeader collection={collection} />
       {items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No items in this collection yet.</p>
+        <p className="text-sm text-muted-foreground">{t("detailNoItems")}</p>
       ) : (
         <div className="space-y-8">
           {sections.map(({ label, items: sectionItems, Grid }) =>

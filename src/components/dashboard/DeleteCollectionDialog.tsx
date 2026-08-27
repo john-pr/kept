@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import {
   AlertDialog,
@@ -32,6 +33,8 @@ export function DeleteCollectionDialog({
   onDeleted,
 }: DeleteCollectionDialogProps) {
   const router = useRouter();
+  const t = useTranslations("itemForm");
+  const tc = useTranslations("common");
   const [isDeleting, setIsDeleting] = useState(false);
 
   async function handleDelete() {
@@ -40,7 +43,7 @@ export function DeleteCollectionDialog({
     setIsDeleting(false);
 
     if (result.success) {
-      toast.success("Collection deleted");
+      toast.success(t("toasts.collectionDeleted"));
       onOpenChange(false);
       if (onDeleted) {
         onDeleted();
@@ -48,7 +51,7 @@ export function DeleteCollectionDialog({
         router.refresh();
       }
     } else {
-      toast.error(result.error ?? "Failed to delete collection");
+      toast.error(result.error ?? t("toasts.failedDeleteCollection"));
     }
   }
 
@@ -56,16 +59,15 @@ export function DeleteCollectionDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete collection</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteCollectionTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            This will delete &quot;{collectionName}&quot;. Items in this collection will not be
-            deleted — they will just no longer belong to it. This action cannot be undone.
+            {t("deleteCollectionBody", { name: collectionName })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>{tc("cancel")}</AlertDialogCancel>
           <AlertDialogAction variant="destructive" disabled={isDeleting} onClick={handleDelete}>
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? tc("deleting") : tc("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

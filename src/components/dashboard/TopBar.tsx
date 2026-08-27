@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { FolderPlus, Plus, Search, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "@/components/dashboard/MobileSidebar";
@@ -33,6 +34,7 @@ export function TopBar({
   user,
 }: TopBarProps) {
   const [searchOpen, setSearchOpen] = useState(false);
+  const t = useTranslations("appChrome");
 
   return (
     <header className="flex flex-col gap-3 border-b border-border px-4 py-3 lg:grid lg:grid-cols-3 lg:items-center lg:gap-4">
@@ -51,7 +53,7 @@ export function TopBar({
         <Button
           variant="ghost"
           size="icon-lg"
-          aria-label="Search"
+          aria-label={t("search")}
           className="lg:hidden"
           onClick={() => setSearchOpen(true)}
         >
@@ -71,13 +73,13 @@ export function TopBar({
       <div className="hidden items-center justify-end gap-2 lg:flex">
         {!user.isPro && (
           <Button variant="ghost" nativeButton={false} render={<Link href="/upgrade" />}>
-            Upgrade
+            {t("upgrade")}
           </Button>
         )}
         <Button
           variant="outline"
           size="icon"
-          aria-label="Favorites"
+          aria-label={t("favorites")}
           nativeButton={false}
           render={<Link href="/favorites" />}
         >
@@ -85,7 +87,7 @@ export function TopBar({
         </Button>
         <NewCollectionDialog trigger={<Button variant="outline" />}>
           <FolderPlus />
-          New Collection
+          {t("newCollection")}
         </NewCollectionDialog>
         <NewItemDialog
           itemTypes={itemTypes}
@@ -94,7 +96,7 @@ export function TopBar({
           trigger={<Button />}
         >
           <Plus />
-          New Item
+          {t("newItem")}
         </NewItemDialog>
       </div>
     </header>

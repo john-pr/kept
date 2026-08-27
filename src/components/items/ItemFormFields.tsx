@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -81,15 +82,16 @@ export function ItemFormFields({
   placeholders = false,
   children,
 }: ItemFormFieldsProps) {
+  const t = useTranslations("itemForm");
   return (
     <>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor={`${idPrefix}-title`} className={LABEL_CLASS}>
-          Title
+          {t("title")}
         </Label>
         <Input
           id={`${idPrefix}-title`}
-          placeholder={placeholders ? "e.g. Debounce hook" : undefined}
+          placeholder={placeholders ? t("placeholderTitle") : undefined}
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           className={`h-[38px] ${FIELD_CLASS}`}
@@ -98,11 +100,11 @@ export function ItemFormFields({
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor={`${idPrefix}-description`} className={LABEL_CLASS}>
-          Description
+          {t("description")}
         </Label>
         <Textarea
           id={`${idPrefix}-description`}
-          placeholder={placeholders ? "A short summary of this item" : undefined}
+          placeholder={placeholders ? t("placeholderDescription") : undefined}
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           className={FIELD_CLASS}
@@ -122,11 +124,11 @@ export function ItemFormFields({
       {showLanguage && (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={`${idPrefix}-language`} className={LABEL_CLASS}>
-            Language
+            {t("language")}
           </Label>
           <Select value={language} onValueChange={(value) => onLanguageChange(value ?? "")}>
             <SelectTrigger id={`${idPrefix}-language`} className={`h-[38px] w-full ${FIELD_CLASS}`}>
-              <SelectValue placeholder="Select a language" />
+              <SelectValue placeholder={t("selectLanguage")} />
             </SelectTrigger>
             <SelectContent alignItemWithTrigger={false}>
               {LANGUAGE_OPTIONS.map((lang) => (
@@ -142,26 +144,26 @@ export function ItemFormFields({
       {showContent && (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={`${idPrefix}-content`} className={LABEL_CLASS}>
-            Content
+            {t("content")}
           </Label>
           {showLanguage ? (
             <CodeEditor
               value={content}
               onChange={onContentChange}
               language={language || undefined}
-              placeholder={placeholders ? "Paste your code here" : undefined}
+              placeholder={placeholders ? t("placeholderCode") : undefined}
             />
           ) : showMarkdown ? (
             <MarkdownEditor
               value={content}
               onChange={onContentChange}
-              placeholder={placeholders ? "Write the content here" : undefined}
+              placeholder={placeholders ? t("placeholderContent") : undefined}
             />
           ) : (
             <Textarea
               id={`${idPrefix}-content`}
               className={`min-h-32 font-mono text-xs ${FIELD_CLASS}`}
-              placeholder={placeholders ? "Write the content here" : undefined}
+              placeholder={placeholders ? t("placeholderContent") : undefined}
               value={content}
               onChange={(e) => onContentChange(e.target.value)}
             />
@@ -172,11 +174,11 @@ export function ItemFormFields({
       {showUrl && (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={`${idPrefix}-url`} className={LABEL_CLASS}>
-            URL
+            {t("url")}
           </Label>
           <Input
             id={`${idPrefix}-url`}
-            placeholder={placeholders ? "https://example.com" : undefined}
+            placeholder={placeholders ? t("placeholderUrl") : undefined}
             value={url}
             onChange={(e) => onUrlChange(e.target.value)}
             className={`h-[38px] ${FIELD_CLASS}`}
@@ -188,11 +190,11 @@ export function ItemFormFields({
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor={`${idPrefix}-tags`} className={LABEL_CLASS}>
-          Tags
+          {t("tags")}
         </Label>
         <Input
           id={`${idPrefix}-tags`}
-          placeholder="comma, separated, tags"
+          placeholder={t("placeholderTags")}
           value={tags}
           onChange={(e) => onTagsChange(e.target.value)}
           className={`h-[38px] ${FIELD_CLASS}`}

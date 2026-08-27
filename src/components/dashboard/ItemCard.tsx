@@ -1,12 +1,13 @@
 "use client";
 
 import { type MouseEvent } from "react";
+import { useTranslations } from "next-intl";
 import { Copy, Pin } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { iconMap } from "@/lib/icon-map";
 import { withAlpha } from "@/lib/color";
-import { formatRelativeTime } from "@/lib/relative-time";
+import { relativeTimeParts } from "@/lib/relative-time";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
@@ -20,13 +21,16 @@ export function ItemCard({ item }: { item: ItemSummary }) {
   const clickableCard = useClickableCard(() => openItem(item.id));
   const [isFavorite, handleToggleFavorite] = useItemFavoriteToggle(item);
   const alphaSuffix = useSoftTintAlpha();
+  const t = useTranslations("cards");
+  const tr = useTranslations("relativeTime");
+  const rel = relativeTimeParts(new Date(item.createdAt));
 
   function handleCopy(event: MouseEvent) {
     event.stopPropagation();
     // item.content already folds in url/description; fall back to the title so
     // file/image cards (no textual content) don't copy an empty string.
     navigator.clipboard.writeText(item.content.trim() || item.title);
-    toast.success("Copied to clipboard");
+    toast.success(t("copiedToClipboard"));
   }
 
   return (
@@ -35,7 +39,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
       style={{ borderLeftColor: item.typeColor }}
       role="button"
       tabIndex={0}
-      aria-label={`${item.typeName}: ${item.title}`}
+      aria-label={t("ariaItem", { type: item.typeName, title: item.title })}
       {...clickableCard}
     >
       <div className="flex items-center justify-between gap-2">
@@ -48,7 +52,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
         </span>
         <div className="flex shrink-0 items-center gap-2 text-muted-foreground">
           <span className="text-[10px] tracking-[0.08em] uppercase tabular-nums">
-            {formatRelativeTime(new Date(item.createdAt))}
+            {rel.unit === "justNow" ? tr("justNow") : tr(rel.unit, { count: rel.count })}
           </span>
           {item.isPinned && <Pin className="size-3.5" />}
           <FavoriteToggleButton isFavorite={isFavorite} onToggle={handleToggleFavorite} />
@@ -57,7 +61,7 @@ export function ItemCard({ item }: { item: ItemSummary }) {
             size="icon-sm"
             className="text-muted-foreground hover:text-foreground"
             onClick={handleCopy}
-            aria-label="Copy to clipboard"
+            aria-label={t("copyToClipboard")}
           >
             <Copy className="size-3.5" />
           </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
+import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -25,13 +26,14 @@ export function FavoriteToggleButton({
   onToggle,
   color = "yellow",
 }: FavoriteToggleButtonProps) {
+  const t = useTranslations("cards");
   return (
     <Button
       variant="ghost"
       size="icon-sm"
       className="text-muted-foreground hover:text-foreground"
       onClick={onToggle}
-      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+      aria-label={isFavorite ? t("removeFromFavorites") : t("addToFavorites")}
     >
       <Star className={isFavorite ? `size-3.5 ${ACTIVE_COLOR_CLASS[color]}` : "size-3.5"} />
     </Button>

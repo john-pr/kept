@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,10 +21,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/lib/toast";
 
+// The word the user must type to confirm. Kept as a literal (matched
+// case-insensitively) rather than translated — it's a fixed safety token, and
+// the localized prompt shows it verbatim via the `<b>delete</b>` placeholder.
 const CONFIRM_WORD = "delete";
 
 export function DeleteAccountDialog() {
   const router = useRouter();
+  const t = useTranslations("deleteAccount");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -45,7 +51,7 @@ export function DeleteAccountDialog() {
 
     if (!result.success) {
       setIsDeleting(false);
-      toast.error(result.error ?? "Something went wrong");
+      toast.error(result.error ?? tc("somethingWentWrong"));
       return;
     }
 
@@ -57,19 +63,18 @@ export function DeleteAccountDialog() {
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger render={<Button variant="destructive" />}>
         <Trash2 className="size-4" />
-        Delete account
+        {t("open")}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete account</AlertDialogTitle>
-          <AlertDialogDescription>
-            This will permanently delete your account and all of your items and collections. This
-            action cannot be undone.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("body")}</AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex flex-col gap-2">
           <Label htmlFor="delete-confirm">
-            Type <span className="font-semibold text-foreground">delete</span> to confirm
+            {t.rich("confirmPrompt", {
+              b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
+            })}
           </Label>
           <Input
             id="delete-confirm"
@@ -79,14 +84,14 @@ export function DeleteAccountDialog() {
           />
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>{tc("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             disabled={!canDelete || isDeleting}
             onClick={handleDelete}
           >
             {isDeleting && <Loader2 className="size-4 animate-spin" />}
-            Delete account
+            {t("confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

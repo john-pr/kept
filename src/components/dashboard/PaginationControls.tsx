@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import {
   Pagination,
   PaginationContent,
@@ -19,18 +20,20 @@ function pageHref(basePath: string, page: number): string {
   return page <= 1 ? basePath : `${basePath}?page=${page}`;
 }
 
-export function PaginationControls({ currentPage, totalPages, basePath }: PaginationControlsProps) {
+export async function PaginationControls({ currentPage, totalPages, basePath }: PaginationControlsProps) {
   if (totalPages <= 1) return null;
 
   const range = getPaginationRange(currentPage, totalPages);
   const hasPrevious = currentPage > 1;
   const hasNext = currentPage < totalPages;
+  const t = await getTranslations("pagination");
 
   return (
     <Pagination>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
+            text={t("previous")}
             href={hasPrevious ? pageHref(basePath, currentPage - 1) : pageHref(basePath, 1)}
             disabled={!hasPrevious}
           />
@@ -50,6 +53,7 @@ export function PaginationControls({ currentPage, totalPages, basePath }: Pagina
         )}
         <PaginationItem>
           <PaginationNext
+            text={t("next")}
             href={hasNext ? pageHref(basePath, currentPage + 1) : pageHref(basePath, totalPages)}
             disabled={!hasNext}
           />

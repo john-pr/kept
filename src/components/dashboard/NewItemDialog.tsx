@@ -2,6 +2,7 @@
 
 import { useState, type ReactElement, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import { Loader2, X } from "lucide-react";
 import {
@@ -84,6 +85,8 @@ export function NewItemDialog({
 }: NewItemDialogProps) {
   const router = useRouter();
   const isMobile = useIsMobile();
+  const t = useTranslations("itemForm");
+  const tc = useTranslations("common");
   const selectableTypes = itemTypes;
   const isTypeLocked = Boolean(
     defaultItemTypeId && selectableTypes.some((type) => type.id === defaultItemTypeId),
@@ -143,11 +146,11 @@ export function NewItemDialog({
     setIsSaving(false);
 
     if (result.success) {
-      toast.success("Item created");
+      toast.success(t("toasts.itemCreated"));
       handleOpenChange(false);
       router.refresh();
     } else {
-      toast.error(result.error ?? "Failed to create item");
+      toast.error(result.error ?? t("toasts.failedCreateItem"));
     }
   }
 
@@ -158,7 +161,7 @@ export function NewItemDialog({
           htmlFor="new-item-type"
           className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase"
         >
-          Type
+          {t("type")}
         </Label>
         <Select
           value={itemTypeId}
@@ -169,7 +172,7 @@ export function NewItemDialog({
             id="new-item-type"
             className="h-[38px] w-full rounded-none border-border bg-muted text-[13px]"
           >
-            <SelectValue placeholder="Select a type">
+            <SelectValue placeholder={t("selectType")}>
               {selectedType ? (
                 <span className="flex items-center gap-1.5">
                   {SelectedTypeIcon && (
@@ -220,7 +223,7 @@ export function NewItemDialog({
         {showFile && (
           <div className="flex flex-col gap-2">
             <Label className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-              {uploadKind === "image" ? "Image" : "File"}
+              {uploadKind === "image" ? t("image") : t("file")}
             </Label>
             <FileUpload kind={uploadKind} value={form.file} onChange={(file) => setForm({ ...form, file })} />
           </div>
@@ -252,7 +255,7 @@ export function NewItemDialog({
       className="tracking-[0.14em] uppercase disabled:opacity-40"
     >
       {isSaving && <Loader2 className="size-4 animate-spin" />}
-      {isSaving ? "Creating..." : "Create"}
+      {isSaving ? t("creating") : t("create")}
     </Button>
   );
 
@@ -276,7 +279,7 @@ export function NewItemDialog({
             </div>
             {/* Custom, larger close button — `SheetContent`'s built-in one is size-7 (28px),
                 under the project's touch-target guideline (same override as `MobileSidebar`). */}
-            <SheetClose render={<Button variant="ghost" size="icon-lg" aria-label="Close" />}>
+            <SheetClose render={<Button variant="ghost" size="icon-lg" aria-label={tc("close")} />}>
               <X />
             </SheetClose>
           </SheetHeader>

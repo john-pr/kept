@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import { useTranslations } from "next-intl";
 import { Moon, Sun } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useHasMounted } from "@/hooks/useHasMounted";
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 export function ThemeToggle() {
   const mounted = useHasMounted();
   const { resolvedTheme, setTheme } = useTheme();
+  const t = useTranslations("nav");
   const isDark = !(mounted && resolvedTheme === "light");
 
   return (
@@ -31,7 +33,7 @@ export function ThemeToggle() {
       <Switch
         checked={isDark}
         onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-        aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
+        aria-label={isDark ? t("switchToLight") : t("switchToDark")}
         // Light mode's near-white default thumb barely reads against the pale unchecked
         // track — darken it here (scoped to this toggle, not the shared ui/switch).
         className="[&_[data-slot=switch-thumb][data-unchecked]]:bg-muted-foreground"

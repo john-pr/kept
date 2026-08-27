@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BillingSection } from "@/components/settings/BillingSection";
 import { ChangePasswordSection } from "@/components/settings/ChangePasswordSection";
@@ -11,20 +12,21 @@ import { FREE_ITEM_LIMIT, FREE_COLLECTION_LIMIT } from "@/lib/plan-limits";
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();
-  const [itemCount, collectionCount] = await Promise.all([
+  const [itemCount, collectionCount, t] = await Promise.all([
     getItemCountForUser(user.id),
     getCollectionCountForUser(user.id),
+    getTranslations("settingsPage"),
   ]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
+      <h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
 
       <Card>
         <CardHeader>
-          <CardTitle>Billing</CardTitle>
+          <CardTitle>{t("billing")}</CardTitle>
           <CardDescription>
-            {user.isPro ? "Manage your Kept Pro subscription." : "Upgrade to Pro for unlimited items and collections."}
+            {user.isPro ? t("billingProDescription") : t("billingFreeDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -45,10 +47,8 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Editor Preferences</CardTitle>
-          <CardDescription>
-            Customize how the code editor looks and behaves. Changes save automatically.
-          </CardDescription>
+          <CardTitle>{t("editorPreferences")}</CardTitle>
+          <CardDescription>{t("editorPreferencesDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <EditorPreferencesSection />
@@ -57,11 +57,9 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Security</CardTitle>
+          <CardTitle>{t("security")}</CardTitle>
           <CardDescription>
-            {user.hasPassword
-              ? "Update the password used to sign in."
-              : "You sign in with GitHub, so there's no password to manage."}
+            {user.hasPassword ? t("securityHasPassword") : t("securityGithub")}
           </CardDescription>
         </CardHeader>
         {user.hasPassword && (
@@ -73,10 +71,8 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Danger Zone</CardTitle>
-          <CardDescription>
-            Permanently delete your account and all of your items and collections.
-          </CardDescription>
+          <CardTitle>{t("dangerZone")}</CardTitle>
+          <CardDescription>{t("dangerZoneDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <DeleteAccountDialog />

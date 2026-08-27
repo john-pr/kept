@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -17,20 +18,21 @@ import {
   type EditorTheme,
 } from "@/lib/editor-preferences";
 
-const THEME_LABELS: Record<EditorTheme, string> = {
-  "vs-dark": "VS Dark",
-  monokai: "Monokai",
-  "github-dark": "GitHub Dark",
+const THEME_LABEL_KEY: Record<EditorTheme, string> = {
+  "vs-dark": "themeVsDark",
+  monokai: "themeMonokai",
+  "github-dark": "themeGithubDark",
 };
 
 export function EditorPreferencesSection() {
   const { preferences, updatePreferences } = useEditorPreferences();
+  const t = useTranslations("editorPreferences");
 
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="editor-font-size">Font size</Label>
+          <Label htmlFor="editor-font-size">{t("fontSize")}</Label>
           <Select
             value={String(preferences.fontSize)}
             onValueChange={(value) => updatePreferences({ fontSize: Number(value) })}
@@ -41,7 +43,7 @@ export function EditorPreferencesSection() {
             <SelectContent>
               {FONT_SIZE_OPTIONS.map((size) => (
                 <SelectItem key={size} value={String(size)}>
-                  {size}px
+                  {t("px", { size })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -49,7 +51,7 @@ export function EditorPreferencesSection() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="editor-tab-size">Tab size</Label>
+          <Label htmlFor="editor-tab-size">{t("tabSize")}</Label>
           <Select
             value={String(preferences.tabSize)}
             onValueChange={(value) => updatePreferences({ tabSize: Number(value) })}
@@ -60,7 +62,7 @@ export function EditorPreferencesSection() {
             <SelectContent>
               {TAB_SIZE_OPTIONS.map((size) => (
                 <SelectItem key={size} value={String(size)}>
-                  {size} spaces
+                  {t("spaces", { count: size })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -68,7 +70,7 @@ export function EditorPreferencesSection() {
         </div>
 
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="editor-theme">Theme</Label>
+          <Label htmlFor="editor-theme">{t("theme")}</Label>
           <Select
             value={preferences.theme}
             onValueChange={(value) => updatePreferences({ theme: value as EditorTheme })}
@@ -79,7 +81,7 @@ export function EditorPreferencesSection() {
             <SelectContent>
               {EDITOR_THEMES.map((theme) => (
                 <SelectItem key={theme} value={theme}>
-                  {THEME_LABELS[theme]}
+                  {t(THEME_LABEL_KEY[theme])}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -89,9 +91,9 @@ export function EditorPreferencesSection() {
 
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="editor-word-wrap">Word wrap</Label>
+          <Label htmlFor="editor-word-wrap">{t("wordWrap")}</Label>
           <p className="text-sm text-muted-foreground">
-            Wrap long lines instead of scrolling horizontally.
+            {t("wordWrapDescription")}
           </p>
         </div>
         <Switch
@@ -103,9 +105,9 @@ export function EditorPreferencesSection() {
 
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="editor-minimap">Minimap</Label>
+          <Label htmlFor="editor-minimap">{t("minimap")}</Label>
           <p className="text-sm text-muted-foreground">
-            Show a miniature code overview on the right edge of the editor.
+            {t("minimapDescription")}
           </p>
         </div>
         <Switch

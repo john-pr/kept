@@ -2,8 +2,10 @@
 
 import { signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { useTranslations } from "next-intl";
 import { User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +33,7 @@ const APPEARANCE_OPTION_CLASS =
 
 export function UserFooter({ user, collapsed = false }: UserFooterProps) {
   const { theme, setTheme } = useTheme();
+  const t = useTranslations("appChrome");
   // next-themes can't know the persisted preference during SSR, so `theme` is undefined
   // until after mount — guard the Light/Dark highlight to avoid a hydration mismatch
   // (both render unhighlighted pre-mount, matching the server-rendered markup).
@@ -52,7 +55,7 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
     >
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={<button type="button" aria-label="User menu" className="cursor-pointer" />}
+          render={<button type="button" aria-label={t("userMenu")} className="cursor-pointer" />}
         >
           <UserAvatar
             name={user.name}
@@ -72,50 +75,53 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
                 "border-b border-dotted border-border px-3 py-2.5"
               )}
             >
-              Account
+              {t("account")}
             </DropdownMenuLabel>
 
             <div className="p-1">
               <DropdownMenuItem render={<Link href="/profile" />} className={MENU_ITEM_CLASS}>
                 <User className="size-4" />
-                Profile
+                {t("profile")}
               </DropdownMenuItem>
               <DropdownMenuItem render={<Link href="/settings" />} className={MENU_ITEM_CLASS}>
                 <Settings className="size-4" />
-                Settings
+                {t("settings")}
               </DropdownMenuItem>
             </div>
           </DropdownMenuGroup>
 
-          <div className="flex flex-col gap-2 border-y border-border px-3 py-2.5">
-            <span className={SECTION_LABEL_CLASS}>Appearance</span>
-            <div className="flex border border-border">
-              <button
-                type="button"
-                onClick={stopAndSetTheme("light")}
-                className={cn(
-                  APPEARANCE_OPTION_CLASS,
-                  "border-r border-border",
-                  mounted && theme === "light"
-                    ? "bg-accent text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Light
-              </button>
-              <button
-                type="button"
-                onClick={stopAndSetTheme("dark")}
-                className={cn(
-                  APPEARANCE_OPTION_CLASS,
-                  mounted && theme === "dark"
-                    ? "bg-accent text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Dark
-              </button>
+          <div className="flex flex-col gap-3 border-y border-border px-3 py-2.5">
+            <div className="flex flex-col gap-2">
+              <span className={SECTION_LABEL_CLASS}>{t("appearance")}</span>
+              <div className="flex border border-border">
+                <button
+                  type="button"
+                  onClick={stopAndSetTheme("light")}
+                  className={cn(
+                    APPEARANCE_OPTION_CLASS,
+                    "border-r border-border",
+                    mounted && theme === "light"
+                      ? "bg-accent text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {t("light")}
+                </button>
+                <button
+                  type="button"
+                  onClick={stopAndSetTheme("dark")}
+                  className={cn(
+                    APPEARANCE_OPTION_CLASS,
+                    mounted && theme === "dark"
+                      ? "bg-accent text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {t("dark")}
+                </button>
+              </div>
             </div>
+            <LanguageSwitcher variant="segmented" />
           </div>
 
           <div className="p-1">
@@ -125,7 +131,7 @@ export function UserFooter({ user, collapsed = false }: UserFooterProps) {
               className={MENU_ITEM_CLASS}
             >
               <LogOut className="size-4" />
-              Sign out
+              {t("signOut")}
             </DropdownMenuItem>
           </div>
         </DropdownMenuContent>

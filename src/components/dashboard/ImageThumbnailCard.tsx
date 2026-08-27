@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Expand, Pin } from "lucide-react";
 import type { ItemSummary } from "@/lib/db/items";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
@@ -11,6 +12,7 @@ export function ImageThumbnailCard({ item }: { item: ItemSummary }) {
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
   const [isFavorite, handleToggleFavorite] = useItemFavoriteToggle(item);
+  const t = useTranslations("cards");
 
   return (
     <div
@@ -30,7 +32,7 @@ export function ImageThumbnailCard({ item }: { item: ItemSummary }) {
           />
         ) : (
           <div className="flex size-full items-center justify-center bg-muted text-sm text-muted-foreground">
-            No preview
+            {t("noPreview")}
           </div>
         )}
 

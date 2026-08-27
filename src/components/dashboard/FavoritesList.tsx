@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { FolderOpen, Star } from "lucide-react";
 import { iconMap } from "@/lib/icon-map";
 import { formatDate } from "@/lib/format-date";
+import type { Locale } from "@/lib/i18n";
 import { useItemDrawer } from "@/components/items/ItemDrawerProvider";
 import { useClickableCard } from "@/hooks/useClickableCard";
 import {
@@ -16,7 +18,6 @@ import {
 } from "@/components/ui/select";
 import {
   FAVORITES_SORT_OPTIONS,
-  FAVORITES_SORT_LABELS,
   sortFavoriteItems,
   sortFavoriteCollections,
   type FavoritesSortOption,
@@ -29,8 +30,17 @@ interface FavoritesListProps {
   collections: FavoriteCollection[];
 }
 
+const SORT_LABEL_KEY: Record<FavoritesSortOption, string> = {
+  newest: "sortNewest",
+  oldest: "sortOldest",
+  "name-asc": "sortNameAsc",
+  "name-desc": "sortNameDesc",
+  type: "sortType",
+};
+
 export function FavoritesList({ items, collections }: FavoritesListProps) {
   const router = useRouter();
+  const t = useTranslations("favoritesPage");
   const [sort, setSort] = useState<FavoritesSortOption>("newest");
 
   const sortedItems = useMemo(() => sortFavoriteItems(items, sort), [items, sort]);
@@ -43,7 +53,7 @@ export function FavoritesList({ items, collections }: FavoritesListProps) {
     return (
       <div className="flex flex-col items-center gap-2 py-16 text-center text-sm text-muted-foreground">
         <Star className="size-6 opacity-50" />
-        No favorites yet. Star an item or collection to see it here.
+        {t("empty")}
       </div>
     );
   }
@@ -51,12 +61,14 @@ export function FavoritesList({ items, collections }: FavoritesListProps) {
   const sortSelect = (
     <Select value={sort} onValueChange={(value) => setSort(value as FavoritesSortOption)}>
       <SelectTrigger className="w-36" size="sm">
-        <SelectValue>{(value: FavoritesSortOption) => FAVORITES_SORT_LABELS[value]}</SelectValue>
+        <SelectValue>
+          {(value: FavoritesSortOption) => t(SORT_LABEL_KEY[value])}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent alignItemWithTrigger={false}>
         {FAVORITES_SORT_OPTIONS.map((option) => (
           <SelectItem key={option.value} value={option.value}>
-            {option.label}
+            {t(SORT_LABEL_KEY[option.value])}
           </SelectItem>
         ))}
       </SelectContent>
@@ -69,7 +81,7 @@ export function FavoritesList({ items, collections }: FavoritesListProps) {
     <div className="font-mono text-sm">
       {sortedItems.length > 0 && (
         <FavoritesSection
-          heading="Items"
+          heading={t("items")}
           count={sortedItems.length}
           action={showSortOnItems ? sortSelect : undefined}
         >
@@ -80,7 +92,7 @@ export function FavoritesList({ items, collections }: FavoritesListProps) {
       )}
       {sortedCollections.length > 0 && (
         <FavoritesSection
-          heading="Collections"
+          heading={t("collections")}
           count={sortedCollections.length}
           action={showSortOnCollections ? sortSelect : undefined}
         >
@@ -108,11 +120,12 @@ function FavoritesSection({
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("favoritesPage");
   return (
     <div className="mb-6 last:mb-0">
       <div className="mb-1.5 flex items-center justify-between px-1">
         <span className="text-xs tracking-wide text-muted-foreground uppercase">
-          {heading} ({count})
+          {t("sectionHeading", { heading, count })}
         </span>
         {action}
       </div>
@@ -127,6 +140,7 @@ function FavoriteItemRow({ item }: { item: FavoriteItem }) {
   const { openItem } = useItemDrawer();
   const clickableCard = useClickableCard(() => openItem(item.id));
   const Icon = iconMap[item.typeIcon];
+  const locale = useLocale() as Locale;
 
   return (
     <div
@@ -144,7 +158,7 @@ function FavoriteItemRow({ item }: { item: FavoriteItem }) {
         {item.typeName}
       </span>
       <span className="w-24 shrink-0 text-right text-xs text-muted-foreground">
-        {formatDate(item.updatedAt)}
+        {formatDate(item.updatedAt, locale)}
       </span>
     </div>
   );
@@ -158,6 +172,8 @@ function FavoriteCollectionRow({
   onSelect: () => void;
 }) {
   const clickableCard = useClickableCard(onSelect);
+  const locale = useLocale() as Locale;
+  const tc = useTranslations("common");
 
   return (
     <div
@@ -169,10 +185,10 @@ function FavoriteCollectionRow({
       <FolderOpen className="size-3.5 shrink-0 text-muted-foreground" />
       <span className="min-w-0 flex-1 truncate text-foreground">{collection.name}</span>
       <span className="shrink-0 text-xs text-muted-foreground">
-        {collection.itemCount} {collection.itemCount === 1 ? "item" : "items"}
+        {tc("itemCount", { count: collection.itemCount })}
       </span>
       <span className="w-24 shrink-0 text-right text-xs text-muted-foreground">
-        {formatDate(collection.updatedAt)}
+        {formatDate(collection.updatedAt, locale)}
       </span>
     </div>
   );
