@@ -79,11 +79,15 @@ export function HomeNav() {
             </span>
           </Button>
 
-          {/* Desktop: utility controls pushed to the right edge, past the auth CTAs. */}
-          <span aria-hidden className="mx-1 hidden h-5 w-px bg-border md:block" />
-          <div className="hidden items-center gap-1.5 sm:gap-2 md:flex">
-            <LanguageSwitcher />
-            <ThemeToggle />
+          {/* Desktop: language + theme sit just past the auth CTAs up to 2xl; on
+              wide screens they detach to the header's right edge so the centre
+              cluster stops feeling crowded. */}
+          <div className="hidden items-center md:flex 2xl:absolute 2xl:top-1/2 2xl:right-6 2xl:-translate-y-1/2">
+            <span aria-hidden className="mx-1 h-5 w-px bg-border 2xl:hidden" />
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <LanguageSwitcher />
+              <ThemeToggle />
+            </div>
           </div>
 
           {/* Mobile: language + theme tuck into a compact kebab menu. */}
