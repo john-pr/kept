@@ -512,3 +512,15 @@ the full pattern reference live in `context/design-system.md`.
   `/`). `docs/quality.md` records the before/after and the Lighthouse plan (production
   numbers captured at deploy in prep 7). All three axe checks clean; homepage and auth pages
   had zero violations to begin with.
+- **2026-08-31 — Portfolio prep: demo seed + README polish.** `scripts/seed-demo.ts` — a
+  standalone, idempotent seed for the public demo account (`demo@kept.app`, Pro,
+  `emailVerified` set): upserts the 7 system item types, 6 collections, and 35 text items
+  (snippet/prompt/command/note/link) by stable `demo-*` ids, with pins, favorites,
+  ~3 months of spread timestamps, and 4 items in two collections for the M2M relation.
+  Item↔collection join rows are upserted explicitly since `item.upsert` only runs the nested
+  create on first insert. `scripts/seed-demo-prod.ts` (`npm run db:seed:demo:prod`) loads
+  `.env.production` and skips the prompt; **already run against the production Neon branch —
+  no need to re-run it in prep 7**. File/Image items deliberately out of scope (need real R2
+  uploads; added by hand). Also captured the four README screenshots (`docs/images/`), filled
+  in the demo credentials, removed the stale CI-badge/placeholder notes and the reference to
+  the never-captured `chaos-to-order.gif`, and did a phrasing pass over the README.
