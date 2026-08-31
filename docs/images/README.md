@@ -11,4 +11,9 @@ Expected files (referenced by `README.md`):
 | `item-drawer.png` | An item open in the side drawer, read view |
 | `global-search.png` | The ⌘K command palette open with results |
 | `ai-auto-tag.png` | New Item dialog with AI tag suggestions shown |
+
+Optional, not yet captured (re-add to `README.md` once it exists):
+
+| File | Shot |
+|---|---|
 | `chaos-to-order.gif` | Homepage hero "chaos → order" animation, or a ⌘K search clip |
