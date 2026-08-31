@@ -13,6 +13,10 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # prisma.config.ts eagerly resolves DATABASE_URL at load time, even for commands
+    # (generate, lint, tsc) that never open a connection. No real database is needed here.
+    env:
+      DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
     steps:
       - uses: actions/checkout@v4
 
