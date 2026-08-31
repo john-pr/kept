@@ -524,3 +524,20 @@ the full pattern reference live in `context/design-system.md`.
   uploads; added by hand). Also captured the four README screenshots (`docs/images/`), filled
   in the demo credentials, removed the stale CI-badge/placeholder notes and the reference to
   the never-captured `chaos-to-order.gif`, and did a phrasing pass over the README.
+- **2026-08-31 — Portfolio prep 7: flip repository to public.** `master` had never actually
+  been pushed to GitHub, so this was CI's first real run and it failed twice: `npm ci` on the
+  Node 20 runner's bundled npm 10.8.2 rejected the `@swc/helpers` peer resolution that npm
+  11 (used locally, and by whoever wrote `package-lock.json`) accepts, fixed by pinning CI to
+  npm 11 rather than regenerating the lockfile (a full regen quietly bumped `stripe` to a
+  version whose types broke `src/lib/stripe.ts`, backed out as unrelated scope); then
+  `prisma generate`/`lint`/`tsc` failed because `prisma.config.ts` eagerly resolves
+  `DATABASE_URL` even for commands that never open a connection, fixed with a placeholder
+  connection string at the job level. Once green, flipped visibility with `gh repo edit
+  --visibility public`. Post-flip verification: README badges/screenshots/social-preview
+  image all resolve, and the demo login was exercised end-to-end against the live NextAuth
+  API (CSRF, credentials POST, session check), not just eyeballed. Also found and removed
+  6 `.playwright-mcp/` debug snapshots that had been committed before that path was
+  gitignored; checked their content by hand (no secrets/PII, mostly an unrelated third-party
+  site's accessibility tree) and left git history as-is rather than rewriting it, since
+  gitleaks and the manual check both came back clean and a rewrite this late wasn't worth
+  the risk.
