@@ -21,6 +21,12 @@ jobs:
           node-version: 20
           cache: npm
 
+      # Node 20's bundled npm (10.x) resolves the @swc/helpers peer dependency more
+      # strictly than the npm 11.x that generated package-lock.json, and fails `npm ci`
+      # on a valid lockfile as a result. Match the npm major version used locally.
+      - name: Use npm 11
+        run: npm install -g npm@11
+
       - name: Install dependencies
         run: npm ci
 
