@@ -569,3 +569,13 @@ the full pattern reference live in `context/design-system.md`.
   hook adds `tabIndex={0}` and selects the element's contents via `Range.selectNodeContents`.
   Monaco and textareas were left alone since they already scope Ctrl+A natively; no unit test,
   as the hook is DOM-only and the project has no jsdom setup.
+
+- **2026-09-30 — Unsaved-changes confirmation.** Closing a form with changed values (Esc,
+  outside click, X, or the drawer's edit-mode Cancel) now asks "Discard changes?" first, in
+  `NewItemDialog` (desktop + mobile Sheet), `NewCollectionDialog`, `EditCollectionDialog` and
+  `ItemDrawer`'s edit mode. Built as a reusable `DiscardChangesDialog`
+  (`src/components/shared/`) + `useDiscardGuard` hook, with the dirty check in
+  `src/lib/form-dirty.ts` (trimmed strings, arrays compared as unordered sets). The
+  confirmation renders inside each guarded Dialog/Sheet so Base UI treats it as nested and
+  doesn't dismiss the parent; successful create/save/delete close without asking. Left out:
+  a `beforeunload` guard for tab close/refresh.
