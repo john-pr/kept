@@ -21,6 +21,11 @@
     "itemCount": "{count, plural, one {# element} few {# elementy} many {# elementów} other {# elementu}}",
     "recordCount": "{count} wpisów"
   },
+  "discardChanges": {
+    "title": "Odrzucić zmiany?",
+    "body": "Masz niezapisane zmiany. Jeśli zamkniesz teraz, zostaną utracone.",
+    "discard": "Odrzuć"
+  },
   "toasts": {
     "success": "Sukces",
     "error": "Błąd"

@@ -21,6 +21,9 @@ import { toggleOptimisticField } from "@/hooks/useOptimisticToggle";
 import { ItemDrawerView } from "@/components/items/ItemDrawerView";
 import { ItemDrawerEditForm } from "@/components/items/ItemDrawerEditForm";
 import { useSoftTintAlpha } from "@/hooks/useSoftTintAlpha";
+import { useDiscardGuard } from "@/hooks/useDiscardGuard";
+import { DiscardChangesDialog } from "@/components/shared/DiscardChangesDialog";
+import { isFormDirty } from "@/lib/form-dirty";
 
 export type ItemDetailResponse = Omit<ItemDetail, "createdAt" | "updatedAt"> & {
   createdAt: string;
@@ -112,12 +115,21 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     };
   }, [itemId, open, onOpenChange, tt]);
 
+  const isDirty = Boolean(isEditing && item && form && isFormDirty(toFormState(item), form));
+  const { guard, dialogProps: discardDialogProps } = useDiscardGuard(isDirty);
+
+  function closeDrawer() {
+    setIsEditing(false);
+    setForm(null);
+    onOpenChange(false);
+  }
+
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen) {
-      setIsEditing(false);
-      setForm(null);
+    if (nextOpen) {
+      onOpenChange(true);
+    } else {
+      guard(closeDrawer);
     }
-    onOpenChange(nextOpen);
   }
 
   const isLoading = !item || item.id !== itemId;
@@ -149,8 +161,10 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   }
 
   function handleCancel() {
-    setIsEditing(false);
-    setForm(null);
+    guard(() => {
+      setIsEditing(false);
+      setForm(null);
+    });
   }
 
   /**
@@ -258,7 +272,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
 
     if (result.success) {
       toast.success(tt("itemDeleted"));
-      handleOpenChange(false);
+      closeDrawer();
       router.refresh();
     } else {
       toast.error(result.error ?? tt("failedDeleteItem"));
@@ -356,6 +370,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
           </>
         )}
         </div>
+        <DiscardChangesDialog {...discardDialogProps} />
       </SheetContent>
     </Sheet>
   );

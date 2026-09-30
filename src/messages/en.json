@@ -21,6 +21,11 @@
     "itemCount": "{count, plural, one {# item} other {# items}}",
     "recordCount": "{count} records"
   },
+  "discardChanges": {
+    "title": "Discard changes?",
+    "body": "You have unsaved changes. If you close now, they will be lost.",
+    "discard": "Discard"
+  },
   "toasts": {
     "success": "Success",
     "error": "Error"

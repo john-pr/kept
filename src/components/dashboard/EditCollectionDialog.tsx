@@ -15,6 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { CollectionFormFields } from "@/components/dashboard/CollectionFormFields";
 import { updateCollection } from "@/actions/collections";
+import { DiscardChangesDialog } from "@/components/shared/DiscardChangesDialog";
+import { useDiscardGuard } from "@/hooks/useDiscardGuard";
+import { isFormDirty } from "@/lib/form-dirty";
 
 interface EditCollectionDialogProps {
   collection: { id: string; name: string; description: string | null };
@@ -44,6 +47,17 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
     }
   }
 
+  const savedForm = { name: collection.name, description: collection.description ?? "" };
+  const { guard, dialogProps: discardDialogProps } = useDiscardGuard(isFormDirty(savedForm, form));
+
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen) {
+      onOpenChange(true);
+    } else {
+      guard(() => onOpenChange(false));
+    }
+  }
+
   async function handleSave() {
     setIsSaving(true);
     const result = await updateCollection(collection.id, {
@@ -62,7 +76,7 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       {/* Chrome kept in step with NewCollectionDialog — this dialog was missed by the
           2026-08-25 create-dialog redesign pass (it only shared the form fields). */}
       <DialogContent className="max-h-[90vh] gap-5 overflow-y-auto rounded-none border border-border ring-0 sm:max-w-md">
@@ -90,6 +104,7 @@ export function EditCollectionDialog({ collection, open, onOpenChange }: EditCol
             {isSaving ? t("saving") : t("save")}
           </Button>
         </DialogFooter>
+        <DiscardChangesDialog {...discardDialogProps} />
       </DialogContent>
     </Dialog>
   );

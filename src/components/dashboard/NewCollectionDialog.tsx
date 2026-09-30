@@ -16,6 +16,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { CollectionFormFields } from "@/components/dashboard/CollectionFormFields";
 import { createCollection } from "@/actions/collections";
+import { DiscardChangesDialog } from "@/components/shared/DiscardChangesDialog";
+import { useDiscardGuard } from "@/hooks/useDiscardGuard";
+import { isFormDirty } from "@/lib/form-dirty";
 
 interface NewCollectionDialogProps {
   trigger: ReactElement;
@@ -35,10 +38,18 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
   const [form, setForm] = useState(EMPTY_FORM);
   const [isSaving, setIsSaving] = useState(false);
 
+  const { guard, dialogProps: discardDialogProps } = useDiscardGuard(isFormDirty(EMPTY_FORM, form));
+
+  function closeAndReset() {
+    setOpen(false);
+    setForm(EMPTY_FORM);
+  }
+
   function handleOpenChange(nextOpen: boolean) {
-    setOpen(nextOpen);
-    if (!nextOpen) {
-      setForm(EMPTY_FORM);
+    if (nextOpen) {
+      setOpen(true);
+    } else {
+      guard(closeAndReset);
     }
   }
 
@@ -52,7 +63,7 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
 
     if (result.success) {
       toast.success(t("toasts.collectionCreated"));
-      handleOpenChange(false);
+      closeAndReset();
       router.refresh();
     } else {
       toast.error(result.error ?? t("toasts.failedCreateCollection"));
@@ -87,6 +98,7 @@ export function NewCollectionDialog({ trigger, children }: NewCollectionDialogPr
             {isSaving ? t("creating") : t("create")}
           </Button>
         </DialogFooter>
+        <DiscardChangesDialog {...discardDialogProps} />
       </DialogContent>
     </Dialog>
   );
