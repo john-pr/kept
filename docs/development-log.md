@@ -561,3 +561,11 @@ the full pattern reference live in `context/design-system.md`.
   also fixes the same latent bug in the drawer). Deliberately left: the overlay's
   `backdrop-blur` is the remaining per-frame paint cost (smooth in practice), and the 12px
   grip is under the touch-target guideline on mobile.
+
+- **2026-09-30 — Scoped Ctrl+A in read-only content.** Clicking into the markdown preview
+  (`MarkdownEditor` — drawer view and the New Item dialog's Preview tab), the AI explanation
+  panel (`CodeEditor`) or the drawer's plain `<pre>` fallback (`ItemDrawerView`) and pressing
+  Ctrl/Cmd+A now selects only that block instead of the whole page. New `useSelectAllScope`
+  hook adds `tabIndex={0}` and selects the element's contents via `Range.selectNodeContents`.
+  Monaco and textareas were left alone since they already scope Ctrl+A natively; no unit test,
+  as the hook is DOM-only and the project has no jsdom setup.
