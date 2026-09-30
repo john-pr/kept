@@ -27,6 +27,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useDiscardGuard } from "@/hooks/useDiscardGuard";
+import { DiscardChangesDialog } from "@/components/shared/DiscardChangesDialog";
+import { isFormDirty } from "@/lib/form-dirty";
 import { useResizableWidth } from "@/hooks/useResizableWidth";
 import { ResizeHandle } from "@/components/items/ResizeHandle";
 import {
@@ -137,11 +140,23 @@ export function NewItemDialog({
   const showFile = FILE_SLUGS.has(slug);
   const uploadKind = slug === "images" ? "image" : "file";
 
+  const isDirty = isFormDirty(
+    { ...initialForm, itemTypeId: initialTypeId },
+    { ...form, itemTypeId },
+  );
+  const { guard, dialogProps: discardDialogProps } = useDiscardGuard(isDirty);
+
+  function closeAndReset() {
+    setOpen(false);
+    setForm(initialForm);
+    setItemTypeId(initialTypeId);
+  }
+
   function handleOpenChange(nextOpen: boolean) {
-    setOpen(nextOpen);
-    if (!nextOpen) {
-      setForm(initialForm);
-      setItemTypeId(initialTypeId);
+    if (nextOpen) {
+      setOpen(true);
+    } else {
+      guard(closeAndReset);
     }
   }
 
@@ -170,7 +185,7 @@ export function NewItemDialog({
 
     if (result.success) {
       toast.success(t("toasts.itemCreated"));
-      handleOpenChange(false);
+      closeAndReset();
       router.refresh();
     } else {
       toast.error(result.error ?? t("toasts.failedCreateItem"));
@@ -310,6 +325,7 @@ export function NewItemDialog({
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">{formBody}</div>
 
           <SheetFooter className="mt-0 border-t border-border bg-muted/40">{createButton}</SheetFooter>
+          <DiscardChangesDialog {...discardDialogProps} />
         </SheetContent>
       </Sheet>
     );
@@ -352,6 +368,7 @@ export function NewItemDialog({
         <DialogFooter className="-mx-4 -mb-4 rounded-none border-t border-border bg-muted/40 p-4">
           {createButton}
         </DialogFooter>
+        <DiscardChangesDialog {...discardDialogProps} />
       </DialogContent>
     </Dialog>
   );

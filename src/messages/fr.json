@@ -21,6 +21,11 @@
     "itemCount": "{count, plural, one {# élément} other {# éléments}}",
     "recordCount": "{count} entrées"
   },
+  "discardChanges": {
+    "title": "Abandonner les modifications ?",
+    "body": "Vous avez des modifications non enregistrées. Si vous fermez maintenant, elles seront perdues.",
+    "discard": "Abandonner"
+  },
   "toasts": {
     "success": "Succès",
     "error": "Erreur"
