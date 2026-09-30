@@ -541,3 +541,23 @@ the full pattern reference live in `context/design-system.md`.
   site's accessibility tree) and left git history as-is rather than rewriting it, since
   gitleaks and the manual check both came back clean and a rewrite this late wasn't worth
   the risk.
+
+## September 2026 — editor ergonomics
+
+- **2026-09-30 — Drag-to-resize New Item dialog and code/markdown editors.** The desktop New
+  Item dialog gets a left-edge-only handle (the right edge carries the form's scrollbar); the
+  centered dialog grows symmetrically (drag delta ×2), clamps to 448px..viewport−32px and
+  persists its width. The item drawer's resize logic was generalized into `useResizableWidth`
+  (`useResizableDrawerWidth` is now a preset) with its grabber extracted into `ResizeHandle`;
+  scrolling moved from `DialogContent` to a body wrapper so the handle stays pinned, which
+  also pins the dialog header/footer. `CodeEditor`/`MarkdownEditor` get a textarea-style
+  bottom grip (`useResizableHeight`, `EditorResizeGrip`) — auto-fit until dragged, not
+  persisted. Bugs found along the way: markdown Preview ignored the dragged height because
+  shadcn `TabsContent`'s default `flex-1` (basis 0%) overrides an explicit `height` (fixed
+  with `flex-none`); the width drag stuttered because every frame re-rendered the whole dialog
+  (now written straight to the DOM via `surfaceRef`, committed once on release — ~20× less
+  script time); and Escape mid-drag left `user-select: none` stuck on `<body>` because the
+  unmounted handle never got `lostpointercapture` (caught by a document-level watcher, which
+  also fixes the same latent bug in the drawer). Deliberately left: the overlay's
+  `backdrop-blur` is the remaining per-frame paint cost (smooth in practice), and the 12px
+  grip is under the touch-target guideline on mobile.
