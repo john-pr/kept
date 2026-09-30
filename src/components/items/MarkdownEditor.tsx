@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useTranslations } from "next-intl";
@@ -11,8 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { optimizePrompt } from "@/actions/ai";
-
-const MAX_HEIGHT = 400;
+import { useResizableHeight } from "@/hooks/useResizableHeight";
+import { MAX_AUTO_EDITOR_HEIGHT, MIN_EDITOR_HEIGHT } from "@/lib/editor-height";
+import { EditorResizeGrip } from "@/components/items/EditorResizeGrip";
 
 interface MarkdownEditorProps {
   value: string;
@@ -50,6 +51,20 @@ export function MarkdownEditor({
   const [optimized, setOptimized] = useState<string | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
+  // Panels auto-size via CSS (120–400px) until the user drags the bottom grip. They get
+  // `flex-none` because TabsContent's default `flex-1` (basis 0%) inside the Tabs flex column
+  // resolves to content size and would ignore the dragged `height`. Separate refs
+  // per panel: Base UI keeps the outgoing panel mounted through its exit transition, so a
+  // shared ref would be nulled by that late unmount after the incoming panel attached.
+  const writePanelRef = useRef<HTMLDivElement>(null);
+  const previewPanelRef = useRef<HTMLDivElement>(null);
+  const { manualHeight, isResizing, handleProps } = useResizableHeight(
+    useCallback(
+      () => (tab === "write" ? writePanelRef.current : previewPanelRef.current),
+      [tab],
+    ),
+  );
+  const panelStyle = manualHeight != null ? { height: manualHeight, maxHeight: "none" } : undefined;
 
   const displayValue = view === "optimized" && optimized ? optimized : value;
 
@@ -161,22 +176,30 @@ export function MarkdownEditor({
 
         {!readOnly && (
           <TabsContent
+            ref={writePanelRef}
             value="write"
-            className="m-0 max-h-[400px] min-h-[120px] overflow-auto [contain:layout]"
+            className="m-0 max-h-[400px] min-h-[120px] flex-none overflow-auto [contain:layout]"
+            style={panelStyle}
           >
             <Textarea
               value={value}
               onChange={(e) => onChange?.(e.target.value)}
               placeholder={placeholder}
               className="min-h-[120px] resize-none rounded-none border-none bg-transparent font-mono text-xs text-neutral-100 shadow-none focus-visible:ring-0 dark:bg-transparent"
-              style={{ maxHeight: MAX_HEIGHT }}
+              style={
+                manualHeight != null
+                  ? { minHeight: manualHeight, maxHeight: "none" }
+                  : { maxHeight: MAX_AUTO_EDITOR_HEIGHT }
+              }
             />
           </TabsContent>
         )}
 
         <TabsContent
+          ref={previewPanelRef}
           value="preview"
-          className="m-0 max-h-[400px] min-h-[120px] overflow-auto p-3 [contain:layout]"
+          className="m-0 max-h-[400px] min-h-[120px] flex-none overflow-auto p-3 [contain:layout]"
+          style={panelStyle}
         >
           {displayValue.trim() === "" ? (
             <p className="text-xs text-neutral-500">{placeholder || t("nothingToPreview")}</p>
@@ -199,6 +222,13 @@ export function MarkdownEditor({
           </Button>
         </div>
       )}
+
+      <EditorResizeGrip
+        height={manualHeight ?? MIN_EDITOR_HEIGHT}
+        isResizing={isResizing}
+        handleProps={handleProps}
+        className="bg-[#2d2d2d]"
+      />
     </div>
   );
 }

@@ -365,6 +365,7 @@
     }
   },
   "itemForm": {
+    "resizeHandle": "Resize dialog",
     "newItem": "New item",
     "newItemDescription": "Create a new snippet, prompt, command, note, link, file, or image.",
     "newCollection": "New collection",
@@ -415,6 +416,7 @@
     "deleteCollectionBody": "This will delete \"{name}\". Items in this collection will not be deleted — they will just no longer belong to it. This action cannot be undone."
   },
   "editor": {
+    "resizeEditor": "Resize editor",
     "code": "Code",
     "explanation": "Explanation",
     "explainThisCode": "Explain this code",

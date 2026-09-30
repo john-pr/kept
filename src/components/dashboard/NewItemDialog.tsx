@@ -27,6 +27,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useResizableWidth } from "@/hooks/useResizableWidth";
+import { ResizeHandle } from "@/components/items/ResizeHandle";
+import {
+  ITEM_DIALOG_VIEWPORT_MARGIN,
+  ITEM_DIALOG_WIDTH_STORAGE_KEY,
+  MIN_ITEM_DIALOG_WIDTH,
+} from "@/lib/resizable-drawer";
+import { cn } from "@/lib/utils";
 import { FileUpload, type UploadedFile } from "@/components/items/FileUpload";
 import { CollectionMultiSelect } from "@/components/items/CollectionMultiSelect";
 import { ItemFormFields } from "@/components/items/ItemFormFields";
@@ -62,6 +70,13 @@ interface NewItemDialogProps {
   /** Shows the AI "Suggest Tags" button. Pro-only feature — omit/false hides it. */
   isPro?: boolean;
 }
+
+const ITEM_DIALOG_RESIZE_OPTIONS = {
+  storageKey: ITEM_DIALOG_WIDTH_STORAGE_KEY,
+  minWidth: MIN_ITEM_DIALOG_WIDTH,
+  viewportMargin: ITEM_DIALOG_VIEWPORT_MARGIN,
+  symmetric: true,
+};
 
 const EMPTY_FORM = {
   title: "",
@@ -103,6 +118,14 @@ export function NewItemDialog({
   const [itemTypeId, setItemTypeId] = useState(initialTypeId);
   const [form, setForm] = useState(initialForm);
   const [isSaving, setIsSaving] = useState(false);
+  const {
+    width: dialogWidth,
+    minWidth,
+    maxWidth,
+    isResizing,
+    surfaceRef,
+    handleProps,
+  } = useResizableWidth(!isMobile, ITEM_DIALOG_RESIZE_OPTIONS);
 
   const selectedType = selectableTypes.find((type) => type.id === itemTypeId);
   const slug = selectedType?.slug ?? "";
@@ -295,7 +318,24 @@ export function NewItemDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={trigger}>{children}</DialogTrigger>
-      <DialogContent className="max-h-[90vh] gap-5 overflow-y-auto rounded-none border border-border ring-0 sm:max-w-md">
+      <DialogContent
+        ref={surfaceRef}
+        className={cn(
+          "max-h-[90vh] grid-rows-[auto_minmax(0,1fr)_auto] gap-5 overflow-hidden rounded-none border border-border ring-0 sm:max-w-md",
+          isResizing && "select-none"
+        )}
+        style={dialogWidth != null ? { width: dialogWidth, maxWidth: "none" } : undefined}
+      >
+        {/* Left edge only — the right edge carries the form's scrollbar. The dialog is centered,
+            so it still grows symmetrically (the hook doubles the drag delta). */}
+        <ResizeHandle
+          label={t("resizeHandle")}
+          minWidth={minWidth}
+          maxWidth={maxWidth}
+          width={dialogWidth ?? minWidth}
+          isResizing={isResizing}
+          handleProps={handleProps}
+        />
         <DialogHeader>
           <DialogTitle className="text-base font-medium tracking-[0.12em] uppercase">
             New item
@@ -305,7 +345,9 @@ export function NewItemDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {formBody}
+        {/* Scrolls here rather than on DialogContent so the absolutely-positioned resize
+            handles stay pinned to the dialog's edges instead of scrolling away. */}
+        <div className="-mx-4 -my-1 min-h-0 overflow-y-auto px-4 py-1">{formBody}</div>
 
         <DialogFooter className="-mx-4 -mb-4 rounded-none border-t border-border bg-muted/40 p-4">
           {createButton}

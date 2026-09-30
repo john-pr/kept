@@ -365,6 +365,7 @@
     }
   },
   "itemForm": {
+    "resizeHandle": "Zmień szerokość okna",
     "newItem": "Nowy element",
     "newItemDescription": "Utwórz nowy fragment kodu, prompt, polecenie, notatkę, link, plik lub obraz.",
     "newCollection": "Nowa kolekcja",
@@ -415,6 +416,7 @@
     "deleteCollectionBody": "Spowoduje to usunięcie „{name}”. Elementy w tej kolekcji nie zostaną usunięte — po prostu przestaną do niej należeć. Tej operacji nie można cofnąć."
   },
   "editor": {
+    "resizeEditor": "Zmień wysokość edytora",
     "code": "Kod",
     "explanation": "Wyjaśnienie",
     "explainThisCode": "Wyjaśnij ten kod",
