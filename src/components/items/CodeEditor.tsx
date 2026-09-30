@@ -12,9 +12,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useEditorPreferences } from "@/components/editor/EditorPreferencesProvider";
 import { explainCode } from "@/actions/ai";
-
-const MIN_HEIGHT = 120;
-const MAX_HEIGHT = 400;
+import { useResizableHeight } from "@/hooks/useResizableHeight";
+import { MIN_EDITOR_HEIGHT, getAutoEditorHeight } from "@/lib/editor-height";
+import { EditorResizeGrip } from "@/components/items/EditorResizeGrip";
 
 // Monaco only ships vs-dark/light/hc-black/hc-light natively — monokai and
 // github-dark are registered as custom themes the first time any editor
@@ -92,17 +92,22 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const { preferences } = useEditorPreferences();
   const t = useTranslations("editor");
-  const [height, setHeight] = useState(MIN_HEIGHT);
+  const [autoHeight, setAutoHeight] = useState(MIN_EDITOR_HEIGHT);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const [tab, setTab] = useState<"code" | "explain">("code");
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isExplaining, setIsExplaining] = useState(false);
+  // Auto-fits to content until the user drags the bottom grip; after that their height sticks.
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const { manualHeight, isResizing, handleProps } = useResizableHeight(
+    useCallback(() => bodyRef.current, []),
+  );
+  const height = manualHeight ?? autoHeight;
 
   const updateHeight = useCallback(() => {
     const editor = editorRef.current;
     if (!editor) return;
-    const contentHeight = editor.getContentHeight();
-    setHeight(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, contentHeight)));
+    setAutoHeight(getAutoEditorHeight(editor.getContentHeight()));
   }, []);
 
   const handleMount: OnMount = (editor) => {
@@ -191,7 +196,11 @@ export function CodeEditor({
         </div>
       </div>
 
-      <div style={{ height }} className="min-h-0 transition-[height] duration-100">
+      <div
+        ref={bodyRef}
+        style={{ height }}
+        className={cn("min-h-0", !isResizing && "transition-[height] duration-100")}
+      >
         <div className={cn("h-full", tab === "explain" && "hidden")}>
           <Editor
             value={value}
@@ -234,6 +243,13 @@ export function CodeEditor({
           </div>
         )}
       </div>
+
+      <EditorResizeGrip
+        height={height}
+        isResizing={isResizing}
+        handleProps={handleProps}
+        className="bg-[#252526]"
+      />
     </div>
   );
 }

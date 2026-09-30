@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  ITEM_DIALOG_VIEWPORT_MARGIN,
   MAX_DRAWER_WIDTH,
+  MIN_ITEM_DIALOG_WIDTH,
   MIN_DRAWER_WIDTH,
   clampDrawerWidth,
   getMaxDrawerWidth,
@@ -68,5 +70,34 @@ describe("parseStoredDrawerWidth", () => {
     expect(parseStoredDrawerWidth("300")).toBe(MIN_DRAWER_WIDTH);
     expect(parseStoredDrawerWidth("99999")).toBe(MAX_DRAWER_WIDTH);
     expect(parseStoredDrawerWidth("700", 640)).toBe(640);
+  });
+});
+
+describe("custom min / viewport margin (New Item dialog)", () => {
+  const dialogMax = (viewport?: number) =>
+    getMaxDrawerWidth(viewport, { min: 500, margin: ITEM_DIALOG_VIEWPORT_MARGIN });
+
+  it("subtracts the viewport margin from the max", () => {
+    expect(getMaxDrawerWidth(1280, { margin: ITEM_DIALOG_VIEWPORT_MARGIN })).toBe(1248);
+    expect(getMaxDrawerWidth(1280, { min: MIN_ITEM_DIALOG_WIDTH, margin: 32 })).toBe(1248);
+  });
+
+  it("never drops below the custom minimum", () => {
+    expect(dialogMax(400)).toBe(500);
+    expect(dialogMax()).toBe(MAX_DRAWER_WIDTH);
+    expect(getMaxDrawerWidth(undefined, { min: 1200 })).toBe(1200);
+  });
+
+  it("clamps to the custom minimum", () => {
+    expect(clampDrawerWidth(300, 1000, 500)).toBe(500);
+    expect(clampDrawerWidth(Number.NaN, 1000, 500)).toBe(500);
+    expect(clampDrawerWidth(700, 1000, 500)).toBe(700);
+    expect(clampDrawerWidth(1200, 1000, 500)).toBe(1000);
+  });
+
+  it("parses stored values against the custom minimum", () => {
+    expect(parseStoredDrawerWidth("450", 1000, 500)).toBe(500);
+    expect(parseStoredDrawerWidth("800", 1000, 500)).toBe(800);
+    expect(parseStoredDrawerWidth("nope", 1000, 500)).toBeNull();
   });
 });

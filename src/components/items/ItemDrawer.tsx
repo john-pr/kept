@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useResizableDrawerWidth } from "@/hooks/useResizableDrawerWidth";
+import { ResizeHandle } from "@/components/items/ResizeHandle";
 import { iconMap } from "@/lib/icon-map";
 import { withAlpha } from "@/lib/color";
 import type { ItemDetail } from "@/lib/db/items";
@@ -76,6 +77,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
     minWidth,
     maxWidth,
     isResizing,
+    surfaceRef,
     handleProps,
   } = useResizableDrawerWidth(!isMobile);
   const t = useTranslations("drawer");
@@ -266,6 +268,7 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
+        ref={surfaceRef}
         className={cn(
           "gap-0 data-[side=right]:w-full data-[side=right]:sm:max-w-[28rem]",
           isResizing && "select-none"
@@ -273,29 +276,14 @@ export function ItemDrawer({ itemId, open, onOpenChange }: ItemDrawerProps) {
         style={drawerWidth != null ? { width: drawerWidth, maxWidth: "none" } : undefined}
       >
         {!isMobile && (
-          <div
-            role="separator"
-            aria-orientation="vertical"
-            aria-label={t("resizeHandle")}
-            aria-valuemin={minWidth}
-            aria-valuemax={maxWidth}
-            aria-valuenow={drawerWidth ?? minWidth}
-            tabIndex={0}
-            {...handleProps}
-            data-resizing={isResizing ? "" : undefined}
-            className="group absolute inset-y-0 left-0 z-20 flex w-4 cursor-col-resize touch-none items-center justify-center outline-none"
-          >
-            {/* full-height accent line — always visibly green so the edge reads as draggable */}
-            <span
-              aria-hidden
-              className="absolute inset-y-0 left-0 w-0.5 bg-primary/40 transition-colors group-hover:bg-primary group-focus-visible:bg-primary group-data-[resizing]:bg-primary"
-            />
-            {/* centered grabber bar — grows and brightens on hover / focus / drag */}
-            <span
-              aria-hidden
-              className="relative h-14 w-1 bg-primary/70 transition-[height,width,background-color] duration-150 group-hover:h-20 group-hover:w-1.5 group-hover:bg-primary group-focus-visible:h-20 group-focus-visible:w-1.5 group-focus-visible:bg-primary group-data-[resizing]:h-20 group-data-[resizing]:w-1.5 group-data-[resizing]:bg-primary"
-            />
-          </div>
+          <ResizeHandle
+            label={t("resizeHandle")}
+            minWidth={minWidth}
+            maxWidth={maxWidth}
+            width={drawerWidth ?? minWidth}
+            isResizing={isResizing}
+            handleProps={handleProps}
+          />
         )}
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {isLoading || !item ? (

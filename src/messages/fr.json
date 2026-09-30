@@ -365,6 +365,7 @@
     }
   },
   "itemForm": {
+    "resizeHandle": "Redimensionner la fenêtre",
     "newItem": "Nouvel élément",
     "newItemDescription": "Créer un nouvel extrait de code, prompt, commande, note, lien, fichier ou image.",
     "newCollection": "Nouvelle collection",
@@ -415,6 +416,7 @@
     "deleteCollectionBody": "Cela supprimera « {name} ». Les éléments de cette collection ne seront pas supprimés — ils n'y appartiendront simplement plus. Cette action est irréversible."
   },
   "editor": {
+    "resizeEditor": "Redimensionner l’éditeur",
     "code": "Code",
     "explanation": "Explication",
     "explainThisCode": "Expliquer ce code",
