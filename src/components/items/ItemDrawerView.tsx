@@ -8,6 +8,7 @@ import { CodeEditor } from "@/components/items/CodeEditor";
 import { MarkdownEditor } from "@/components/items/MarkdownEditor";
 import { DeleteItemDialog } from "@/components/items/DeleteItemDialog";
 import { formatFileSize } from "@/lib/file-constraints";
+import { useSelectAllScope } from "@/hooks/useSelectAllScope";
 import type { ItemDetailResponse } from "@/components/items/ItemDrawer";
 
 // Dotted-divider section-label convention — this component is its canonical origin
@@ -47,6 +48,8 @@ export function ItemDrawerView({
   onAcceptOptimizedPrompt,
 }: ItemDrawerViewProps) {
   const t = useTranslations("drawer");
+  const selectAllScope = useSelectAllScope();
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -128,7 +131,10 @@ export function ItemDrawerView({
               onAcceptOptimized={onAcceptOptimizedPrompt}
             />
           ) : (
-            <pre className="max-h-80 overflow-auto border border-border bg-muted p-3.5 font-mono text-xs leading-[19px] text-ink-body whitespace-pre-wrap">
+            <pre
+              {...selectAllScope}
+              className="max-h-80 overflow-auto border border-border bg-muted p-3.5 font-mono text-xs leading-[19px] text-ink-body whitespace-pre-wrap outline-none"
+            >
               {item.content ?? item.url}
             </pre>
           )}

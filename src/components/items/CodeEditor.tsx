@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { useEditorPreferences } from "@/components/editor/EditorPreferencesProvider";
 import { explainCode } from "@/actions/ai";
 import { useResizableHeight } from "@/hooks/useResizableHeight";
+import { useSelectAllScope } from "@/hooks/useSelectAllScope";
 import { MIN_EDITOR_HEIGHT, getAutoEditorHeight } from "@/lib/editor-height";
 import { EditorResizeGrip } from "@/components/items/EditorResizeGrip";
 
@@ -103,6 +104,7 @@ export function CodeEditor({
     useCallback(() => bodyRef.current, []),
   );
   const height = manualHeight ?? autoHeight;
+  const selectAllScope = useSelectAllScope();
 
   const updateHeight = useCallback(() => {
     const editor = editorRef.current;
@@ -234,8 +236,9 @@ export function CodeEditor({
         </div>
         {explanation && (
           <div
+            {...selectAllScope}
             className={cn(
-              "markdown-preview h-full overflow-auto p-3",
+              "markdown-preview h-full overflow-auto p-3 outline-none",
               tab !== "explain" && "hidden",
             )}
           >
