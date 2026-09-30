@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { optimizePrompt } from "@/actions/ai";
 import { useResizableHeight } from "@/hooks/useResizableHeight";
+import { useSelectAllScope } from "@/hooks/useSelectAllScope";
 import { MAX_AUTO_EDITOR_HEIGHT, MIN_EDITOR_HEIGHT } from "@/lib/editor-height";
 import { EditorResizeGrip } from "@/components/items/EditorResizeGrip";
 
@@ -64,6 +65,7 @@ export function MarkdownEditor({
       [tab],
     ),
   );
+  const selectAllScope = useSelectAllScope();
   const panelStyle = manualHeight != null ? { height: manualHeight, maxHeight: "none" } : undefined;
 
   const displayValue = view === "optimized" && optimized ? optimized : value;
@@ -198,6 +200,7 @@ export function MarkdownEditor({
         <TabsContent
           ref={previewPanelRef}
           value="preview"
+          {...selectAllScope}
           className="m-0 max-h-[400px] min-h-[120px] flex-none overflow-auto p-3 [contain:layout]"
           style={panelStyle}
         >
