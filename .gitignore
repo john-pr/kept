@@ -55,3 +55,6 @@ next-env.d.ts
 
 # jetbrains ide
 .idea/
+
+# local-only architecture notes
+docs/ARCHITECTURE_RADIO.md
